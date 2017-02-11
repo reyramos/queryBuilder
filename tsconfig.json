@@ -16,7 +16,12 @@
     },
     "awesomeTypescriptLoaderOptions": {
         "useBabel": true,
-        "useCache": true,
+        "useCache": false,
+        "babelOptions ": {
+            "presets": [
+                "es2015"
+            ]
+        },
         "useWebpackText": true
     }
 }
