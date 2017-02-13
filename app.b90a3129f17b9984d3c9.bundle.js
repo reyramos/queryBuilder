@@ -6,14 +6,13 @@ webpackJsonp([0,2],{
 "use strict";
 
 
-const angular = __webpack_require__(31);
-const routes_1 = __webpack_require__(136);
-var App;
-(function (App) {
-    __webpack_require__(320);
-    App.app = angular.module('app', ['ui.router', 'ngSanitize', 'oc.lazyLoad', __webpack_require__(125).name]);
-    App.app.config(routes_1.RouteProvider);
-})(App = exports.App || (exports.App = {}));
+var angular = __webpack_require__(31);
+var routes_1 = __webpack_require__(136);
+__webpack_require__(320);
+exports.app = angular.module('app', ['ui.router', 'ngSanitize', 'oc.lazyLoad', __webpack_require__(125).name]);
+exports.app.config(['routeStateProvider', function (states) {
+    return new routes_1.RouteProvider(states);
+}]);
 
 /***/ }),
 
@@ -52,7 +51,7 @@ module.exports = app;
 "use strict";
 
 
-const angular_1 = __webpack_require__(31);
+var angular_1 = __webpack_require__(31);
 exports.app = angular_1.module("app.core", []);
 
 /***/ }),
@@ -63,18 +62,20 @@ exports.app = angular_1.module("app.core", []);
 "use strict";
 
 
-class AboutCtrl {
-    constructor($scope) {
+var AboutCtrl = function () {
+    function AboutCtrl($scope) {
         this.$scope = $scope;
     }
-}
+    return AboutCtrl;
+}();
 AboutCtrl.$inject = ['$scope'];
-class AboutComponent {
-    constructor() {
+var AboutComponent = function () {
+    function AboutComponent() {
         this.template = "About Page";
         this.controller = AboutCtrl;
     }
-}
+    return AboutComponent;
+}();
 exports.AboutComponent = AboutComponent;
 
 /***/ }),
@@ -85,18 +86,20 @@ exports.AboutComponent = AboutComponent;
 "use strict";
 
 
-class HomeCtrl {
-    constructor($scope) {
+var HomeCtrl = function () {
+    function HomeCtrl($scope) {
         this.$scope = $scope;
     }
-}
+    return HomeCtrl;
+}();
 HomeCtrl.$inject = ['$scope'];
-class HomeComponent {
-    constructor() {
+var HomeComponent = function () {
+    function HomeComponent() {
         this.template = __webpack_require__(321);
         this.controller = HomeCtrl;
     }
-}
+    return HomeComponent;
+}();
 exports.HomeComponent = HomeComponent;
 
 /***/ }),
@@ -107,19 +110,21 @@ exports.HomeComponent = HomeComponent;
 "use strict";
 
 
-class NavCtrl {
-    constructor($element) {
+var NavCtrl = function () {
+    function NavCtrl($element) {
         this.$element = $element;
         $element.addClass('navbar navbar-default navbar-fixed-top').css({ position: 'relative' });
     }
-}
+    return NavCtrl;
+}();
 NavCtrl.$inject = ['$element'];
-class NavComponent {
-    constructor() {
+var NavComponent = function () {
+    function NavComponent() {
         this.template = __webpack_require__(322);
         this.controller = NavCtrl;
     }
-}
+    return NavComponent;
+}();
 exports.NavComponent = NavComponent;
 
 /***/ }),
@@ -142,7 +147,7 @@ var Public;
         abstract: true,
         resolve: {
             register: ['jsBundleResolver', function (jsBundleResolver) {
-                return jsBundleResolver((app, resolve) => {
+                return jsBundleResolver(function (app, resolve) {
                     __webpack_require__.e/* require.ensure */(0/* min-size */).then((function () {
                         app.register(__webpack_require__(131));
                         resolve();
@@ -170,11 +175,11 @@ var Public;
 "use strict";
 
 
-const angular = __webpack_require__(31);
+var angular = __webpack_require__(31);
 var app = angular.module("app.public", []);
-const nav_component_1 = __webpack_require__(129);
-const home_component_1 = __webpack_require__(128);
-const about_component_1 = __webpack_require__(127);
+var nav_component_1 = __webpack_require__(129);
+var home_component_1 = __webpack_require__(128);
+var about_component_1 = __webpack_require__(127);
 app.component('eqNav', new nav_component_1.NavComponent());
 app.component('eqHome', new home_component_1.HomeComponent());
 app.component('eqAbout', new about_component_1.AboutComponent());
@@ -188,9 +193,9 @@ module.exports = app;
 "use strict";
 
 
-const angular = __webpack_require__(31);
-const query_conditions_1 = __webpack_require__(86);
-const query_interface_1 = __webpack_require__(87);
+var angular = __webpack_require__(31);
+var query_conditions_1 = __webpack_require__(86);
+var query_interface_1 = __webpack_require__(87);
 String.prototype.replaceAt = function (index, char) {
     var a = this.split("");
     a[index] = char;
@@ -207,8 +212,8 @@ Array.prototype.unique = function () {
     }
     return a;
 };
-class QueryBuilderCtrl {
-    constructor($element, $scope) {
+var QueryBuilderCtrl = function () {
+    function QueryBuilderCtrl($element, $scope) {
         this.$element = $element;
         this.$scope = $scope;
         this.maxChips = 1;
@@ -218,61 +223,61 @@ class QueryBuilderCtrl {
         this.$event = "";
         this.$queryString = "";
         this.$outputUpdate = false;
-        let self = this;
+        var self = this;
         Object.keys(query_conditions_1.QUERY_CONDITIONS).forEach(function (k) {
             self.conditions.push(query_conditions_1.QUERY_CONDITIONS[k]);
         });
     }
-    $onInit() {
+    QueryBuilderCtrl.prototype.$onInit = function () {
         if (!this.group) this.group = angular.copy(query_interface_1.QUERY_INTERFACE.filters);
         if (!this.fieldValue) this.fieldValue = 'value';
         if (!this.fieldName) this.fieldName = 'name';
         this.onGroupChange();
-    }
-    $doCheck() {
+    };
+    QueryBuilderCtrl.prototype.$doCheck = function () {
         if (!angular.equals(this.queryString, this.$queryString)) {
-            let self = this;
+            var self_1 = this;
             this.$queryString = this.queryString;
             clearTimeout(this.$timeoutPromise);
-            this.$timeoutPromise = setTimeout(() => {
-                self.$outputUpdate = true;
-                let obj = self.parseQuery(self.queryString);
-                let group = angular.toJson(obj);
-                self.group = JSON.parse(group);
-                self.onGroupChange();
-                self.$scope.$digest();
+            this.$timeoutPromise = setTimeout(function () {
+                self_1.$outputUpdate = true;
+                var obj = self_1.parseQuery(self_1.queryString);
+                var group = angular.toJson(obj);
+                self_1.group = JSON.parse(group);
+                self_1.onGroupChange();
+                self_1.$scope.$digest();
             }, 500);
         }
-    }
-
-    split_string(query) {
+    };
+    ;
+    QueryBuilderCtrl.prototype.split_string = function (query) {
         if (!query) return;
-        let words = query.trim().split(/ /g);
-        let conditions = ["(", ")"];
-        let qArr = [];
-        let string = "";
+        var words = query.trim().split(/ /g);
+        var conditions = ["(", ")"];
+        var qArr = [];
+        var string = "";
         this.conditions.map(function (c) {
-            let defaultCase = Array.isArray(c.symbol) ? c.symbol : [c.symbol];
-            let lowerCase = defaultCase.map(o => {
+            var defaultCase = Array.isArray(c.symbol) ? c.symbol : [c.symbol];
+            var lowerCase = defaultCase.map(function (o) {
                 return o.toLowerCase();
             });
             conditions = conditions.concat(defaultCase, lowerCase);
         });
         this.operators.map(function (c) {
-            let defaultCase = Array.isArray(c.name) ? c.name : [c.name];
-            let lowerCase = defaultCase.map(o => {
+            var defaultCase = Array.isArray(c.name) ? c.name : [c.name];
+            var lowerCase = defaultCase.map(function (o) {
                 return o.toLowerCase();
             });
             conditions = conditions.concat(defaultCase, lowerCase);
         });
         conditions = conditions.unique();
         var i = 0;
-        let handler = [];
+        var handler = [];
         do {
             if (words[i]) {
                 if (conditions.indexOf(words[i].toLowerCase()) < 0) {
-                    let regex = /^and|AND|or|OR$`/g;
-                    let cond = regex.exec(words[i]);
+                    var regex = /^and|AND|or|OR$`/g;
+                    var cond = regex.exec(words[i]);
                     if (cond) {
                         handler.push(string);
                         handler.push(words[i]);
@@ -284,8 +289,8 @@ class QueryBuilderCtrl {
                     string = "";
                     handler.push(words[i]);
                 } else {
-                    let regex = /(["'`])(\\?.)*?\1/g;
-                    let value = regex.exec(string);
+                    var regex = /(["'`])(\\?.)*?\1/g;
+                    var value = regex.exec(string);
                     if (value) {
                         handler.push(value.input);
                     } else {
@@ -307,15 +312,15 @@ class QueryBuilderCtrl {
         qArr = qArr.filter(function (o) {
             return o !== "";
         });
-        let _split = () => {
-            let cQarr = qArr.slice(0);
+        var _split = function () {
+            var cQarr = qArr.slice(0);
             qArr.forEach(function (o, i) {
-                let regex = /\(|\)/g;
-                let m = o.length > 1 ? regex.exec(o) : null;
+                var regex = /\(|\)/g;
+                var m = o.length > 1 ? regex.exec(o) : null;
                 if (m) {
                     qArr.splice(m[0] === "(" ? i : i + 1, 0, m[0]);
-                    let string = o.replaceAt(m.index, "");
-                    qArr.splice(m[0] === ")" ? i : i + 1, 1, string);
+                    var string_1 = o.replaceAt(m.index, "");
+                    qArr.splice(m[0] === ")" ? i : i + 1, 1, string_1);
                 }
             });
             if (qArr.length !== cQarr.length) _split();
@@ -325,46 +330,47 @@ class QueryBuilderCtrl {
             return o.trim();
         });
         return qArr;
-    }
-    parseQuery(queryString) {
-        let self = this;
-        let queryArray = this.split_string(queryString);
-        let operators = [];
+    };
+    QueryBuilderCtrl.prototype.parseQuery = function (queryString) {
+        var _this = this;
+        var self = this;
+        var queryArray = this.split_string(queryString);
+        var operators = [];
         this.operators.map(function (c) {
-            let defaultCase = Array.isArray(c.name) ? c.name : [c.name];
-            let lowerCase = defaultCase.map(o => {
+            var defaultCase = Array.isArray(c.name) ? c.name : [c.name];
+            var lowerCase = defaultCase.map(function (o) {
                 return o.toLowerCase();
             });
             operators = operators.concat(lowerCase);
         });
-        let conditions = [];
+        var conditions = [];
         Object.keys(query_conditions_1.QUERY_CONDITIONS).forEach(function (k) {
-            let symbol = query_conditions_1.QUERY_CONDITIONS[k].symbol;
+            var symbol = query_conditions_1.QUERY_CONDITIONS[k].symbol;
             conditions.push({
                 symbol: Array.isArray(symbol) ? symbol : [symbol],
                 value: query_conditions_1.QUERY_CONDITIONS[k].value
             });
         });
-        let newGroup = () => {
-            let filters = angular.copy(query_interface_1.QUERY_INTERFACE.filters);
+        var newGroup = function () {
+            var filters = angular.copy(query_interface_1.QUERY_INTERFACE.filters);
             Object.assign(filters, {
                 expressions: []
             });
             return filters;
         };
-        let newCondition = exp => {
-            let expressions = angular.copy(query_interface_1.QUERY_INTERFACE.filters.expressions[0]);
-            let regex = /(["'`])(\\?.)*?\1/g;
-            let val = regex.exec(exp[2]);
-            let value = val ? exp[2].substring(1, exp[2].length - 1) : exp[2];
-            let desc = regex.exec(exp[0]);
-            let description = desc ? exp[0].substring(1, exp[0].length - 1) : exp[0];
+        var newCondition = function (exp) {
+            var expressions = angular.copy(query_interface_1.QUERY_INTERFACE.filters.expressions[0]);
+            var regex = /(["'`])(\\?.)*?\1/g;
+            var val = regex.exec(exp[2]);
+            var value = val ? exp[2].substring(1, exp[2].length - 1) : exp[2];
+            var desc = regex.exec(exp[0]);
+            var description = desc ? exp[0].substring(1, exp[0].length - 1) : exp[0];
             Object.assign(expressions, {
                 values: [],
                 field: self.fields.find(function (o) {
                     return description === o[self.fieldName];
                 }),
-                operator: conditions.find(o => {
+                operator: conditions.find(function (o) {
                     return o.symbol.indexOf(exp[1]) !== -1;
                 }).value
             });
@@ -374,28 +380,28 @@ class QueryBuilderCtrl {
             });
             return expressions;
         };
-        let group = newGroup();
-        let parseIt = (group, arr) => {
-            let expressions = [];
+        var group = newGroup();
+        var parseIt = function (group, arr) {
+            var expressions = [];
             if (!arr) return;
-            for (let i = 0; i < arr.length; i++) {
-                let txt = arr[i];
+            for (var i = 0; i < arr.length; i++) {
+                var txt = arr[i];
                 if (txt === "$$QueryBuilder") return;
                 if (txt === "(") {
-                    let _group = newGroup();
+                    var _group = newGroup();
                     group.expressions.push(_group);
                     arr = arr.filter(function (o) {
                         return o !== "$$QueryBuilder";
                     });
-                    let reg = /(\()?(?:[^()]+|\([^)]+\))+(\)?)/;
-                    let m = reg.exec(arr.join(" "));
+                    var reg = /(\()?(?:[^()]+|\([^)]+\))+(\)?)/;
+                    var m = reg.exec(arr.join(" "));
                     if (m) {
-                        let balance = m[0].replaceAt(0, "");
+                        var balance = m[0].replaceAt(0, "");
                         balance = balance.replaceAt(balance.length - 1, "");
-                        let newStr = arr.join(" ").replace(balance, "").replace(/\(\)/, "");
-                        arr = ["$$QueryBuilder"].concat(this.split_string(newStr.trim()) || []);
-                        let handler = this.split_string(balance) || [];
-                        handler = handler.filter(o => {
+                        var newStr = arr.join(" ").replace(balance, "").replace(/\(\)/, "");
+                        arr = ["$$QueryBuilder"].concat(_this.split_string(newStr.trim()) || []);
+                        var handler = _this.split_string(balance) || [];
+                        handler = handler.filter(function (o) {
                             return o.trim();
                         });
                         expressions = [];
@@ -413,9 +419,9 @@ class QueryBuilderCtrl {
         };
         parseIt(group, queryArray);
         return group;
-    }
-    stringifyQuery(group) {
-        let self = this;
+    };
+    QueryBuilderCtrl.prototype.stringifyQuery = function (group) {
+        var self = this;
         if (!group) return;
         var str = [];
         angular.forEach(group.expressions, function (o, i) {
@@ -424,11 +430,11 @@ class QueryBuilderCtrl {
                 if (!o.field || !o.field[self.fieldName]) return;
                 if (i !== 0) str.push(group.op);
                 str.push(o.field[self.fieldName]);
-                let condition = self.conditions.find(function (q) {
+                var condition = self.conditions.find(function (q) {
                     return o.operator === q.value;
                 }).symbol;
                 str.push(Array.isArray(condition) ? condition[0] : condition);
-                let ticks = "`";
+                var ticks = "`";
                 if (values) str.push(self.$outputUpdate ? values : ticks + values + ticks);
             } else {
                 var comp = self.stringifyQuery(o);
@@ -443,9 +449,9 @@ class QueryBuilderCtrl {
             }
         });
         return str;
-    }
-    setOperator(operator) {
-        let self = this;
+    };
+    QueryBuilderCtrl.prototype.setOperator = function (operator) {
+        var self = this;
         switch (operator) {
             case query_conditions_1.QUERY_CONDITIONS.IN.value:
                 self.multi = true;
@@ -460,24 +466,24 @@ class QueryBuilderCtrl {
                 self.maxChips = 1;
                 break;
         }
-    }
-    onConditionChange(rule, e) {
+    };
+    QueryBuilderCtrl.prototype.onConditionChange = function (rule, e) {
         this.$event = 'onConditionChange';
         this.setOperator(rule.operator);
         this.onGroupChange();
-    }
-
-    onGroupChange(e) {
+    };
+    ;
+    QueryBuilderCtrl.prototype.onGroupChange = function (e) {
         clearTimeout(this.$timeoutPromise);
-        let self = this;
+        var self = this;
         this.$event = e || 'onGroupChange';
-        let conditions = [];
-        let values = [];
+        var conditions = [];
+        var values = [];
         this.group.expressions.forEach(function (o, i) {
             if (o.type !== 'condition') return;
             conditions.push(o);
-            let hasValue = o.values ? o.values[0] : false;
-            let hasOperand = o.field ? o.field[self.fieldValue] : false;
+            var hasValue = o.values ? o.values[0] : false;
+            var hasOperand = o.field ? o.field[self.fieldValue] : false;
             if (hasValue && hasOperand) values.push(i);
         });
         this.setFieldsDescription(this.group);
@@ -487,13 +493,13 @@ class QueryBuilderCtrl {
         } else if (conditions.length == 0) {
             this.AddCondition(0);
         }
-    }
-    setFieldsDescription(group) {
-        let self = this;
+    };
+    QueryBuilderCtrl.prototype.setFieldsDescription = function (group) {
+        var self = this;
         group.expressions.forEach(function (o, i) {
             !function (obj) {
                 if (obj.type === 'condition') {
-                    let test = self.fields.map(function (o) {
+                    var test = self.fields.map(function (o) {
                         if (obj.field && obj.field[self.fieldValue] === o[self.fieldValue]) {
                             return obj.field = o;
                         } else if (obj.field && obj.field[self.fieldName] === o[self.fieldName]) {
@@ -505,10 +511,10 @@ class QueryBuilderCtrl {
                 }
             }(o);
         });
-    }
-
-    AddCondition(idx) {
-        let self = this;
+    };
+    ;
+    QueryBuilderCtrl.prototype.AddCondition = function (idx) {
+        var self = this;
         var condition = angular.copy(query_interface_1.QUERY_INTERFACE.filters.expressions[0], {
             $$indeed: self.$countCondition,
             values: []
@@ -518,23 +524,23 @@ class QueryBuilderCtrl {
         } else {
             self.group.expressions.push(condition);
         }
-    }
-    AddGroup(e) {
+    };
+    QueryBuilderCtrl.prototype.AddGroup = function (e) {
         this.$event = 'AddGroup';
         this.group.expressions.push(angular.copy(query_interface_1.QUERY_INTERFACE.filters));
-    }
-    RemoveGroup(e) {
+    };
+    QueryBuilderCtrl.prototype.RemoveGroup = function (e) {
         this.$event = 'RemoveGroup';
-        let self = this;
+        var self = this;
         this.onDelete({
             $event: {
                 group: self.group
             }
         });
-    }
-    RemoveCondition(idx, e) {
+    };
+    QueryBuilderCtrl.prototype.RemoveCondition = function (idx, e) {
         this.$event = 'RemoveCondition';
-        let self = this;
+        var self = this;
         this.$countCondition = 0;
         this.group.expressions.map(function (o) {
             if (o.type === 'condition') self.$countCondition++;
@@ -542,21 +548,21 @@ class QueryBuilderCtrl {
         if (self.$countCondition === 1) return;
         self.group.expressions.splice(idx, 1);
         this.onGroupChange();
-    }
-    onDeleteGroup(e) {
-        let self = this;
-        let gCopy = this.group.expressions.slice(0);
+    };
+    QueryBuilderCtrl.prototype.onDeleteGroup = function (e) {
+        var self = this;
+        var gCopy = this.group.expressions.slice(0);
         gCopy.forEach(function (o, i) {
             if (o.$$hashKey === e.group.$$hashKey && o.$$indeed === e.group.$$indeed) self.group.expressions.splice(i, 1);
         });
         this.onGroupChange();
-    }
-    onUpdateGroup(e) {
+    };
+    QueryBuilderCtrl.prototype.onUpdateGroup = function (e) {
         this.trigger('onUpdate');
-    }
-    trigger(event) {
-        let self = this;
-        let string = this.stringifyQuery(this.group);
+    };
+    QueryBuilderCtrl.prototype.trigger = function (event) {
+        var self = this;
+        var string = this.stringifyQuery(this.group);
         this.$queryString = this.queryString = string.join(' ');
         this.$outputUpdate = false;
         this[event]({
@@ -565,15 +571,16 @@ class QueryBuilderCtrl {
                 string: self.queryString
             }
         });
-    }
-    $onDestroy() {
+    };
+    QueryBuilderCtrl.prototype.$onDestroy = function () {
         clearTimeout(this.$timeoutPromise);
-    }
-}
+    };
+    return QueryBuilderCtrl;
+}();
 QueryBuilderCtrl.$inject = ['$element', '$scope'];
 __webpack_require__(330);
-class QueryBuilder {
-    constructor() {
+var QueryBuilder = function () {
+    function QueryBuilder() {
         this.bindings = {
             onDelete: '&',
             onUpdate: '&',
@@ -587,7 +594,8 @@ class QueryBuilder {
         this.template = __webpack_require__(326);
         this.controller = QueryBuilderCtrl;
     }
-}
+    return QueryBuilder;
+}();
 exports.QueryBuilder = QueryBuilder;
 
 /***/ }),
@@ -605,10 +613,10 @@ module.exports = __webpack_require__(333);
 "use strict";
 
 
-const angular = __webpack_require__(31);
-const query_builder_component_1 = __webpack_require__(132);
-const query_conditions_1 = __webpack_require__(86);
-const query_interface_1 = __webpack_require__(87);
+var angular = __webpack_require__(31);
+var query_builder_component_1 = __webpack_require__(132);
+var query_conditions_1 = __webpack_require__(86);
+var query_interface_1 = __webpack_require__(87);
 var app = angular.module("app.queryBuilder", []);
 __webpack_require__(133)(app);
 app.component('queryBuilder', new query_builder_component_1.QueryBuilder());
@@ -657,15 +665,16 @@ var QueryBuilder;
 "use strict";
 
 
-const public_routes_1 = __webpack_require__(130);
-const routes_1 = __webpack_require__(135);
-class RouteProvider {
-    constructor(states) {
+var public_routes_1 = __webpack_require__(130);
+var routes_1 = __webpack_require__(135);
+var RouteProvider = function () {
+    function RouteProvider(states) {
         this.states = states;
         states.inject(public_routes_1.Public.routes);
         states.inject(routes_1.QueryBuilder.routes);
     }
-}
+    return RouteProvider;
+}();
 RouteProvider.$inject = ['routeStateProvider'];
 exports.RouteProvider = RouteProvider;
 
@@ -1629,4 +1638,4 @@ exports.QUERY_INTERFACE = Object.freeze({
 /***/ })
 
 },[334]);
-//# sourceMappingURL=app.1bcd367be955f77d364a.bundle.map
+//# sourceMappingURL=app.b90a3129f17b9984d3c9.bundle.map
