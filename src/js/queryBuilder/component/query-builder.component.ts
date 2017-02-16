@@ -669,6 +669,32 @@ class QueryBuilderCtrl implements ng.IComponentController {
     }
 
 
+    private CleanObject() {
+        var regex = /\{"type":"condition".*?"values":\[\]\}/g;
+        var str = angular.toJson(this.group);
+        var m;
+
+        while ((m = regex.exec(str)) !== null) {
+            if (m.index === regex.lastIndex) {
+                regex.lastIndex++;
+            }
+            m.forEach(function (match) {
+                var obj = JSON.parse("[" + match + "]");
+                obj.forEach(function (o) {
+                    if (!o.values.length) {
+                        var search = JSON.stringify(o).trim();
+                        var re = str.split(search);
+                        str = re.join("");
+                    }
+                })
+            });
+        }
+        //clean up the json
+        str = str.replace(/,\]/g, "]").replace(/\[,/g, "[").replace(/,,/g, ",");
+        return JSON.parse(str);
+    }
+
+
     trigger(event: string) {
         let self: any = this;
         let string: Array<string> = this.stringifyQuery(this.group);
@@ -679,7 +705,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
         this[event]({
             $event: {
-                group: JSON.parse(angular.toJson(self.group)),
+                group: self.CleanObject(),
                 string: self.queryString
             }
         })
