@@ -679,14 +679,16 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 regex.lastIndex++;
             }
             m.forEach(function (match) {
-                var obj = JSON.parse("[" + match + "]");
-                obj.forEach(function (o) {
-                    if (!o.values.length) {
-                        var search = JSON.stringify(o).trim();
-                        var re = str.split(search);
-                        str = re.join("");
-                    }
-                })
+                try{
+                    var obj = JSON.parse("[" + match + "]");
+                    obj.forEach(function (o) {
+                        if (!o.values.length) {
+                            var search = JSON.stringify(o).trim();
+                            var re = str.split(search);
+                            str = re.join("");
+                        }
+                    })
+                }catch(e){}
             });
         }
         //clean up the json
