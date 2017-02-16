@@ -53,19 +53,15 @@ module.exports = {
 		extensions: [".ts", ".tsx", ".js", ".less", ".json", ".css", ".png", ".jpg"],
 		alias: {
 			angular: "angular",
+			jquery: 'jquery/dist/jquery',
 			rx: "rxjs/index"
 		}
 	},
 	module: {
 		rules: [
-			// {
-			// 	test: /\.js$/,
-			// 	exclude: /node_modules/,
-			// 	use: ["babel-loader"]
-			// },
 			{
 				test: /\.ts$/,
-				use: ["babel-loader", "awesome-typescript-loader", "angular1-template-loader"],
+				use: ["babel-loader","awesome-typescript-loader", "angular1-template-loader"],
 				exclude: [/\.(spec|e2e|d)\.ts$/]
 			},
 			{
@@ -107,7 +103,7 @@ module.exports = {
 			{test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, use: "url-loader"},
 			{
 				test: /\.html$/,
-				use: ["html-loader", "html-minify"]
+				use: ["raw-loader", "html-minify"]
 			},
 			{
 				test: /^index\.html$/, use: ["html", {
@@ -208,7 +204,12 @@ module.exports = {
 
 		}),
 		new webpack.ProvidePlugin({
-			"Rx": "rx"
+			"$": "jquery",
+			"jQuery": "jquery",
+			"jquery": "jquery",
+			'window.$': 'jquery',
+			"window.jQuery": "jquery",
+			"Rx": 'rx'
 		})
 	],
 	// target: "node",
