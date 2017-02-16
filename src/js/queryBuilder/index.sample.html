@@ -11,6 +11,7 @@
         <span ng-bind-html="$ctrl.output"></span>
 
     </div>
+    <button ng-click="$ctrl.CleanObject()">Clean</button>
     <query-builder group="$ctrl.filters" fields="$ctrl.fields" on-update="$ctrl.onChanges($event)"
                    query-string="$ctrl.output" field-value="name" field-name="description" optgroup></query-builder>
 

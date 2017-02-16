@@ -14,64 +14,64 @@ module.exports = function (app) {
 	function FilterController(QUERY_INTERFACE) {
 
 		console.clear();
-		this.filters = angular.copy(QUERY_INTERFACE.filters);
-		// this.filters = {
-		// 	"type": "group",
-		// 	"op": "AND",
-		// 	"expressions": [{
-		// 		"type": "condition",
-		// 		"field": {
-		// 			"description": "Account Country",
-		// 			"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.ACCOUNT_COUNTRY",
-		// 			"dataType": "STRING",
-		// 			"type": "DIMENSION"
-		// 		},
-		// 		"operator": "EQ",
-		// 		"values": ["United States"]
-		// 	}, {
-		// 		"type": "group",
-		// 		"op": "OR",
-		// 		"expressions": [{
-		// 			"type": "group",
-		// 			"op": "AND",
-		// 			"expressions": [{
-		// 				"type": "condition",
-		// 				"field": {
-		// 					"description": "Patient Gender",
-		// 					"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.PATIENT_GENDER",
-		// 					"dataType": "STRING",
-		// 					"type": "DIMENSION"
-		// 				},
-		// 				"operator": "LT",
-		// 				"values": ["M"]
-		// 			}, {
-		// 				"type": "condition",
-		// 				"operator": "EQ",
-		// 				"field": {
-		// 					"description": "Patient Age",
-		// 					"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.PATIENT_AGE",
-		// 					"dataType": "STRING",
-		// 					"type": "DIMENSION"
-		// 				},
-		// 				"values": []
-		// 			}],
-		// 		}, {
-		// 			"type": "group",
-		// 			"op": "AND",
-		// 			"expressions": [{
-		// 				"type": "condition",
-		// 				"field": {
-		// 					"description": "Patient Gender",
-		// 					"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.PATIENT_GENDER",
-		// 					"dataType": "STRING",
-		// 					"type": "DIMENSION"
-		// 				},
-		// 				"operator": "EQ",
-		// 				"values": ["F"]
-		// 			}]
-		// 		}]
-		// 	}]
-		// };
+		// this.filters = angular.copy(QUERY_INTERFACE.filters);
+		this.filters = {
+			"type": "group",
+			"op": "AND",
+			"expressions": [{
+				"type": "condition",
+				"field": {
+					"description": "Account Country",
+					"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.ACCOUNT_COUNTRY",
+					"dataType": "STRING",
+					"type": "DIMENSION"
+				},
+				"operator": "EQ",
+				"values": ["United States"]
+			}, {
+				"type": "group",
+				"op": "OR",
+				"expressions": [{
+					"type": "group",
+					"op": "AND",
+					"expressions": [{
+						"type": "condition",
+						"field": {
+							"description": "Patient Gender",
+							"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.PATIENT_GENDER",
+							"dataType": "STRING",
+							"type": "DIMENSION"
+						},
+						"operator": "LT",
+						"values": ["M"]
+					}, {
+						"type": "condition",
+						"operator": "EQ",
+						"field": {
+							"description": "Patient Age",
+							"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.PATIENT_AGE",
+							"dataType": "STRING",
+							"type": "DIMENSION"
+						},
+						"values": []
+					}],
+				}, {
+					"type": "group",
+					"op": "AND",
+					"expressions": [{
+						"type": "condition",
+						"field": {
+							"description": "Patient Gender",
+							"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.PATIENT_GENDER",
+							"dataType": "STRING",
+							"type": "DIMENSION"
+						},
+						"operator": "EQ",
+						"values": ["F"]
+					}]
+				}]
+			}]
+		};
 
 		var mapping = function (d) {
 			var handler = {
@@ -92,6 +92,57 @@ module.exports = function (app) {
 				this.output = e.string;
 			}
 		};
+
+
+		function cleanObject(filter) {
+			var remove = [];
+			filter.expressions.forEach(function (arr, i) {
+				!function () {
+					if (arr.type === 'condition') {
+						if (arr.values && !arr.values.length)remove.push(i)
+					} else {
+						var narr = cleanObject(arr);
+						filter.expressions[i] = narr;
+					}
+				}(i)
+			});
+
+
+			remove.forEach(function (index) {
+				filter.expressions.splice(index, 1);
+			});
+
+			return filter
+
+		}
+
+
+		this.CleanObject = function () {
+			// cleanObject(this.filters)
+
+			var regex = /\{"type":"condition".*?"values":\[\]\}/g;
+			var str = angular.toJson(this.filters);
+			var m;
+
+			while ((m = regex.exec(str)) !== null) {
+				if (m.index === regex.lastIndex) {
+					regex.lastIndex++;
+				}
+				m.forEach(function (match) {
+					var obj = JSON.parse("[" + match + "]");
+					obj.forEach(function (o) {
+						if (!o.values.length) {
+							var search = JSON.stringify(o).trim();
+							var re = str.split(search);
+							str = re.join("");
+						}
+					})
+				});
+			}
+			//clean up the json
+			str = str.replace(/,\]/g, "]").replace(/\[,/g, "[").replace(/,,/g, ",");
+			console.log(JSON.parse(str))
+		}
 
 
 	}

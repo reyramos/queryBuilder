@@ -61,6 +61,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     private $outputUpdate: boolean = false;
     private $countCondition: number;
     private $timeoutPromise: any;
+    //keep original group
     private $group: any;
     private $digestCycle: any;
 
