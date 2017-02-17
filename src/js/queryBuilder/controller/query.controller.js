@@ -4,17 +4,22 @@
 
 //the object data for the OPERANDS
 var JSON_DATASET = require('./operands');
+var PrettyJSON = require('../../vendor/pretty-json');
+require('pretty-json/css/pretty-json.css');
+
 
 module.exports = function (app) {
 
 	app.controller('QueryBuilderController', FilterController);
 
-	FilterController.$inject = ['QUERY_INTERFACE'];
+	FilterController.$inject = ['QUERY_INTERFACE', '$element'];
 
-	function FilterController(QUERY_INTERFACE) {
+	function FilterController(QUERY_INTERFACE, $element) {
+		var JSON_PRETTY = $element.find('#PRETTY_JSON');
 
-		console.clear();
 		this.filters = angular.copy(QUERY_INTERFACE);
+
+
 		// this.filters = {
 		// 	"type": "group",
 		// 	"op": "AND",
@@ -73,7 +78,7 @@ module.exports = function (app) {
 		// 	}]
 		// };
 
-		var group;
+		this.group;
 		var mapping = function (d) {
 			var handler = {
 				description: d.description,
@@ -90,18 +95,17 @@ module.exports = function (app) {
 		 * @param e
 		 */
 		this.onChanges = function (e) {
-			group = e.group;
+			this.group = e.group;
 			if (!angular.equals(this.output, e.string)) {
 				this.output = e.string;
 			}
+
+
+			var node = new PrettyJSON.view.Node({
+				el:JSON_PRETTY,
+				data:e.group
+			});
 		};
-
-
-
-		this.CleanObject = function () {
-			console.log(group)
-
-		}
 
 
 	}

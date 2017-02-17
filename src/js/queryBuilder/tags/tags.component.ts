@@ -48,6 +48,7 @@ class TagsComponentCtrl implements ng.IComponentController {
         self.select.tagsinput(self.options || '' || {
                 itemValue: self.itemvalue,
                 itemText: self.itemtext,
+                trimValue: true,
                 confirmKeys: self.confirmkeys ? JSON.parse(self.confirmkeys) : [13],
                 tagClass: typeof self.tagClass === "function" ? self.tagClass : function (item) {
                     return self.tagclass;
@@ -96,6 +97,8 @@ class TagsComponentCtrl implements ng.IComponentController {
             this.ngModel.$setValidity("tags-invalid", !!this.model.length);
             this.ngModel.$setViewValue(this.model, 'change');
 
+            console.log('this.model, this.$model', this.model, this.$model)
+
             self.select.tagsinput('removeAll');
             self.model.forEach((m)=> {
                 self.select.tagsinput('add', m);
@@ -127,6 +130,8 @@ class TagsComponentCtrl implements ng.IComponentController {
     $onDestroy() {
         clearTimeout(this.Timeout);
         clearTimeout(this.TagsTimeout);
+        this.select.tagsinput('destroy');
+
     }
 }
 
