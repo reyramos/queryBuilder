@@ -100,10 +100,12 @@ class QueryBuilderCtrl implements ng.IComponentController {
             this.$queryString = this.queryString;
             clearTimeout(this.$timeoutPromise);
 
+
             this.$timeoutPromise = setTimeout(() => {
                 self.$outputUpdate = true;
                 let obj = self.parseQuery(self.queryString);
                 let group = angular.toJson(obj);
+
                 self.group = JSON.parse(group);
                 self.onGroupChange();
                 self.$scope.$digest();
@@ -343,7 +345,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
             let symbol = QUERY_CONDITIONS[k].symbol;
             conditions.push({
                 symbol: Array.isArray(symbol) ? symbol : [symbol],
-                value : QUERY_CONDITIONS[k].value
+                value: QUERY_CONDITIONS[k].value
             })
         });
 
@@ -367,8 +369,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
             let description = desc ? exp[0].substring(1, exp[0].length - 1) : exp[0];
 
             Object.assign(expressions, {
-                values  : [],
-                field   : self.fields.find(function (o) {
+                values: [],
+                field: self.fields.find(function (o) {
                     return description === o[self.fieldName];
                 }),
                 operator: conditions.find((o) => {
@@ -554,6 +556,32 @@ class QueryBuilderCtrl implements ng.IComponentController {
     };
 
 
+    private checkExpressions(group) {
+        let self: any = this;
+        let conditions = [];
+        let values = [];
+        group.expressions.forEach(function (o, i) {
+            if (o.type === 'condition') {
+                conditions.push(o);
+                let hasValue: boolean = o.values ? o.values[0] : false;
+                let hasOperand: boolean = o.field ? o.field[self.fieldValue] : false;
+                if (hasValue && hasOperand) values.push(i)
+            } else {
+                self.checkExpressions(o)
+            }
+        });
+        /*
+         Add a new row for new field entry
+         */
+        if (conditions.length > 0 && values.length === conditions.length) {
+            this.AddCondition(group, values[values.length - 1] + 1);
+        } else if (conditions.length == 0) {
+            this.AddCondition(group, 0);
+        }
+
+    }
+
+
     onGroupChange(e?: any) {
         clearTimeout(this.$timeoutPromise);
 
@@ -561,27 +589,11 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
         this.$event = e || 'onGroupChange';
 
-        let conditions = [];
-        let values = [];
-        this.group.expressions.forEach(function (o, i) {
-            if (o.type !== 'condition')return;
-            conditions.push(o);
-            let hasValue: boolean = o.values ? o.values[0] : false;
-            let hasOperand: boolean = o.field ? o.field[self.fieldValue] : false;
-            if (hasValue && hasOperand) values.push(i)
-        });
+        this.checkExpressions(this.group);
 
         this.setFieldsDescription(this.group);
         this.trigger('onUpdate');
 
-        /*
-         Add a new row for new field entry
-         */
-        if (conditions.length > 0 && values.length === conditions.length) {
-            this.AddCondition(values[values.length - 1] + 1);
-        } else if (conditions.length == 0) {
-            this.AddCondition(0);
-        }
 
     }
 
@@ -605,18 +617,18 @@ class QueryBuilderCtrl implements ng.IComponentController {
         });
     };
 
-    AddCondition(idx?: number) {
+    AddCondition(group, idx?: number) {
         let self: any = this;
 
         var condition = angular.copy(QUERY_INTERFACE.expressions[0], {
             $$indeed: self.$countCondition,
-            values  : []
+            values: []
         });
 
         if (idx > -1) {
-            self.group.expressions.splice(idx, 0, condition);
+            group.expressions.splice(idx, 0, condition);
         } else {
-            self.group.expressions.push(condition);
+            group.expressions.push(condition);
         }
 
     }
@@ -670,9 +682,9 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
 
     private CleanObject() {
-        var regex = /\{"type":"condition".*?"values":\[\]\}/g;
-        var str = angular.toJson(this.group);
-        var m;
+        const regex = /\{"type":"condition".*?"values":\[\]\}/g;
+        let str: string = angular.toJson(this.group);
+        let m;
 
         while ((m = regex.exec(str)) !== null) {
             if (m.index === regex.lastIndex) {
@@ -680,11 +692,11 @@ class QueryBuilderCtrl implements ng.IComponentController {
             }
             m.forEach(function (match) {
                 try {
-                    var obj = JSON.parse("[" + match + "]");
+                    let obj = JSON.parse("[" + match + "]");
                     obj.forEach(function (o) {
                         if (!o.values.length) {
-                            var search = JSON.stringify(o).trim();
-                            var re = str.split(search);
+                            let search = JSON.stringify(o).trim();
+                            let re = str.split(search);
                             str = re.join("");
                         }
                     })
@@ -708,7 +720,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
         this[event]({
             $event: {
-                group : self.CleanObject(),
+                group: self.CleanObject(),
                 string: self.queryString
             }
         })
@@ -732,14 +744,14 @@ export class QueryBuilder implements ng.IComponentOptions {
 
     constructor() {
         this.bindings = {
-            onDelete   : '&',
-            onUpdate   : '&',
-            fieldValue : '@?',
-            fieldName  : '@?',
+            onDelete: '&',
+            onUpdate: '&',
+            fieldValue: '@?',
+            fieldName: '@?',
             queryString: '=?',
-            $$index    : '<',
-            group      : '=',
-            fields     : '<operands'
+            $$index: '<',
+            group: '=',
+            fields: '<operands'
         };
 
         this.template = require('./query-builder.component.html');

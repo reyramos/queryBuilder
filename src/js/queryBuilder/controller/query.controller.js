@@ -78,7 +78,6 @@ module.exports = function (app) {
 		// 	}]
 		// };
 
-		this.group;
 		var mapping = function (d) {
 			var handler = {
 				description: d.description,
@@ -95,7 +94,6 @@ module.exports = function (app) {
 		 * @param e
 		 */
 		this.onChanges = function (e) {
-			this.group = e.group;
 			if (!angular.equals(this.output, e.string)) {
 				this.output = e.string;
 			}
