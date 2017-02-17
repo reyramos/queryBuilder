@@ -321,6 +321,11 @@ class QueryBuilderCtrl implements ng.IComponentController {
     }
 
 
+    /**
+     * Take the String and parse it into OBJECT format
+     * @param queryString
+     * @returns {Object}
+     */
     private parseQuery(queryString: string) {
         let self: any = this;
         //take the string and break into array
