@@ -84,6 +84,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
         if (!this.fieldName)
             this.fieldName = 'name';
 
+
         this.onGroupChange();
     }
 
