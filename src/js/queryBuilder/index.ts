@@ -13,7 +13,6 @@ import {QUERY_INTERFACE} from "./component/query.interface";
 
 var app = angular.module("app.queryBuilder", []);
 
-require('./controller')(app);
 
 app.constant('QUERY_OPERATORS', QUERY_OPERATORS);
 app.constant('QUERY_CONDITIONS', QUERY_CONDITIONS);
@@ -24,5 +23,3 @@ app.component('qbTags', new TagsComponent());
 
 
 module.exports = app;
-
-

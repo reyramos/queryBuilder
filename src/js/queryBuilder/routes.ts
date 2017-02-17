@@ -1,6 +1,8 @@
 /**
  * Created by redroger on 8/5/2015.
  */
+
+
 'use strict';
 
 
@@ -18,7 +20,8 @@ export module QueryBuilder {
                 ModuleResolver: ['jsBundleResolver', function (jsBundleResolver) {
                     return jsBundleResolver(function (app, resolve) {
                         (require as any).ensure([], function () {
-                            app.register(require('./module'));
+                            app.register(require('./demo'));
+                            app.register(require('./index'));
                             resolve();
                         });
                     });
@@ -29,7 +32,8 @@ export module QueryBuilder {
             name: 'queryBuilder',
             url: 'query-builder/',
             parent: 'QueryBuilder',
-            template: require('./index.sample.html')
+            component: 'demoComponent'
         }];
 
 }
+

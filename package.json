@@ -8,9 +8,10 @@
     "test": "karma start",
     "postinstall": "typings install",
     "typings": "typings install",
-    "build": "rimraf dist && rimraf .tmp && webpack --config config/webpack.prod.js --progress --profile",
+    "build": "rimraf dist && rimraf .tmp && webpack --config config/webpack.prod.js --progress --profile && npm run compile",
     "build:serve": "npm run build && node express",
-    "serve": "node express"
+    "serve": "node express",
+    "compile": "rimraf build && tsc src/js/queryBuilder/index.ts --outDir build --sourceMap  --allowUnreachableCode --lib es2015,dom"
   },
   "dependencies": {
     "@types/angular": "^1.6.2",
