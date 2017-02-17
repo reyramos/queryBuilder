@@ -194,6 +194,7 @@ module.exports = {
 		}),
 		new HtmlWebpackPlugin({
 			// hash: true,
+			baseUrl :"/",
 			minify: {
 				removeComments: true,
 				collapseWhitespace: true,
@@ -201,7 +202,8 @@ module.exports = {
 				collapseBooleanAttributes: false,
 				removeCommentsFromCDATA: true
 			},
-			template: helpers.root("src", "index.html"),
+			template: helpers.root("src", "index.ejs"),
+			filename: "index.html",
 			chunksSortMode: "dependency"
 
 		}),

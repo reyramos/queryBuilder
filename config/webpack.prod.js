@@ -9,6 +9,7 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
@@ -84,6 +85,21 @@ module.exports = webpackMerge(commonConfig, {
 			'process.env': {
 				'ENV': JSON.stringify(ENV)
 			}
+		}),
+		new HtmlWebpackPlugin({
+			hash: true,
+			baseUrl: "//reyramos.github.io/queryBuilder/",
+			minify: {
+				removeComments: true,
+				collapseWhitespace: true,
+				conservativeCollapse: true,
+				collapseBooleanAttributes: false,
+				removeCommentsFromCDATA: true
+			},
+			template: helpers.root("src", "index.ejs"),
+			filename: "index.html",
+			chunksSortMode: "dependency"
+
 		}),
 		// new CompressionPlugin({
 		// 	asset: '[path].gz[query]',
