@@ -76,7 +76,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     }
 
     $onInit() {
-        if (!this.group) this.group = angular.copy(QUERY_INTERFACE.filters);
+        if (!this.group) this.group = angular.copy(QUERY_INTERFACE);
 
         if (!this.fieldValue)
             this.fieldValue = 'value';
@@ -197,9 +197,9 @@ class QueryBuilderCtrl implements ng.IComponentController {
             if (["(", ")"].indexOf(test) === -1) {
                 string += " " + words[i];
                 sCount.push(i); //keep count of string adds
-                if (conditions.indexOf(test.toLowerCase()) > -1 && i > 0) {
+                if (conditions.indexOf(test.toLowerCase()) > -1) {
                     //CHECK FOR ALL CONDITIONS AND OPERATORS
-                    let isNot = words[i - 1].toUpperCase() === "NOT";
+                    let isNot = words[i - 1] ? words[i - 1].toUpperCase() === "NOT" : false;
                     let cond = test;
                     if (isNot) {
                         cond = [words[i - 1], test].join(" ");
@@ -208,11 +208,11 @@ class QueryBuilderCtrl implements ng.IComponentController {
                     }
 
                     let comp1 = string.replace(cond, "").trim();
-                    let comp2 = words[i - 1].trim();
+                    let comp2 = words[i - 1] ? words[i - 1].trim() : null;
                     if (comp1 && [test, comp2].indexOf(comp1) < 0) {
                         wCopy.splice(i - 1, 1, comp1.trim());
-                        sCount.forEach((idx)=> {
-                            if (idx < (i - 1))wCopy.splice(idx, 1, QBKEY);
+                        sCount.forEach((idx) => {
+                            if (idx < (i - 1)) wCopy.splice(idx, 1, QBKEY);
                         });
                     }
                     sCount = [];//reset
@@ -221,8 +221,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 } else if (operands.indexOf(string.trim()) > -1) {
                     //CHECK FOR ALL OPERANDS
                     wCopy.splice(i, 1, string.trim());
-                    sCount.forEach((idx)=> {
-                        if (idx < i)wCopy.splice(idx, 1, QBKEY);
+                    sCount.forEach((idx) => {
+                        if (idx < i) wCopy.splice(idx, 1, QBKEY);
                     });
 
                     sCount = [];//reset
@@ -238,9 +238,9 @@ class QueryBuilderCtrl implements ng.IComponentController {
         }
 
         //CHECK FOR ALL OPERANDS
-        if (string)wCopy.splice(position, 1, string.trim());
-        sCount.forEach((idx)=> {
-            if (idx < position)wCopy.splice(idx, 1, QBKEY);
+        if (string) wCopy.splice(position, 1, string.trim());
+        sCount.forEach((idx) => {
+            if (idx < position) wCopy.splice(idx, 1, QBKEY);
         });
 
 
@@ -343,12 +343,12 @@ class QueryBuilderCtrl implements ng.IComponentController {
             let symbol = QUERY_CONDITIONS[k].symbol;
             conditions.push({
                 symbol: Array.isArray(symbol) ? symbol : [symbol],
-                value: QUERY_CONDITIONS[k].value
+                value : QUERY_CONDITIONS[k].value
             })
         });
 
         let newGroup = () => {
-            let filters: any = angular.copy(QUERY_INTERFACE.filters);
+            let filters: any = angular.copy(QUERY_INTERFACE);
 
             Object.assign(filters, {
                 expressions: []
@@ -359,7 +359,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
         };
 
         let newCondition = (exp: Array<string>) => {
-            let expressions: any = angular.copy(QUERY_INTERFACE.filters.expressions[0]);
+            let expressions: any = angular.copy(QUERY_INTERFACE.expressions[0]);
             let regex = /(["'`])(\\?.)*?\1/g
             let val = regex.exec(exp[2]);
             let value = val ? exp[2].substring(1, exp[2].length - 1) : exp[2];
@@ -367,8 +367,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
             let description = desc ? exp[0].substring(1, exp[0].length - 1) : exp[0];
 
             Object.assign(expressions, {
-                values: [],
-                field: self.fields.find(function (o) {
+                values  : [],
+                field   : self.fields.find(function (o) {
                     return description === o[self.fieldName];
                 }),
                 operator: conditions.find((o) => {
@@ -377,10 +377,10 @@ class QueryBuilderCtrl implements ng.IComponentController {
             });
 
             if (["BETWEEN", "IN"].indexOf(exp[1].toUpperCase()) > -1) {
-                let values = value.split(",").map((f)=> {
+                let values = value.split(",").map((f) => {
                     return f.trim();
                 });
-                values.forEach((v)=> {
+                values.forEach((v) => {
                     expressions.values.push(v);
                 })
             } else {
@@ -420,12 +420,12 @@ class QueryBuilderCtrl implements ng.IComponentController {
                     let m = reg.exec(arr.join(" "));
                     if (m) {
 
-                        let balance = (m[0] as any).replaceAt(0, "");
-                        balance = balance.replaceAt(balance.length - 1, "");
+                        let balance = (m[0] as any).replace(/\(/, "").trim();
+                        balance = balance.replaceAt(balance.length - 1, "").trim();
 
-                        let newStr = ((arr.join(" ")).replace(balance, "")).replace(/\(\)/, "");
+                        let newStr = ((arr.join(" ")).replace(balance, "")).replace(/\(\s{1,}\)/, "").trim();
                         //since of array reference add unidentified index to keep the same loop in order
-                        arr = ["$$QueryBuilder"].concat(this.split_string(newStr.trim()) || []);
+                        arr = ["$$QueryBuilder"].concat(this.split_string(newStr) || []);
                         let handler = this.split_string(balance) || [];
                         handler = handler.filter((o) => {
                             return o.trim();
@@ -608,9 +608,9 @@ class QueryBuilderCtrl implements ng.IComponentController {
     AddCondition(idx?: number) {
         let self: any = this;
 
-        var condition = angular.copy(QUERY_INTERFACE.filters.expressions[0], {
+        var condition = angular.copy(QUERY_INTERFACE.expressions[0], {
             $$indeed: self.$countCondition,
-            values: []
+            values  : []
         });
 
         if (idx > -1) {
@@ -623,7 +623,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
     AddGroup(e?: any) {
         this.$event = 'AddGroup';
-        this.group.expressions.push(angular.copy(QUERY_INTERFACE.filters));
+        this.group.expressions.push(angular.copy(QUERY_INTERFACE));
     }
 
     RemoveGroup(e?: any) {
@@ -679,7 +679,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 regex.lastIndex++;
             }
             m.forEach(function (match) {
-                try{
+                try {
                     var obj = JSON.parse("[" + match + "]");
                     obj.forEach(function (o) {
                         if (!o.values.length) {
@@ -688,7 +688,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
                             str = re.join("");
                         }
                     })
-                }catch(e){}
+                } catch (e) {
+                }
             });
         }
         //clean up the json
@@ -707,7 +708,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
         this[event]({
             $event: {
-                group: self.CleanObject(),
+                group : self.CleanObject(),
                 string: self.queryString
             }
         })
@@ -731,18 +732,17 @@ export class QueryBuilder implements ng.IComponentOptions {
 
     constructor() {
         this.bindings = {
-            onDelete: '&',
-            onUpdate: '&',
-            fieldValue: '@?',
-            fieldName: '@?',
+            onDelete   : '&',
+            onUpdate   : '&',
+            fieldValue : '@?',
+            fieldName  : '@?',
             queryString: '=?',
-            $$index: '<',
-            group: '=',
-            fields: '<'
+            $$index    : '<',
+            group      : '=',
+            fields     : '<'
         };
 
         this.template = require('./query-builder.component.html');
         this.controller = QueryBuilderCtrl;
     }
 }
-
