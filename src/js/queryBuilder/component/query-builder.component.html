@@ -23,7 +23,7 @@
             <span ng-init="rule.$$indeed = $index"></span>
             <div ng-switch="rule.type === 'group'">
                 <div ng-switch-when="true" class="rule-group">
-                    <query-builder group="rule" fields="$ctrl.fields" $$index="1"
+                    <query-builder group="rule" operands="$ctrl.fields" $$index="1"
                                    on-delete="$ctrl.onDeleteGroup($event)"
                                    on-update="$ctrl.onUpdateGroup($event)"
                                    field-value="{{$ctrl.fieldValue}}" field-name="{{$ctrl.fieldName}}"></query-builder>

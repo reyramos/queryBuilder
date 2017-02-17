@@ -739,7 +739,7 @@ export class QueryBuilder implements ng.IComponentOptions {
             queryString: '=?',
             $$index    : '<',
             group      : '=',
-            fields     : '<'
+            fields     : '<operands'
         };
 
         this.template = require('./query-builder.component.html');
