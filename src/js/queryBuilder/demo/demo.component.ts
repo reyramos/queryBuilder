@@ -88,7 +88,7 @@ class DemoComponentCtrl implements ng.IComponentController {
         var mapping = function (d) {
             var handler = {
                 description: d.description,
-                name: d.name
+                value: d.name
             };
             return handler;
         };

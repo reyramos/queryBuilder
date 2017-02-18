@@ -35,7 +35,7 @@
                         <div class="form-inline">
                             <div class="form-group">
                                 <select ng-model="rule.field[$ctrl.fieldValue]" class="form-control input-sm"
-                                        ng-change="$ctrl.onGroupChange()">
+                                        ng-change="$ctrl.onOperandChange()">
                                     <option ng-value="t[$ctrl.fieldValue]"
                                             ng-repeat="t in $ctrl.fields track by $index">
                                         {{t[$ctrl.fieldName]}}
@@ -62,19 +62,19 @@
                                     <span ng-switch-when="BETWEEN" class="rule-operator-between">
                                            <input type="text" ng-model="rule.values[0]"
                                                   class="form-control input-sm"
-                                                  ng-keyup="$ctrl.onGroupChange($event)">
+                                                  ng-keyup="$ctrl.onValueChange($event)">
 
                                         AND
 
                                            <input type="text" ng-model="rule.values[1]"
                                                   class="form-control input-sm"
-                                                  ng-keyup="$ctrl.onGroupChange($event)">
+                                                  ng-keyup="$ctrl.onValueChange($event)">
                                     </span>
                                     <span ng-switch-default class="rule-condition">
                                         <input type="text" ng-model="rule.values[0]"
                                                id="{{rule.$$hashKey}}"
                                                class="form-control input-sm"
-                                               ng-keyup="$ctrl.onGroupChange($event)">
+                                               ng-keyup="$ctrl.onValueChange($event)">
                                     </span>
                                 </span>
 

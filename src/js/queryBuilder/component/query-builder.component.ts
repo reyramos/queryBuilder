@@ -89,6 +89,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     }
 
 
+
     $doCheck() {
 
 
@@ -351,7 +352,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
             let symbol = QUERY_CONDITIONS[k].symbol;
             conditions.push({
                 symbol: Array.isArray(symbol) ? symbol : [symbol],
-                value: QUERY_CONDITIONS[k].value
+                value : QUERY_CONDITIONS[k].value
             })
         });
 
@@ -375,8 +376,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
             let description = desc ? exp[0].substring(1, exp[0].length - 1) : exp[0];
 
             Object.assign(expressions, {
-                values: [],
-                field: self.fields.find(function (o) {
+                values  : [],
+                field   : self.fields.find(function (o) {
                     return description === o[self.fieldName];
                 }),
                 operator: conditions.find((o) => {
@@ -489,7 +490,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 str.push(Array.isArray(condition) ? condition[0] : condition);
 
                 let ticks = "`";
-                if (values) str.push(self.$outputUpdate ? values : ticks + values + ticks);
+                str.push(self.$outputUpdate ? values : ticks + values + ticks);
 
             } else {
                 var comp = self.stringifyQuery(o);
@@ -547,8 +548,21 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
     }
 
+    onOperandChange(){
+        this.$event = 'onOperandChange';
+        this.$outputUpdate = false;
+        this.onGroupChange();
+    }
+
+    onValueChange(){
+        this.$event = 'onValueChange';
+        this.$outputUpdate = false;
+        this.onGroupChange();
+    }
+
     onTagsChange(e: any) {
         this.$event = 'onTagsChange';
+        this.$outputUpdate = false;
         this.onGroupChange();
         this.safeApply();
 
@@ -588,38 +602,29 @@ class QueryBuilderCtrl implements ng.IComponentController {
     }
 
 
-    onGroupChange(e?: any) {
+    private onGroupChange(e?: any) {
         clearTimeout(this.$timeoutPromise);
-
         let self: any = this;
-
         this.$event = e || 'onGroupChange';
-
         this.checkExpressions(this.group);
-
         this.setFieldsDescription(this.group);
         this.trigger('onUpdate');
-
-
     }
 
 
     private setFieldsDescription(group) {
         let self: any = this;
-        group.expressions.forEach(function (o, i) {
-            !function (obj) {
-                if (obj.type === 'condition') {
-                    let test = self.fields.map(function (o) {
-                        if (obj.field && obj.field[self.fieldValue] === o[self.fieldValue]) {
-                            return obj.field = o;
-                        } else if (obj.field && obj.field[self.fieldName] === o[self.fieldName]) {
-                            return obj.field = o;
-                        }
-                    });
-                } else {
-                    obj = self.setFieldsDescription(obj)
-                }
-            }(o)
+        //depends where the change came from find by
+        let findBy: string = self.$outputUpdate ? self.fieldName : self.fieldValue;
+        group.expressions.forEach(function (condition, i) {
+            if (condition.type === 'condition') {
+                let found = self.fields.find(function (o) {
+                    return condition.field[findBy] === o[findBy]
+                });
+                if (found) Object.assign(condition.field, found);
+            } else {
+                self.setFieldsDescription(condition)
+            }
         });
     };
 
@@ -628,7 +633,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
         var condition = angular.copy(QUERY_INTERFACE.expressions[0], {
             $$indeed: self.$countCondition,
-            values: []
+            values  : []
         });
 
         if (idx > -1) {
@@ -726,7 +731,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
         this[event]({
             $event: {
-                group: self.CleanObject(),
+                group : self.CleanObject(),
                 string: self.queryString
             }
         })
@@ -750,14 +755,14 @@ export class QueryBuilder implements ng.IComponentOptions {
 
     constructor() {
         this.bindings = {
-            onDelete: '&',
-            onUpdate: '&',
-            fieldValue: '@?',
-            fieldName: '@?',
+            onDelete   : '&',
+            onUpdate   : '&',
+            fieldValue : '@?',
+            fieldName  : '@?',
             queryString: '=?',
-            $$index: '<',
-            group: '=',
-            fields: '<operands'
+            $$index    : '<',
+            group      : '=',
+            fields     : '<operands'
         };
 
         this.template = require('./query-builder.component.html');
