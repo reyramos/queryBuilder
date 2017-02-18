@@ -399,8 +399,7 @@ var QueryBuilderCtrl = (function () {
                 }).symbol;
                 str.push(Array.isArray(condition) ? condition[0] : condition);
                 var ticks = "`";
-                if (values)
-                    str.push(self.$outputUpdate ? values : ticks + values + ticks);
+                str.push(self.$outputUpdate ? values : ticks + values + ticks);
             }
             else {
                 var comp = self.stringifyQuery(o);
@@ -449,8 +448,19 @@ var QueryBuilderCtrl = (function () {
             }
         }, 0);
     };
+    QueryBuilderCtrl.prototype.onOperandChange = function () {
+        this.$event = 'onOperandChange';
+        this.$outputUpdate = false;
+        this.onGroupChange();
+    };
+    QueryBuilderCtrl.prototype.onValueChange = function () {
+        this.$event = 'onValueChange';
+        this.$outputUpdate = false;
+        this.onGroupChange();
+    };
     QueryBuilderCtrl.prototype.onTagsChange = function (e) {
         this.$event = 'onTagsChange';
+        this.$outputUpdate = false;
         this.onGroupChange();
         this.safeApply();
     };
@@ -497,22 +507,19 @@ var QueryBuilderCtrl = (function () {
     };
     QueryBuilderCtrl.prototype.setFieldsDescription = function (group) {
         var self = this;
-        group.expressions.forEach(function (o, i) {
-            !function (obj) {
-                if (obj.type === 'condition') {
-                    var test = self.fields.map(function (o) {
-                        if (obj.field && obj.field[self.fieldValue] === o[self.fieldValue]) {
-                            return obj.field = o;
-                        }
-                        else if (obj.field && obj.field[self.fieldName] === o[self.fieldName]) {
-                            return obj.field = o;
-                        }
-                    });
-                }
-                else {
-                    obj = self.setFieldsDescription(obj);
-                }
-            }(o);
+        //depends where the change came from find by
+        var findBy = self.$outputUpdate ? self.fieldName : self.fieldValue;
+        group.expressions.forEach(function (condition, i) {
+            if (condition.type === 'condition') {
+                var found = self.fields.find(function (o) {
+                    return condition.field[findBy] === o[findBy];
+                });
+                if (found)
+                    Object.assign(condition.field, found);
+            }
+            else {
+                self.setFieldsDescription(condition);
+            }
         });
     };
     ;

@@ -60,7 +60,6 @@ var TagsComponentCtrl = (function () {
             this.$model = angular.copy(this.model);
             this.ngModel.$setValidity("tags-invalid", !!this.model.length);
             this.ngModel.$setViewValue(this.model, 'change');
-            console.log('this.model, this.$model', this.model, this.$model);
             self.select.tagsinput('removeAll');
             self.model.forEach(function (m) {
                 self.select.tagsinput('add', m);
