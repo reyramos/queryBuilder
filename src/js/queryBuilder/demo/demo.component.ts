@@ -87,11 +87,13 @@ class DemoComponentCtrl implements ng.IComponentController {
 
 
     onValueFetch(e) {
-        // if (e.group) {
+        if (e.group) {
             this.setBloodhound(e.$event.target).then((result) => {
                 console.log('Bloodhound', result)
+                if (["IN", "BETWEEN"].indexOf(e.group.operator) === -1)
+                    e.group.values[0] = result;
             });
-        // }
+        }
     }
 
 
@@ -110,7 +112,6 @@ class DemoComponentCtrl implements ng.IComponentController {
             data: e.group
         });
     };
-
 
 
 }
