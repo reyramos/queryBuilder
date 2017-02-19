@@ -780,7 +780,7 @@ export class QueryBuilder implements ng.IComponentOptions {
         this.bindings = {
             onDelete   : '&',
             onUpdate   : '&',
-            onFetch    : '&',
+            onFetch    : '&onValueChange',
             fieldValue : '@?',
             fieldName  : '@?',
             queryString: '=?',

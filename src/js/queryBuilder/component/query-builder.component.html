@@ -78,6 +78,7 @@
                     <query-builder group="rule" operands="$ctrl.fields" $$index="1"
                                    on-delete="$ctrl.onDeleteGroup($event)"
                                    on-update="$ctrl.onUpdateGroup($event)"
+                                   on-value-change="$ctrl.onFetch($event)"
                                    field-value="{{$ctrl.fieldValue}}" field-name="{{$ctrl.fieldName}}"></query-builder>
                 </div>
             </li>
