@@ -46,23 +46,24 @@ var QueryBuilderCtrl = (function () {
         this.onGroupChange();
     };
     QueryBuilderCtrl.prototype.$doCheck = function () {
+        var self = this;
         /*
          This will be trigger when the output string is changes from outside source
          other than query builder
          */
         if (!angular.equals(this.queryString, this.$queryString)) {
-            var self_1 = this;
             this.$queryString = this.queryString;
             clearTimeout(this.$timeoutPromise);
             this.$timeoutPromise = setTimeout(function () {
-                self_1.$outputUpdate = true;
-                var obj = self_1.parseQuery(self_1.queryString);
+                self.$outputUpdate = true;
+                var obj = self.parseQuery(self.queryString);
                 var group = angular.toJson(obj);
-                self_1.group = JSON.parse(group);
-                self_1.onGroupChange();
-                self_1.$scope.$digest();
+                self.group = JSON.parse(group);
+                self.onGroupChange();
+                self.$scope.$digest();
             }, 500);
         }
+        this.trigger('onUpdate');
     };
     ;
     /**
@@ -453,10 +454,14 @@ var QueryBuilderCtrl = (function () {
         this.$outputUpdate = false;
         this.onGroupChange();
     };
-    QueryBuilderCtrl.prototype.onValueChange = function () {
+    QueryBuilderCtrl.prototype.onValueChange = function (e, rule) {
+        var self = this;
+        var evnt = e.originalEvent || e;
         this.$event = 'onValueChange';
         this.$outputUpdate = false;
-        this.onGroupChange();
+        this.onPrefetch(evnt, rule).then(function (e) {
+            self.onGroupChange();
+        });
     };
     QueryBuilderCtrl.prototype.onTagsChange = function (e) {
         this.$event = 'onTagsChange';
@@ -617,6 +622,22 @@ var QueryBuilderCtrl = (function () {
             }
         });
     };
+    QueryBuilderCtrl.prototype.onPrefetch = function (e, rule) {
+        var _this = this;
+        var self = this;
+        return new Promise(function (resolve) {
+            var $event = { $event: e };
+            if (rule)
+                Object.assign($event, {
+                    group: rule
+                });
+            _this.onFetch({
+                $event: $event
+            });
+            e.target.focus();
+            resolve(e.target);
+        });
+    };
     QueryBuilderCtrl.prototype.$onDestroy = function () {
         clearTimeout(this.$timeoutPromise);
         clearTimeout(this.$digestCycle);
@@ -630,6 +651,7 @@ var QueryBuilder = (function () {
         this.bindings = {
             onDelete: '&',
             onUpdate: '&',
+            onFetch: '&onValueChange',
             fieldValue: '@?',
             fieldName: '@?',
             queryString: '=?',
