@@ -754,11 +754,24 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 $event: $event
             });
 
-            e.target.focus()
+            /*
+             It may loose focus on external library injections, ex: typeahead.js
+             */
+            e.target.focus();
             resolve(e.target);
         })
+    }
 
+    onFetchChange(e: any) {
+        let self: any = this;
+        let a = [];
+        Object.keys(e).forEach((k) => {
+            a.push(e[k]);
+        });
 
+        this.onPrefetch.apply(this, a).then((e) => {
+            self.onGroupChange();
+        });
     }
 
     $onDestroy() {
