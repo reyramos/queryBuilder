@@ -454,10 +454,10 @@ var QueryBuilderCtrl = (function () {
         this.$outputUpdate = false;
         this.onGroupChange();
     };
-    QueryBuilderCtrl.prototype.onValueChange = function (e, rule) {
+    QueryBuilderCtrl.prototype.onKeyUp = function (e, rule) {
         var self = this;
         var evnt = e.originalEvent || e;
-        this.$event = 'onValueChange';
+        this.$event = 'onKeyUp';
         this.$outputUpdate = false;
         this.onPrefetch(evnt, rule).then(function (e) {
             self.onGroupChange();
@@ -634,8 +634,22 @@ var QueryBuilderCtrl = (function () {
             _this.onFetch({
                 $event: $event
             });
+            /*
+             It may loose focus on external library injections, ex: typeahead.js
+             */
             e.target.focus();
             resolve(e.target);
+        });
+    };
+    QueryBuilderCtrl.prototype.onValueChange = function (e) {
+        this.$event = 'onValueChange';
+        var self = this;
+        var a = [];
+        Object.keys(e).forEach(function (k) {
+            a.push(e[k]);
+        });
+        this.onPrefetch.apply(this, a).then(function (e) {
+            self.onGroupChange();
         });
     };
     QueryBuilderCtrl.prototype.$onDestroy = function () {

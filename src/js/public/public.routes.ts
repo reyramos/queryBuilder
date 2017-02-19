@@ -23,12 +23,11 @@ export module Public {
                 }]
             }
         },
-        {
-            name     : "root",
-            parent   : "rootBundle.root",
-            component: 'eqHome'
-        }
-        ,
+        // {
+        //     name     : "root",
+        //     parent   : "rootBundle.root",
+        //     component: 'eqHome'
+        // },
         {
             name     : "about",
             url      : "about/",

@@ -10,10 +10,10 @@ export module QueryBuilder {
 
     export let routes: Array<any> = [
         {
-            name: 'QueryBuilder',
-            parent: "rootBundle.root",
+            name    : 'QueryBuilder',
+            parent  : "rootBundle.root",
             abstract: true,
-            resolve: {
+            resolve : {
                 /**
                  * LazyLoad application on needed route
                  */
@@ -29,11 +29,17 @@ export module QueryBuilder {
             }
         },
         {
-            name: 'queryBuilder',
-            url: 'query-builder/',
-            parent: 'QueryBuilder',
+            name     : "root",
+            parent   : 'QueryBuilder',
             component: 'demoComponent'
-        }];
+        },
+        // {
+        //     name: 'queryBuilder',
+        //     url: 'query-builder/',
+        //     parent: 'QueryBuilder',
+        //     component: 'demoComponent'
+        // }
+    ];
 
 }
 
