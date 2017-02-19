@@ -553,10 +553,10 @@ class QueryBuilderCtrl implements ng.IComponentController {
         this.onGroupChange();
     }
 
-    onValueChange(e: any, rule?: any) {
+    onKeyUp(e: any, rule?: any) {
         let self: any = this;
         let evnt: any = e.originalEvent || e;
-        this.$event = 'onValueChange';
+        this.$event = 'onKeyUp';
         this.$outputUpdate = false;
 
         this.onPrefetch(evnt, rule).then((e) => {
@@ -762,7 +762,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
         })
     }
 
-    onFetchChange(e: any) {
+    onValueChange(e: any) {
+        this.$event = 'onValueChange';
         let self: any = this;
         let a = [];
         Object.keys(e).forEach((k) => {
