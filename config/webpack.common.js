@@ -189,7 +189,7 @@ module.exports = {
 		new webpack.optimize.CommonsChunkPlugin({
 			minChunks: Infinity,
 			name: "common",
-			filename: "/common.js",
+			filename: "common.js",
 			sourceMapFilename: "common.map"
 		}),
 		new HtmlWebpackPlugin({
