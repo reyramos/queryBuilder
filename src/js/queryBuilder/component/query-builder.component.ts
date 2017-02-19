@@ -112,7 +112,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
             }, 500);
         }
 
-        this.trigger('onUpdate')
+        // this.trigger('onUpdate')
 
     };
 
