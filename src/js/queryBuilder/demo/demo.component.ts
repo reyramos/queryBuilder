@@ -43,8 +43,7 @@ class DemoComponentCtrl implements ng.IComponentController {
         this.fields = angular.copy(JSON_DATASET.map(mapping));
     }
 
-    private setBloodhound($element) {
-        let ele: any = angular.element($element)
+    private setBloodhound(ele) {
         let states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
             'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
             'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
@@ -65,7 +64,7 @@ class DemoComponentCtrl implements ng.IComponentController {
                 });
 
                 ele.data('bloodhound', typed);
-                ($ as any)($element)
+                ($ as any)(ele)
                     .typeahead({
                             minLength: 3,
                             hint     : true,
@@ -79,7 +78,7 @@ class DemoComponentCtrl implements ng.IComponentController {
 
             }
 
-            ($ as any)($element).off('typeahead:select').on('typeahead:select', function (ev, suggestion) {
+            ($ as any)(ele).off('typeahead:select').on('typeahead:select', function (ev, suggestion) {
                 resolve(suggestion)
             });
         })
@@ -88,10 +87,10 @@ class DemoComponentCtrl implements ng.IComponentController {
 
     onValueFetch(e) {
         if (e.group) {
-            this.setBloodhound(e.$event.target).then((result) => {
-                console.log('Bloodhound', result)
-                if (["IN", "BETWEEN"].indexOf(e.group.operator) === -1)
-                    e.group.values[0] = result;
+            let ele: any = angular.element(e.$event.target)
+            let ctrl = ele.controller('ngModel');
+            this.setBloodhound(ele).then((result) => {
+                ctrl.$setViewValue(result, 'change')
             });
         }
     }
