@@ -5,11 +5,15 @@
 
 import * as angular from "angular";
 import {QUERY_INTERFACE} from "../component/query.interface";
+declare let Bloodhound: any;
 
-const JSON_DATASET: any = require('./operands');
+
 const PrettyJSON: any = require('./pretty-json');
+const JSON_DATASET: any = require('./api/operands');
+
 
 require('pretty-json/css/pretty-json.css');
+require('./typeaheadjs.less');
 
 class DemoComponentCtrl implements ng.IComponentController {
 
@@ -22,78 +26,72 @@ class DemoComponentCtrl implements ng.IComponentController {
 
     constructor(private $element) {
         this.JSON_PRETTY = $element.find('#PRETTY_JSON');
+
     }
 
     $onInit() {
         this.filters = angular.copy(QUERY_INTERFACE);
-        // this.filters = {
-        // 	"type": "group",
-        // 	"op": "AND",
-        // 	"expressions": [{
-        // 		"type": "condition",
-        // 		"field": {
-        // 			"description": "Account Country",
-        // 			"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.ACCOUNT_COUNTRY",
-        // 			"dataType": "STRING",
-        // 			"type": "DIMENSION"
-        // 		},
-        // 		"operator": "EQ",
-        // 		"values": ["United States"]
-        // 	}, {
-        // 		"type": "group",
-        // 		"op": "OR",
-        // 		"expressions": [{
-        // 			"type": "group",
-        // 			"op": "AND",
-        // 			"expressions": [{
-        // 				"type": "condition",
-        // 				"field": {
-        // 					"description": "Patient Gender",
-        // 					"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.PATIENT_GENDER",
-        // 					"dataType": "STRING",
-        // 					"type": "DIMENSION"
-        // 				},
-        // 				"operator": "LT",
-        // 				"values": ["M"]
-        // 			}, {
-        // 				"type": "condition",
-        // 				"operator": "EQ",
-        // 				"field": {
-        // 					"description": "Patient Age",
-        // 					"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.PATIENT_AGE",
-        // 					"dataType": "STRING",
-        // 					"type": "DIMENSION"
-        // 				},
-        // 				"values": []
-        // 			}],
-        // 		}, {
-        // 			"type": "group",
-        // 			"op": "AND",
-        // 			"expressions": [{
-        // 				"type": "condition",
-        // 				"field": {
-        // 					"description": "Patient Gender",
-        // 					"name": "DB_PHX_ORDERS_TZ.ORDER_FLAT_2016_DEC_15_TO_31_TABLE.PATIENT_GENDER",
-        // 					"dataType": "STRING",
-        // 					"type": "DIMENSION"
-        // 				},
-        // 				"operator": "EQ",
-        // 				"values": ["F"]
-        // 			}]
-        // 		}]
-        // 	}]
-        // };
-
 
         var mapping = function (d) {
             var handler = {
                 description: d.description,
-                value: d.name
+                name       : d.name
             };
             return handler;
         };
 
-        this.fields = angular.copy(JSON_DATASET.dimension.map(mapping));
+        this.fields = angular.copy(JSON_DATASET.map(mapping));
+    }
+
+    private setBloodhound($element) {
+        let ele: any = angular.element($element)
+        let states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+            'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
+            'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+            'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+            'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+            'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
+            'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+            'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+            'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+        ];
+
+        return new Promise((resolve, reject) => {
+            if (!ele.data('bloodhound')) {
+                let typed = new Bloodhound({
+                    datumTokenizer: Bloodhound.tokenizers.whitespace,
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    local         : states
+                });
+
+                ele.data('bloodhound', typed);
+                ($ as any)($element)
+                    .typeahead({
+                            minLength: 3,
+                            hint     : true,
+                            highlight: true
+                        },
+                        {
+                            name  : 'states',
+                            source: typed
+                        });
+
+
+            }
+
+            ($ as any)($element).off('typeahead:select').on('typeahead:select', function (ev, suggestion) {
+                resolve(suggestion)
+            });
+        })
+    }
+
+
+    onValueFetch(e) {
+        // if (e.group) {
+            this.setBloodhound(e.$event.target).then((result) => {
+                console.log('Bloodhound', result)
+            });
+        // }
     }
 
 
@@ -108,10 +106,11 @@ class DemoComponentCtrl implements ng.IComponentController {
         }
 
         var node = new PrettyJSON.view.Node({
-            el: self.JSON_PRETTY,
+            el  : self.JSON_PRETTY,
             data: e.group
         });
     };
+
 
 
 }

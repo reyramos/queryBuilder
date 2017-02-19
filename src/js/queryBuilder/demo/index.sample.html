@@ -5,25 +5,34 @@
     <textarea style="width: 100%; height: 100px;" class="flex" ng-model="$ctrl.output" name="query-string"
               ng-trim="true"></textarea>
 
-    <query-builder group="$ctrl.filters" operands="$ctrl.fields" on-update="$ctrl.onChanges($event)"
-                   style="max-height: 500px;display: block;overflow: auto;"
-                   query-string="$ctrl.output" field-value="value" field-name="description" optgroup></query-builder>
+    <query-builder
+        class="query-builder"
+        group="$ctrl.filters"
+        operands="$ctrl.fields"
+        on-update="$ctrl.onChanges($event)"
+        query-string="$ctrl.output"
+        field-value="name"
+        field-name="description"
+        on-fetch="$ctrl.onValueFetch($event)"
+        optgroup></query-builder>
 
+
+    <br>
     <p>JSON OUTPUT</i>
         <code>
             <pre id="PRETTY_JSON" style="max-height: 500px;"></pre>
         </code>
     </p>
-    <p>Sample Queries: <i>Copy/Paste or write them out</i>
-        <code>
-            <pre>
-Account Country == US AND Account City IN `Orlando, Tampa, New York` AND ((Patient Gender equal `M` AND Patient Age equal `64`) OR (Patient Gender equal `F` AND Patient Age equal `64`))<br>
-((Patient Gender equal `M` AND Patient Age equal `64`) OR (Patient Gender equal `F` AND Patient Age equal `64`))<br>
-Patient Gender NOT EQUAL `F` AND Patient Age EQUAL `64`<br>
-Account City BETWEEN `Orlando, Tampa`<br>
-Account City IN `Orlando, Tampa, New York`<br>
-          </pre>
-        </code>
-    </p>
+    <!--    <p>Sample Queries: <i>Copy/Paste or write them out</i>
+            <code>
+                <pre>
+    Account Country == US AND Account City IN `Orlando, Tampa, New York` AND ((Patient Gender equal `M` AND Patient Age equal `64`) OR (Patient Gender equal `F` AND Patient Age equal `64`))<br>
+    ((Patient Gender equal `M` AND Patient Age equal `64`) OR (Patient Gender equal `F` AND Patient Age equal `64`))<br>
+    Patient Gender NOT EQUAL `F` AND Patient Age EQUAL `64`<br>
+    Account City BETWEEN `Orlando, Tampa`<br>
+    Account City IN `Orlando, Tampa, New York`<br>
+              </pre>
+            </code>
+        </p>-->
 
 </div>

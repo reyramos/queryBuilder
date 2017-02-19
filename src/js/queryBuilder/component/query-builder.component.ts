@@ -54,6 +54,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     //output
     private onDelete: any;
     private onUpdate: any;
+    private onFetch: any;
 
     //trackers
     private $event: any = "";
@@ -87,7 +88,6 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
         this.onGroupChange();
     }
-
 
 
     $doCheck() {
@@ -548,16 +548,21 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
     }
 
-    onOperandChange(){
+    onOperandChange() {
         this.$event = 'onOperandChange';
         this.$outputUpdate = false;
         this.onGroupChange();
     }
 
-    onValueChange(){
+    onValueChange(e: any, rule?: any) {
+        let self: any = this;
+        let evnt: any = e.originalEvent || e;
         this.$event = 'onValueChange';
         this.$outputUpdate = false;
-        this.onGroupChange();
+
+        this.onPrefetch(evnt, rule).then((e) => {
+            self.onGroupChange();
+        });
     }
 
     onTagsChange(e: any) {
@@ -565,7 +570,6 @@ class QueryBuilderCtrl implements ng.IComponentController {
         this.$outputUpdate = false;
         this.onGroupChange();
         this.safeApply();
-
     }
 
     onConditionChange(rule: any, e?: any) {
@@ -738,6 +742,26 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
     }
 
+    onPrefetch(e: any, rule?: any) {
+        let self: any = this;
+
+        return new Promise((resolve) => {
+            let $event: any = {$event: e};
+            if (rule) Object.assign($event, {
+                group: rule
+            });
+
+            this.onFetch({
+                $event: $event
+            });
+
+            e.target.focus()
+            resolve(e.target);
+        })
+
+
+    }
+
     $onDestroy() {
         clearTimeout(this.$timeoutPromise);
         clearTimeout(this.$digestCycle);
@@ -757,6 +781,7 @@ export class QueryBuilder implements ng.IComponentOptions {
         this.bindings = {
             onDelete   : '&',
             onUpdate   : '&',
+            onFetch    : '&',
             fieldValue : '@?',
             fieldName  : '@?',
             queryString: '=?',
