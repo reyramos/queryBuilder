@@ -17,14 +17,14 @@ require('./typeaheadjs.less');
 
 class DemoComponentCtrl implements ng.IComponentController {
 
-    static $inject = ['$element'];
+    static $inject = ['$scope', '$element'];
 
     public filters: any;
     public fields: any;
     public output: string;
     private JSON_PRETTY;
 
-    constructor(private $element) {
+    constructor(private $scope, private $element) {
         this.JSON_PRETTY = $element.find('#PRETTY_JSON');
 
     }
@@ -86,7 +86,8 @@ class DemoComponentCtrl implements ng.IComponentController {
 
 
     onValueFetch(e) {
-        if (e.group) {
+        if (["SOME_TABLE_NAME_STATE"].indexOf(e.group.field.name) !== -1) {
+            let self: any = this;
             let ele: any = angular.element(e.$event.target)
             let ctrl = ele.controller('ngModel');
             this.setBloodhound(ele).then((result) => {

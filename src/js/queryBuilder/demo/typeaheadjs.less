@@ -31,7 +31,12 @@ span.twitter-typeahead {
                 color: #ffffff;
                 text-decoration: none;
                 outline: 0;
-                background-color: #428bca;
+                background-color: @brand-primary;
+            }
+
+            &.tt-cursor:not(:hover):not(:focus){
+                background-color: @gray-lighter;
+
             }
         }
     }

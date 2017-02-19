@@ -91,6 +91,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
 
     $doCheck() {
+        let self: any = this;
 
 
         /*
@@ -98,11 +99,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
          other than query builder
          */
         if (!angular.equals(this.queryString, this.$queryString)) {
-            let self: any = this;
             this.$queryString = this.queryString;
             clearTimeout(this.$timeoutPromise);
-
-
             this.$timeoutPromise = setTimeout(() => {
                 self.$outputUpdate = true;
                 let obj = self.parseQuery(self.queryString);
@@ -112,8 +110,9 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 self.onGroupChange();
                 self.$scope.$digest();
             }, 500);
-
         }
+
+        this.trigger('onUpdate')
 
     };
 
