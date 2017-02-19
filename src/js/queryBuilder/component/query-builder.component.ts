@@ -60,6 +60,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     private $event: any = "";
     private $queryString: string = "";
     private $outputUpdate: boolean = false;
+    private $trigger: boolean = false;
     private $countCondition: number;
     private $timeoutPromise: any;
     //keep original group
@@ -93,7 +94,6 @@ class QueryBuilderCtrl implements ng.IComponentController {
     $doCheck() {
         let self: any = this;
 
-
         /*
          This will be trigger when the output string is changes from outside source
          other than query builder
@@ -112,7 +112,11 @@ class QueryBuilderCtrl implements ng.IComponentController {
             }, 500);
         }
 
-        // this.trigger('onUpdate')
+        if (this.$trigger && !angular.equals(this.group, this.$group)) {
+            this.$group = angular.copy(this.group);
+            this.$trigger = false;
+            self.trigger('onUpdate')
+        }
 
     };
 
@@ -557,6 +561,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
         let self: any = this;
         let evnt: any = e.originalEvent || e;
         this.$event = 'onKeyUp';
+        this.$trigger = true;
         this.$outputUpdate = false;
 
         this.onPrefetch(evnt, rule).then((e) => {
@@ -808,3 +813,8 @@ export class QueryBuilder implements ng.IComponentOptions {
     }
 }
 
+
+
+
+// WEBPACK FOOTER //
+// ./~/angular1-template-loader!./src/js/queryBuilder/component/query-builder.component.ts
