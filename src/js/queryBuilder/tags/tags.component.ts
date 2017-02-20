@@ -34,29 +34,29 @@ class TagsComponentCtrl implements ng.IComponentController {
     static $inject: Array<string> = ['$element'];
 
     constructor(protected $element) {
-
         this.$id = Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1) + Date.now().toString();
-
-
         this.select = $($element.find('input[type="text"]')[0]);
         this.hidden = angular.element($element.find('input[type="hidden"]')).controller('ngModel');
     }
 
     private RenderInit() {
         let self: any = this;
-        self.select.tagsinput(self.options || '' || {
-                itemValue: self.itemvalue,
-                itemText: self.itemtext,
-                trimValue: true,
-                confirmKeys: self.confirmkeys ? JSON.parse(self.confirmkeys) : [13],
-                tagClass: typeof self.tagClass === "function" ? self.tagClass : function (item) {
+        let options: any = {
+            itemValue  : self.itemvalue,
+            itemText   : self.itemtext,
+            trimValue  : true,
+            confirmKeys: self.confirmkeys ? JSON.parse(self.confirmkeys) : [13],
+            tagClass   : typeof self.tagClass === "function" ? self.tagClass : function (item) {
                     return self.tagclass;
                 }
-            });
+        };
 
+        if (self.options) Object.assign(options, self.options);
+
+        self.select.tagsinput(options);
 
         if (self.model.length)
-            self.model.forEach((m)=> {
+            self.model.forEach((m) => {
                 self.select.tagsinput('add', m);
             });
 
@@ -80,7 +80,7 @@ class TagsComponentCtrl implements ng.IComponentController {
         if (!this.name) this.name = this.$id;
         if (!this.required) this.required = false;
 
-        if (this.ngModel)this.ngModel.$render = function () {
+        if (this.ngModel) this.ngModel.$render = function () {
             self.model = !Array.isArray(this.$viewValue) ? [] : this.$viewValue.slice(0);
             self.RenderInit();
         };
@@ -96,14 +96,14 @@ class TagsComponentCtrl implements ng.IComponentController {
             this.ngModel.$setValidity("tags-invalid", !!this.model.length);
             this.ngModel.$setViewValue(this.model, 'change');
             self.select.tagsinput('removeAll');
-            self.model.forEach((m)=> {
+            self.model.forEach((m) => {
                 self.select.tagsinput('add', m);
             });
 
             this.ngChange({
                 $event: {
                     $element: self.$element,
-                    model: self.model
+                    model   : self.model
                 }
             })
         }
@@ -142,23 +142,23 @@ export class TagsComponent implements ng.IComponentOptions {
     constructor() {
         this.require = {
             ngModel: '^?',
-            form: '^^?'
+            form   : '^^?'
         };
 
         this.bindings = {
-            ngChange: '&',
-            placeholder: '<',
-            label: '<',
-            name: '<',
-            required: '<',
-            note: '<',
-            disabled: '<',
-            options: '<',
+            ngChange       : '&',
+            placeholder    : '<',
+            label          : '<',
+            name           : '<',
+            required       : '<',
+            note           : '<',
+            disabled       : '<',
+            options        : '<',
             typeaheadSource: "<",
-            tagclass: "<",
-            itemvalue: "@",
-            itemtext: "@",
-            confirmKeys: "@"
+            tagclass       : "<",
+            itemvalue      : "@",
+            itemtext       : "@",
+            confirmKeys    : "@"
         };
 
         this.template = require('./tags.html');
