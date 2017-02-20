@@ -763,6 +763,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 self.setDatatypes(o)
             }
         });
+
+        return group;
     };
 
 
