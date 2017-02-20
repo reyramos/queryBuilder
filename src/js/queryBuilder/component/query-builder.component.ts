@@ -405,6 +405,10 @@ class QueryBuilderCtrl implements ng.IComponentController {
             });
 
 
+            console.log('expressions', expressions)
+            console.log('exp', exp)
+
+
             return expressions;
         };
 
@@ -802,6 +806,7 @@ export class QueryBuilder implements ng.IComponentOptions {
             onFetch    : '&onValueChange',
             fieldValue : '@?',
             fieldName  : '@?',
+            fieldDatatype  : '@?',
             queryString: '=?',
             $$index    : '<',
             group      : '=',

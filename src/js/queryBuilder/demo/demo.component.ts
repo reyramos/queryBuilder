@@ -35,12 +35,14 @@ class DemoComponentCtrl implements ng.IComponentController {
         var mapping = function (d) {
             var handler = {
                 description: d.description,
-                name       : d.name
+                name       : d.name,
+                type       : d.dataType,
             };
             return handler;
         };
 
         this.fields = angular.copy(JSON_DATASET.map(mapping));
+
     }
 
     private setBloodhound(ele) {
