@@ -1,6 +1,7 @@
 import * as angular from "angular";
 import {QUERY_OPERATORS, QUERY_CONDITIONS} from "./query.conditions";
 import {QUERY_INTERFACE} from "./query.interface";
+import {type} from "os";
 
 /**
  * Created by ramor11 on 2/2/2017.
@@ -46,6 +47,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     public conditions: Array<any> = [];
     public group: any;
     public fields: any;
+    public fieldDatatype: string;
     public queryString: string;
     public fieldValue: string;
     public fieldName: string;
@@ -325,6 +327,24 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
     }
 
+    private defineDatatype(dataType, values) {
+        let num = (values.slice(0)).map((f)=> {
+            if (typeof f === 'string')f.trim();
+        });
+        switch (dataType.toUpperCase()) {
+            case 'NUMBER':
+            case 'INTEGER':
+                num = values.map((v)=> {
+                    return Number(v);
+                });
+                break;
+
+        }
+
+
+        return num;
+    }
+
 
     /**
      * Take the String and parse it into OBJECT format
@@ -355,7 +375,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
             let symbol = QUERY_CONDITIONS[k].symbol;
             conditions.push({
                 symbol: Array.isArray(symbol) ? symbol : [symbol],
-                value : QUERY_CONDITIONS[k].value
+                value: QUERY_CONDITIONS[k].value
             })
         });
 
@@ -379,8 +399,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
             let description = desc ? exp[0].substring(1, exp[0].length - 1) : exp[0];
 
             Object.assign(expressions, {
-                values  : [],
-                field   : self.fields.find(function (o) {
+                values: [],
+                field: self.fields.find(function (o) {
                     return description === o[self.fieldName];
                 }),
                 operator: conditions.find((o) => {
@@ -388,26 +408,18 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 }).value
             });
 
-            if (["BETWEEN", "IN"].indexOf(exp[1].toUpperCase()) > -1) {
-                let values = value.split(",").map((f) => {
-                    return f.trim();
-                });
-                values.forEach((v) => {
-                    expressions.values.push(v);
-                })
-            } else {
-                expressions.values.push(value);
-            }
+            let dataType: string = expressions.field.hasOwnProperty(this.fieldDatatype) ? expressions.field[this.fieldDatatype] : false;
+            let values = this.defineDatatype(dataType, value.split(","));
+
+
+            values.forEach((v) => {
+                expressions.values.push(v);
+            });
 
             //remove any empty strings
             expressions.values = expressions.values.filter(function (o) {
                 return o !== "" && o !== "``"
             });
-
-
-            console.log('expressions', expressions)
-            console.log('exp', exp)
-
 
             return expressions;
         };
@@ -568,6 +580,9 @@ class QueryBuilderCtrl implements ng.IComponentController {
         this.$trigger = true;
         this.$outputUpdate = false;
 
+        let dataType: string = rule.field.hasOwnProperty(this.fieldDatatype) ? rule.field[this.fieldDatatype] : false;
+        rule.values = this.defineDatatype(dataType, rule.values);
+
         this.onPrefetch(evnt, rule).then((e) => {
             self.onGroupChange();
         });
@@ -645,7 +660,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
         var condition = angular.copy(QUERY_INTERFACE.expressions[0], {
             $$indeed: self.$countCondition,
-            values  : []
+            values: []
         });
 
         if (idx > -1) {
@@ -743,7 +758,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
         this[event]({
             $event: {
-                group : self.CleanObject(),
+                group: self.CleanObject(),
                 string: self.queryString
             }
         })
@@ -801,24 +816,22 @@ export class QueryBuilder implements ng.IComponentOptions {
 
     constructor() {
         this.bindings = {
-            onDelete   : '&',
-            onUpdate   : '&',
-            onFetch    : '&onValueChange',
-            fieldValue : '@?',
-            fieldName  : '@?',
-            fieldDatatype  : '@?',
+            onDelete: '&',
+            onUpdate: '&',
+            onFetch: '&onValueChange',
+            fieldValue: '@?',
+            fieldName: '@?',
+            fieldDatatype: '@?',
             queryString: '=?',
-            $$index    : '<',
-            group      : '=',
-            fields     : '<operands'
+            $$index: '<',
+            group: '=',
+            fields: '<operands'
         };
 
         this.template = require('./query-builder.component.html');
         this.controller = QueryBuilderCtrl;
     }
 }
-
-
 
 
 // WEBPACK FOOTER //
