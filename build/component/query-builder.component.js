@@ -31,6 +31,7 @@ var QueryBuilderCtrl = (function () {
         this.$event = "";
         this.$queryString = "";
         this.$outputUpdate = false;
+        this.$trigger = false;
         var self = this;
         Object.keys(query_conditions_1.QUERY_CONDITIONS).forEach(function (k) {
             self.conditions.push(query_conditions_1.QUERY_CONDITIONS[k]);
@@ -63,7 +64,11 @@ var QueryBuilderCtrl = (function () {
                 self.$scope.$digest();
             }, 500);
         }
-        this.trigger('onUpdate');
+        if (this.$trigger && !angular.equals(this.group, this.$group)) {
+            this.$group = angular.copy(this.group);
+            this.$trigger = false;
+            self.trigger('onUpdate');
+        }
     };
     ;
     /**
@@ -458,6 +463,7 @@ var QueryBuilderCtrl = (function () {
         var self = this;
         var evnt = e.originalEvent || e;
         this.$event = 'onKeyUp';
+        this.$trigger = true;
         this.$outputUpdate = false;
         this.onPrefetch(evnt, rule).then(function (e) {
             self.onGroupChange();
@@ -679,4 +685,6 @@ var QueryBuilder = (function () {
     return QueryBuilder;
 }());
 exports.QueryBuilder = QueryBuilder;
+// WEBPACK FOOTER //
+// ./~/angular1-template-loader!./src/js/queryBuilder/component/query-builder.component.ts
 //# sourceMappingURL=query-builder.component.js.map

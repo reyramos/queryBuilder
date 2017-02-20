@@ -42,7 +42,6 @@ class TagsComponentCtrl implements ng.IComponentController {
         this.hidden = angular.element($element.find('input[type="hidden"]')).controller('ngModel');
     }
 
-
     private RenderInit() {
         let self: any = this;
         self.select.tagsinput(self.options || '' || {
