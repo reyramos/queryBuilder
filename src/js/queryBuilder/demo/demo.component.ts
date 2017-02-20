@@ -113,6 +113,8 @@ class DemoComponentCtrl implements ng.IComponentController {
             el  : self.JSON_PRETTY,
             data: e.group
         });
+
+        node.expandAll()
     };
 
 

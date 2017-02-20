@@ -16,7 +16,7 @@ var TagsComponentCtrl = (function () {
     }
     TagsComponentCtrl.prototype.RenderInit = function () {
         var self = this;
-        self.select.tagsinput(self.options || '' || {
+        var options = {
             itemValue: self.itemvalue,
             itemText: self.itemtext,
             trimValue: true,
@@ -24,7 +24,10 @@ var TagsComponentCtrl = (function () {
             tagClass: typeof self.tagClass === "function" ? self.tagClass : function (item) {
                 return self.tagclass;
             }
-        });
+        };
+        if (self.options)
+            Object.assign(options, self.options);
+        self.select.tagsinput(options);
         if (self.model.length)
             self.model.forEach(function (m) {
                 self.select.tagsinput('add', m);

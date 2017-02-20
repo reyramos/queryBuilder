@@ -259,6 +259,22 @@ var QueryBuilderCtrl = (function () {
         });
         return qArr;
     };
+    QueryBuilderCtrl.prototype.defineDatatype = function (dataType, values) {
+        var num = (values.slice(0)).map(function (f) {
+            if (typeof f === 'string')
+                return f.trim();
+        });
+        switch (dataType.toUpperCase()) {
+            case 'NUMBER':
+            case 'INTEGER':
+            case 'FLOAT':
+                num = values.map(function (v) {
+                    return Number(v);
+                });
+                break;
+        }
+        return num;
+    };
     /**
      * Take the String and parse it into OBJECT format
      * @param queryString
@@ -313,17 +329,11 @@ var QueryBuilderCtrl = (function () {
                     return o.symbol.indexOf(exp[1].toLowerCase()) !== -1 || o.symbol.indexOf(exp[1].toUpperCase()) !== -1;
                 }).value
             });
-            if (["BETWEEN", "IN"].indexOf(exp[1].toUpperCase()) > -1) {
-                var values = value.split(",").map(function (f) {
-                    return f.trim();
-                });
-                values.forEach(function (v) {
-                    expressions.values.push(v);
-                });
-            }
-            else {
-                expressions.values.push(value);
-            }
+            var dataType = expressions.field.hasOwnProperty(_this.fieldDatatype) ? expressions.field[_this.fieldDatatype] : false;
+            var values = _this.defineDatatype(dataType, value.split(","));
+            values.forEach(function (v) {
+                expressions.values.push(v);
+            });
             //remove any empty strings
             expressions.values = expressions.values.filter(function (o) {
                 return o !== "" && o !== "``";
@@ -394,12 +404,14 @@ var QueryBuilderCtrl = (function () {
         var str = [];
         angular.forEach(group.expressions, function (o, i) {
             if (o.type === 'condition') {
-                var values = o.values[0] ? o.values.join(", ") : "";
+                // var values = o.values[0] ? o.values.join(", ") : "";
                 if (!o.field || !o.field[self.fieldName])
                     return;
                 if (i !== 0)
                     str.push(group.op);
                 str.push(o.field[self.fieldName]);
+                var dataType = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
+                var values = o.values[0] ? (self.defineDatatype(dataType, o.values)).join(", ") : "";
                 var condition = self.conditions.find(function (q) {
                     return o.operator === q.value;
                 }).symbol;
@@ -527,6 +539,7 @@ var QueryBuilderCtrl = (function () {
                 });
                 if (found)
                     Object.assign(condition.field, found);
+                var dataType = condition.field.hasOwnProperty(self.fieldDatatype) ? condition.field[self.fieldDatatype] : false;
             }
             else {
                 self.setFieldsDescription(condition);
@@ -613,8 +626,22 @@ var QueryBuilderCtrl = (function () {
         }
         //clean up the json
         str = str.replace(/,\]/g, "]").replace(/\[,/g, "[").replace(/,,/g, ",");
-        return JSON.parse(str);
+        return this.setDatatypes(JSON.parse(str));
     };
+    QueryBuilderCtrl.prototype.setDatatypes = function (group) {
+        var self = this;
+        group.expressions.forEach(function (o, i) {
+            if (o.type === 'condition') {
+                var dataType = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
+                o.values = o.values[0] ? self.defineDatatype(dataType, o.values) : [];
+            }
+            else {
+                self.setDatatypes(o);
+            }
+        });
+        return group;
+    };
+    ;
     QueryBuilderCtrl.prototype.trigger = function (event) {
         var self = this;
         var string = this.stringifyQuery(this.group);
@@ -674,6 +701,7 @@ var QueryBuilder = (function () {
             onFetch: '&onValueChange',
             fieldValue: '@?',
             fieldName: '@?',
+            fieldDatatype: '@?',
             queryString: '=?',
             $$index: '<',
             group: '=',
