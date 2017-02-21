@@ -31,19 +31,16 @@ query-builder {
     }
 
     .rules-group-header {
-        margin-bottom: 10px
+        margin-bottom: 10px;
+        .group-conditions .btn.readonly {
+            border-radius: 3px
+        }
     }
 
-    .rules-group-header .group-conditions .btn.readonly {
-        border-radius: 3px
-    }
 
     .rule-value-container {
         border-left: 1px solid #DDD;
-        padding-left: 5px
-    }
-
-    .rule-value-container {
+        padding-left: 5px;
         label {
             margin-bottom: 0;
             font-weight: 400;
@@ -52,6 +49,7 @@ query-builder {
             }
         }
     }
+
 
     .rules-list {
         list-style: none;
