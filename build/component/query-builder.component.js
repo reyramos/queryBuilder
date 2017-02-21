@@ -474,7 +474,7 @@ var QueryBuilderCtrl = (function () {
     };
     QueryBuilderCtrl.prototype.onKeyUp = function (e, rule) {
         var self = this;
-        var evnt = e.originalEvent || e.$event || e;
+        var evnt = e.originalEvent || e;
         this.$event = 'onKeyUp';
         this.$trigger = true;
         this.$outputUpdate = false;
@@ -666,13 +666,15 @@ var QueryBuilderCtrl = (function () {
                     group: rule,
                     target: 'input'
                 });
+            if (e.$event)
+                Object.assign($event, e);
             _this.onFetch({
                 $event: $event
             });
             /*
              It may loose focus on external library injections, ex: typeahead.js
              */
-            e.target.focus();
+            $event.$event.target.focus();
             resolve(e.target);
         });
     };
@@ -715,8 +717,4 @@ var QueryBuilder = (function () {
     return QueryBuilder;
 }());
 exports.QueryBuilder = QueryBuilder;
-// WEBPACK FOOTER //
-// ./~/angular1-template-loader!./src/js/queryBuilder/component/query-builder.component.ts
-// WEBPACK FOOTER //
-// ./~/angular1-template-loader!./src/js/queryBuilder/component/query-builder.component.ts
 //# sourceMappingURL=query-builder.component.js.map
