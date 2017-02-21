@@ -260,6 +260,7 @@ var QueryBuilderCtrl = (function () {
         return qArr;
     };
     QueryBuilderCtrl.prototype.defineDatatype = function (dataType, values) {
+        values = Array.isArray(values) ? values : [values];
         var num = (values.slice(0)).map(function (f) {
             if (typeof f === 'string')
                 return f.trim();
@@ -473,7 +474,7 @@ var QueryBuilderCtrl = (function () {
     };
     QueryBuilderCtrl.prototype.onKeyUp = function (e, rule) {
         var self = this;
-        var evnt = e.originalEvent || e;
+        var evnt = e.originalEvent || e.$event || e;
         this.$event = 'onKeyUp';
         this.$trigger = true;
         this.$outputUpdate = false;
@@ -662,7 +663,8 @@ var QueryBuilderCtrl = (function () {
             var $event = { $event: e };
             if (rule)
                 Object.assign($event, {
-                    group: rule
+                    group: rule,
+                    target: 'input'
                 });
             _this.onFetch({
                 $event: $event
@@ -713,6 +715,8 @@ var QueryBuilder = (function () {
     return QueryBuilder;
 }());
 exports.QueryBuilder = QueryBuilder;
+// WEBPACK FOOTER //
+// ./~/angular1-template-loader!./src/js/queryBuilder/component/query-builder.component.ts
 // WEBPACK FOOTER //
 // ./~/angular1-template-loader!./src/js/queryBuilder/component/query-builder.component.ts
 //# sourceMappingURL=query-builder.component.js.map

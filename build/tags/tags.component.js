@@ -60,6 +60,7 @@ var TagsComponentCtrl = (function () {
     TagsComponentCtrl.prototype.CheckModel = function () {
         var self = this;
         if (!angular.equals(this.model, this.$model)) {
+            console.log('CHECKMODEL', this.model);
             this.$model = angular.copy(this.model);
             this.ngModel.$setValidity("tags-invalid", !!this.model.length);
             this.ngModel.$setViewValue(this.model, 'change');
@@ -81,15 +82,34 @@ var TagsComponentCtrl = (function () {
     };
     ;
     TagsComponentCtrl.prototype.$postLink = function () {
+        var _this = this;
         var self = this;
-        setTimeout(function () {
+        this.$inputtimeout = setTimeout(function () {
             var input = self.$element.find('input');
-            input[0].placeholder = self.placeholder || "";
-        }, 1);
+            self.$input = input[0];
+            self.$input.placeholder = self.placeholder || "";
+            self.$input.addEventListener('keyup', function (e) {
+                self.ngKeyup({
+                    $event: {
+                        $event: e,
+                        target: 'tags',
+                        values: self.model
+                    }
+                });
+            }, false);
+            try {
+                $(self.$input).typeahead().on('typeahead:selected', function (e, value) {
+                    _this.model.push(value);
+                });
+            }
+            catch (e) {
+            }
+        }, 0);
     };
     TagsComponentCtrl.prototype.$onDestroy = function () {
-        clearTimeout(this.Timeout);
-        clearTimeout(this.TagsTimeout);
+        clearTimeout(this.$timeout);
+        clearTimeout(this.$tagstimeout);
+        clearTimeout(this.$inputtimeout);
         this.select.tagsinput('destroy');
     };
     return TagsComponentCtrl;
@@ -103,15 +123,14 @@ var TagsComponent = (function () {
             form: '^^?'
         };
         this.bindings = {
-            ngChange: '&',
+            ngKeyup: "&?",
+            ngChange: '&?',
             placeholder: '<',
-            label: '<',
             name: '<',
             required: '<',
             note: '<',
             disabled: '<',
             options: '<',
-            typeaheadSource: "<",
             tagclass: "<",
             itemvalue: "@",
             itemtext: "@",
