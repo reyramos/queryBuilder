@@ -796,10 +796,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 target: 'input'
             });
             
-            if (e.$event)Object.keys(e.$event).forEach((o)=> {
-                $event[o] = e.$event[o];
-            });
-            
+            if (e.$event)Object.assign($event, e);
             this.onFetch({
                 $event: $event
             });
@@ -807,7 +804,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
             /*
              It may loose focus on external library injections, ex: typeahead.js
              */
-            e.target.focus();
+            $event.$event.target.focus();
             resolve(e.target);
         })
     }
