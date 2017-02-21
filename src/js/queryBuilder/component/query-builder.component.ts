@@ -328,14 +328,15 @@ class QueryBuilderCtrl implements ng.IComponentController {
     }
 
     private defineDatatype(dataType, values) {
-        let num = (values.slice(0)).map((f)=> {
+        values = Array.isArray(values) ? values : [values];
+        let num = (values.slice(0)).map((f) => {
             if (typeof f === 'string')return f.trim();
         });
         switch (dataType.toUpperCase()) {
             case 'NUMBER':
             case 'INTEGER':
             case 'FLOAT':
-                num = values.map((v)=> {
+                num = values.map((v) => {
                     return Number(v);
                 });
                 break;
@@ -376,7 +377,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
             let symbol = QUERY_CONDITIONS[k].symbol;
             conditions.push({
                 symbol: Array.isArray(symbol) ? symbol : [symbol],
-                value: QUERY_CONDITIONS[k].value
+                value : QUERY_CONDITIONS[k].value
             })
         });
 
@@ -400,8 +401,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
             let description = desc ? exp[0].substring(1, exp[0].length - 1) : exp[0];
 
             Object.assign(expressions, {
-                values: [],
-                field: self.fields.find(function (o) {
+                values  : [],
+                field   : self.fields.find(function (o) {
                     return description === o[self.fieldName];
                 }),
                 operator: conditions.find((o) => {
@@ -668,7 +669,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
         var condition = angular.copy(QUERY_INTERFACE.expressions[0], {
             $$indeed: self.$countCondition,
-            values: []
+            values  : []
         });
 
         if (idx > -1) {
@@ -778,7 +779,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
 
         this[event]({
             $event: {
-                group: self.CleanObject(),
+                group : self.CleanObject(),
                 string: self.queryString
             }
         })
@@ -804,6 +805,24 @@ class QueryBuilderCtrl implements ng.IComponentController {
             e.target.focus();
             resolve(e.target);
         })
+    }
+
+    onTypeahead(e: any) {
+        let self: any = this;
+        let evnt: any = e.originalEvent || e.$event;
+        this.$event = 'onTypeahead';
+        this.$trigger = true;
+        this.$outputUpdate = false;
+        this.onFetch({
+            $event: {$event: evnt, values: e.values}
+        });
+
+        /*
+         It may loose focus on external library injections, ex: typeahead.js
+         */
+        evnt.target.focus();
+        self.onGroupChange();
+
     }
 
     onValueChange(e: any) {
@@ -836,22 +855,26 @@ export class QueryBuilder implements ng.IComponentOptions {
 
     constructor() {
         this.bindings = {
-            onDelete: '&',
-            onUpdate: '&',
-            onFetch: '&onValueChange',
-            fieldValue: '@?',
-            fieldName: '@?',
+            onDelete     : '&',
+            onUpdate     : '&',
+            onFetch      : '&onValueChange',
+            fieldValue   : '@?',
+            fieldName    : '@?',
             fieldDatatype: '@?',
-            queryString: '=?',
-            $$index: '<',
-            group: '=',
-            fields: '<operands'
+            queryString  : '=?',
+            $$index      : '<',
+            group        : '=',
+            fields       : '<operands'
         };
 
         this.template = require('./query-builder.component.html');
         this.controller = QueryBuilderCtrl;
     }
 }
+
+
+// WEBPACK FOOTER //
+// ./~/angular1-template-loader!./src/js/queryBuilder/component/query-builder.component.ts
 
 
 // WEBPACK FOOTER //

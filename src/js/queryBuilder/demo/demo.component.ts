@@ -24,6 +24,17 @@ class DemoComponentCtrl implements ng.IComponentController {
     public output: string;
     private JSON_PRETTY;
 
+    private states: Array<string> = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+        'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
+        'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+        'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+        'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+        'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
+        'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+        'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+        'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+    ];
+
     constructor(private $scope, private $element) {
         this.JSON_PRETTY = $element.find('#PRETTY_JSON');
 
@@ -31,6 +42,7 @@ class DemoComponentCtrl implements ng.IComponentController {
 
     $onInit() {
         this.filters = angular.copy(QUERY_INTERFACE);
+
 
         var mapping = function (d) {
             var handler = {
@@ -46,23 +58,14 @@ class DemoComponentCtrl implements ng.IComponentController {
     }
 
     private setBloodhound(ele) {
-        let states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-            'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
-            'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-            'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-            'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-            'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
-            'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
-            'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-            'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-        ];
+        let self: any = this;
 
         return new Promise((resolve, reject) => {
             if (!ele.data('bloodhound')) {
                 let typed = new Bloodhound({
                     datumTokenizer: Bloodhound.tokenizers.whitespace,
                     queryTokenizer: Bloodhound.tokenizers.whitespace,
-                    local         : states
+                    local         : self.states
                 });
 
                 ele.data('bloodhound', typed);
@@ -88,7 +91,14 @@ class DemoComponentCtrl implements ng.IComponentController {
 
 
     onValueFetch(e) {
-        if (["SOME_TABLE_NAME_STATE"].indexOf(e.group.field.name) !== -1) {
+
+        console.log('onValueFetch', e)
+
+
+        /**
+         * Control GROUPS
+         */
+        if (e.group && ["SOME_TABLE_NAME_STATE"].indexOf(e.group.field.name) !== -1) {
             let self: any = this;
             let ele: any = angular.element(e.$event.target)
             let ctrl = ele.controller('ngModel');
@@ -130,3 +140,7 @@ export class DemoComponent implements ng.IComponentOptions {
         this.controller = DemoComponentCtrl;
     }
 }
+
+
+// WEBPACK FOOTER //
+// ./~/angular1-template-loader!./src/js/queryBuilder/demo/demo.component.ts

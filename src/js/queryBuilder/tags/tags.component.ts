@@ -16,18 +16,17 @@ class TagsComponentCtrl implements ng.IComponentController {
     public select: any;
     public options: any;
     public form: any;
-    public typeaheadSource: any;
+    public typeahead: any;
     public ngModel: any;
     public model: any = [];
     public $id: string;
     public label: string;
     public required: boolean;
     public ngChange: any;
-    public tags: any;
 
-    private $tags: any;
-    private Timeout: any;
-    private TagsTimeout: any;
+    private $timeout: any;
+    private $tagstimeout: any;
+    private $inputtimeout: any;
     private hidden: any;
     private $model: any = [];
 
@@ -111,21 +110,29 @@ class TagsComponentCtrl implements ng.IComponentController {
 
     $doCheck() {
         let self: any = this;
-
         this.CheckModel();
     };
 
     $postLink() {
         let self: any = this;
-        setTimeout(() => {
-            let input = self.$element.find('input');
-            input[0].placeholder = self.placeholder || "";
-        }, 1)
+        this.$inputtimeout = setTimeout(() => {
+            let input = self.$element.find('input')[0];
+            input.placeholder = self.placeholder || "";
+            input.addEventListener('keyup', function (e) {
+                self.typeahead({
+                    $event: {
+                        $event: e,
+                        values: self.model
+                    }
+                })
+            }, false)
+        }, 0)
     }
 
     $onDestroy() {
-        clearTimeout(this.Timeout);
-        clearTimeout(this.TagsTimeout);
+        clearTimeout(this.$timeout);
+        clearTimeout(this.$tagstimeout);
+        clearTimeout(this.$inputtimeout);
         this.select.tagsinput('destroy');
 
     }
@@ -146,19 +153,18 @@ export class TagsComponent implements ng.IComponentOptions {
         };
 
         this.bindings = {
-            ngChange       : '&',
-            placeholder    : '<',
-            label          : '<',
-            name           : '<',
-            required       : '<',
-            note           : '<',
-            disabled       : '<',
-            options        : '<',
-            typeaheadSource: "<",
-            tagclass       : "<",
-            itemvalue      : "@",
-            itemtext       : "@",
-            confirmKeys    : "@"
+            typeahead  : "&",
+            ngChange   : '&',
+            placeholder: '<',
+            name       : '<',
+            required   : '<',
+            note       : '<',
+            disabled   : '<',
+            options    : '<',
+            tagclass   : "<",
+            itemvalue  : "@",
+            itemtext   : "@",
+            confirmKeys: "@"
         };
 
         this.template = require('./tags.html');
