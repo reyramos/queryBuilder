@@ -581,7 +581,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     
     onKeyUp(e: any, rule?: any) {
         let self: any = this;
-        let evnt: any = e.originalEvent || e.$event || e;
+        let evnt: any = e.originalEvent || e;
         this.$event = 'onKeyUp';
         this.$trigger = true;
         this.$outputUpdate = false;
@@ -796,6 +796,10 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 target: 'input'
             });
             
+            if (e.$event)Object.keys(e.$event).forEach((o)=> {
+                $event[o] = e.$event[o];
+            });
+            
             this.onFetch({
                 $event: $event
             });
@@ -855,11 +859,3 @@ export class QueryBuilder implements ng.IComponentOptions {
         this.controller = QueryBuilderCtrl;
     }
 }
-
-
-// WEBPACK FOOTER //
-// ./~/angular1-template-loader!./src/js/queryBuilder/component/query-builder.component.ts
-
-
-// WEBPACK FOOTER //
-// ./~/angular1-template-loader!./src/js/queryBuilder/component/query-builder.component.ts

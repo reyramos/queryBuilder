@@ -93,7 +93,6 @@ class TagsComponentCtrl implements ng.IComponentController {
         
         
         if (!angular.equals(this.model, this.$model)) {
-            console.log('CHECKMODEL', this.model)
             this.$model = angular.copy(this.model);
             this.ngModel.$setValidity("tags-invalid", !!this.model.length);
             this.ngModel.$setViewValue(this.model, 'change');
@@ -120,6 +119,7 @@ class TagsComponentCtrl implements ng.IComponentController {
         let self: any = this;
         this.$inputtimeout = setTimeout(() => {
             let input = self.$element.find('input');
+   
             self.$input = input[0];
             self.$input.placeholder = self.placeholder || "";
             self.$input.addEventListener('keyup', function (e) {
