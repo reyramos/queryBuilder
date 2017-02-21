@@ -53,7 +53,7 @@
                     <span ng-switch="rule.operator">
                         <span ng-switch-when="IN" class="rule-operator-in">
                             <qb-tags ng-model="rule.values" tags="rule.values"
-                                     typeahead="$ctrl.onTypeahead($event)"
+                                     typeahead="$ctrl.onTypeaheadAdd($event)"
                                      ng-change="$ctrl.onTagsChange($event)"></qb-tags>
                         </span>
                         <span ng-switch-when="BETWEEN" class="rule-operator-between">

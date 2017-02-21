@@ -98,14 +98,21 @@ class DemoComponentCtrl implements ng.IComponentController {
         /**
          * Control GROUPS
          */
-        if (e.group && ["SOME_TABLE_NAME_STATE"].indexOf(e.group.field.name) !== -1) {
-            let self: any = this;
-            let ele: any = angular.element(e.$event.target)
-            let ctrl = ele.controller('ngModel');
-            this.setBloodhound(ele).then((result) => {
+            // if (e.group && ["SOME_TABLE_NAME_STATE"].indexOf(e.group.field.name) !== -1) {
+        let self: any = this;
+        let ele: any = angular.element(e.$event.target)
+        let ctrl = ele.controller('ngModel');
+        let model = Array.isArray(ctrl.$viewValue) ? ctrl.$viewValue.slice(0) : ctrl.$viewValue;
+
+        this.setBloodhound(ele).then((result) => {
+            if (!!e.group) {
                 ctrl.$setViewValue(result, 'change')
-            });
-        }
+            } else {
+                // model.push(result);
+                // ctrl.$setViewValue(model, 'change')
+            }
+        });
+        // }
     }
 
 

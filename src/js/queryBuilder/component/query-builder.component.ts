@@ -807,7 +807,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
         })
     }
 
-    onTypeahead(e: any) {
+    onTypeaheadAdd(e: any) {
         let self: any = this;
         let evnt: any = e.originalEvent || e.$event;
         this.$event = 'onTypeahead';
