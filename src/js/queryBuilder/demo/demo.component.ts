@@ -108,8 +108,8 @@ class DemoComponentCtrl implements ng.IComponentController {
             if (!!e.group) {
                 ctrl.$setViewValue(result, 'change')
             } else {
-                // model.push(result);
-                // ctrl.$setViewValue(model, 'change')
+                model.push(result);
+                ctrl.$setViewValue(model, 'change')
             }
         });
         // }
