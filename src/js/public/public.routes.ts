@@ -33,6 +33,12 @@ export module Public {
             url      : "about/",
             parent   : "rootBundle.root",
             component: 'eqAbout'
+        },
+        {
+            name     : "contact",
+            url      : "contact/",
+            parent   : "rootBundle.root",
+            component: 'eqContact'
         }
     ];
 }

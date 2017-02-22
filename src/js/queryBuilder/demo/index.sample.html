@@ -1,35 +1,64 @@
 <div class="container">
-    <h1>Angular.js Query Builder</h1>
-    <div class="alert alert-info">
-        <strong>Sample Queries: <i>Copy/Paste or Write them out</i></strong><br><br>
-        Country equal `USA` AND Country equal `Canada` AND Gender equal `Male` AND Gender equal `Female` AND (State equal `North Carolina` OR State equal `Ontario`)<br><br>
+    <section class="bs-docs-section">
+        <h1 id="overview" class="page-header">
+            Overview
+        </h1>
 
-        Country equal `USA` AND Country equal `Canada` AND ((Gender equal `Male` AND Gender equal `Female`) AND (State equal `North Carolina` OR State equal `Ontario`))
-    </div>
-    Condition:
-    <textarea style="width: 100%; height: 100px;" class="flex" ng-model="$ctrl.output" name="query-string"
-              ng-trim="true"></textarea>
-    <progress-linear></progress-linear>
+        <blockquote>QueryBuilder is an Angular component to create queries and filters</blockquote>
 
-    <query-builder
-        class="query-builder"
-        group="$ctrl.filters"
-        operands="$ctrl.fields"
-        on-update="$ctrl.onChanges($event)"
-        query-string="$ctrl.output"
-        field-value="name"
-        field-name="description"
-        field-datatype="type"
-        on-value-change="$ctrl.onValueFetch($event)"
-        optgroup></query-builder>
+        <ul>
+            <li>Allows for user input/copy/paste functionality for ease query format samples.</li>
+            <li>Build JSON object for server restful interaction and parsing.</li>
+            <li>It outputs a structured JSON of rules which can be easily parsed.</li>
+        </ul>
+    </section>
+    <section class="clearfix">
+
+        <h4>Example:</h4>
+        <div class="alert alert-info">
+            <strong>Sample Queries: <i>Copy/Paste or Write them out</i></strong><br><br>
+            Country equal `USA` AND Country equal `Canada` AND Gender equal `Male` AND Gender equal `Female` AND (State
+            equal `North Carolina` OR State equal `Ontario`)<br><br>
+
+            Country equal `USA` AND Country equal `Canada` AND ((Gender equal `Male` AND Gender equal `Female`) AND
+            (State equal `North Carolina` OR State equal `Ontario`))
+        </div>
+        Condition:
+        <textarea style="width: 100%; height: 100px;" class="flex" ng-model="$ctrl.output" name="query-string"
+                  ng-trim="true"></textarea>
+        <!--<progress-linear></progress-linear>-->
+
+        <query-builder
+            class="query-builder"
+            group="$ctrl.filters"
+            operands="$ctrl.fields"
+            on-update="$ctrl.onChanges($event)"
+            query-string="$ctrl.output"
+            field-value="name"
+            field-name="description"
+            field-datatype="type"
+            on-value-change="$ctrl.onValueFetch($event)"
+            optgroup></query-builder>
 
 
-    <br>
-    <p>JSON OUTPUT</i>
-        <code>
-            <pre id="PRETTY_JSON" style="max-height: 500px;"></pre>
-        </code>
-    </p>
+        <br>
+        <p>JSON OUTPUT</i>
+            <code>
+                <pre id="PRETTY_JSON" style="max-height: 500px;"></pre>
+            </code>
+        </p>
 
+    </section>
+    <section class="bs-docs-section">
+        <h1 id="installation" class="page-header">
+            Getting started
+        </h1>
+        <h3 id="dependencies">Dependencies</h3>
+        <ul>
+            <li>WebPack or CommonJS bundle see directory src for demo packages</li>
+            <li>Install Node.JS version 6.20>: Use your system package manager (brew,port,apt-get,yum etc)</li>
+            <li>Install global Typings , Bower, and Typescript commands</li>
+        </ul>
 
+    </section>
 </div>
