@@ -332,16 +332,18 @@ class QueryBuilderCtrl implements ng.IComponentController {
         let num = (values.slice(0)).map((f) => {
             if (typeof f === 'string')return f.trim();
         });
-        switch (dataType.toUpperCase()) {
-            case 'NUMBER':
-            case 'INTEGER':
-            case 'FLOAT':
-                num = values.map((v) => {
-                    return Number(v);
-                });
-                break;
-            
-        }
+        
+        if (dataType)
+            switch (dataType.toUpperCase()) {
+                case 'NUMBER':
+                case 'INTEGER':
+                case 'FLOAT':
+                    num = values.map((v) => {
+                        return Number(v);
+                    });
+                    break;
+                
+            }
         
         
         return num;

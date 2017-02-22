@@ -42,19 +42,7 @@ class DemoComponentCtrl implements ng.IComponentController {
     
     $onInit() {
         this.filters = angular.copy(QUERY_INTERFACE);
-        
-        
-        var mapping = function (d) {
-            var handler = {
-                description: d.description,
-                name       : d.name,
-                type       : d.dataType,
-            };
-            return handler;
-        };
-        
-        this.fields = angular.copy(JSON_DATASET.map(mapping));
-        
+        this.fields = angular.copy(JSON_DATASET);
     }
     
     private setBloodhound(ele) {
