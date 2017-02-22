@@ -5156,5 +5156,8 @@ button.list-group-item-danger.active:focus {
 .affix {
   position: fixed;
 }
+body {
+  padding-bottom: 60px;
+}
 
-/*# sourceMappingURL=app.63d419c5eab96742eba4.bundle.map*/
+/*# sourceMappingURL=app.47916d93c875362c8cca.bundle.map*/
