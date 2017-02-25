@@ -49,14 +49,14 @@ module.exports = function (config) {
 		autoWatch: false,
 
 		// Start these browsers
-		// browsers: ['Chrome'],
-		browsers: ['ChromeWithoutSecurity'],
-		customLaunchers: {
-			ChromeWithoutSecurity: {
-				base: 'Chrome',
-				flags: ['--disable-web-security']
-			}
-		},
+		browsers: ['Chrome'],
+		// browsers: ['ChromeWithoutSecurity'],
+		// customLaunchers: {
+		// 	ChromeWithoutSecurity: {
+		// 		base: 'Chrome',
+		// 		flags: ['--disable-web-security']
+		// 	}
+		// },
 		// Continuous Integration mode
 		// if true, it capture browsers, run tests and exit
 		singleRun: true
