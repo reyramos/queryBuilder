@@ -17,41 +17,13 @@ import {QUERY_INTERFACE} from "./query.interface";
  optgroup></query-builder>
  */
 
-let JSON_DATASET = require('../demo/api/operands');
+const JSON_DATASET = require('../demo/api/operands');
+const SIMPLE_TEST = require('./test/simple_group.json');
+const COMPLEX_TEST = require('./test/complex_group.json');
 
 describe('component: queryBuilder', () => {
     let $componentController;
-    let $output;
-    let group = {
-        "type"       : "group",
-        "op"         : "AND",
-        "expressions": [
-            {
-                "type"    : "condition",
-                "field"   : {
-                    "name"       : "SOME_TABLE_NAME_COUNTRY",
-                    "description": "Country",
-                    "dataType"   : "STRING"
-                },
-                "operator": "EQ",
-                "values"  : [
-                    "USA"
-                ]
-            },
-            {
-                "type"    : "condition",
-                "field"   : {
-                    "name"       : "SOME_TABLE_NAME_COUNTRY",
-                    "description": "Country",
-                    "dataType"   : "STRING"
-                },
-                "operator": "EQ",
-                "values"  : [
-                    "Canada"
-                ]
-            }
-        ]
-    };
+    let group = SIMPLE_TEST.group;
     let scope = {},
         element = angular.element('<div></div>'); //provide element you want to test
 
@@ -93,7 +65,6 @@ describe('component: queryBuilder', () => {
         let bindings = {
             group      : angular.copy(group),
             fields     : JSON_DATASET,
-            queryString: $output,
             fieldValue : "name",
             fieldName  : "description",
             onUpdate   : onUpdateSpy
@@ -102,11 +73,25 @@ describe('component: queryBuilder', () => {
 
         ctrl.onGroupChange();
         expect(onUpdateSpy).toHaveBeenCalledWith({
-            $event: {
-                group : group,
-                string: "Country equal `USA` AND Country equal `Canada`"
-            }
+            $event: SIMPLE_TEST
         });
     });
+
+    it('pass query string: should call  `group` binding', function () {
+        let onUpdateSpy = jasmine.createSpy('onUpdate');
+        let bindings = {
+            fields    : JSON_DATASET,
+            fieldValue: "name",
+            fieldName : "description",
+            onUpdate  : onUpdateSpy
+        };
+        let ctrl = $componentController('queryBuilder', {$element: element, $scope: scope}, bindings);
+        ctrl.group = ctrl.parseQuery(COMPLEX_TEST.string);
+        ctrl.onGroupChange();
+        expect(onUpdateSpy).toHaveBeenCalledWith({
+            $event: COMPLEX_TEST
+        });
+    });
+
 
 });

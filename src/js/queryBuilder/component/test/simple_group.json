@@ -1,0 +1,33 @@
+{
+    "group": {
+        "type": "group",
+        "op": "AND",
+        "expressions": [
+            {
+                "type": "condition",
+                "field": {
+                    "name": "SOME_TABLE_NAME_COUNTRY",
+                    "description": "Country",
+                    "dataType": "STRING"
+                },
+                "operator": "EQ",
+                "values": [
+                    "USA"
+                ]
+            },
+            {
+                "type": "condition",
+                "field": {
+                    "name": "SOME_TABLE_NAME_COUNTRY",
+                    "description": "Country",
+                    "dataType": "STRING"
+                },
+                "operator": "EQ",
+                "values": [
+                    "Canada"
+                ]
+            }
+        ]
+    },
+    "string": "Country equal `USA` AND Country equal `Canada`"
+}

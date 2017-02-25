@@ -1,0 +1,87 @@
+{
+    "group": {
+        "type": "group",
+        "op": "AND",
+        "expressions": [
+            {
+                "type": "condition",
+                "field": {
+                    "name": "SOME_TABLE_NAME_COUNTRY",
+                    "description": "Country",
+                    "dataType": "STRING"
+                },
+                "operator": "EQ",
+                "values": [
+                    "USA"
+                ]
+            },
+            {
+                "type": "condition",
+                "field": {
+                    "name": "SOME_TABLE_NAME_COUNTRY",
+                    "description": "Country",
+                    "dataType": "STRING"
+                },
+                "operator": "EQ",
+                "values": [
+                    "Canada"
+                ]
+            },
+            {
+                "type": "condition",
+                "field": {
+                    "name": "SOME_TABLE_NAME_GENDER",
+                    "description": "Gender",
+                    "dataType": "STRING"
+                },
+                "operator": "EQ",
+                "values": [
+                    "Male"
+                ]
+            },
+            {
+                "type": "condition",
+                "field": {
+                    "name": "SOME_TABLE_NAME_GENDER",
+                    "description": "Gender",
+                    "dataType": "STRING"
+                },
+                "operator": "EQ",
+                "values": [
+                    "Female"
+                ]
+            },
+            {
+                "type": "group",
+                "op": "OR",
+                "expressions": [
+                    {
+                        "type": "condition",
+                        "field": {
+                            "name": "SOME_TABLE_NAME_STATE",
+                            "description": "State",
+                            "dataType": "STRING"
+                        },
+                        "operator": "EQ",
+                        "values": [
+                            "North Carolina"
+                        ]
+                    },
+                    {
+                        "type": "condition",
+                        "field": {
+                            "name": "SOME_TABLE_NAME_STATE",
+                            "description": "State",
+                            "dataType": "STRING"
+                        },
+                        "operator": "EQ",
+                        "values": [
+                            "Ontario"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "string": "Country equal `USA` AND Country equal `Canada` AND Gender equal `Male` AND Gender equal `Female` AND ( State equal `North Carolina` OR State equal `Ontario` )"
+}
