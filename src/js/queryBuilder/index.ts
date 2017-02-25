@@ -11,7 +11,7 @@ import {TagsComponent} from "./tags/tags.component";
 import {QUERY_OPERATORS, QUERY_CONDITIONS} from "./component/query.conditions";
 import {QUERY_INTERFACE} from "./component/query.interface";
 
-var app = angular.module("app.queryBuilder", []);
+export let app = angular.module("app.queryBuilder", []);
 
 
 app.constant('QUERY_OPERATORS', QUERY_OPERATORS);

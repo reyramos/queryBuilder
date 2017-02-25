@@ -8,7 +8,6 @@ module.exports = function (config) {
 
 		files: [
 			{pattern: './config/karma-test-shim.js', watched: false},
-			//fixtures //load json that are within the test directory needed for test cases
 			{pattern: './src/**/*.json', watched: true, served: true, included: false}
 		],
 		// list of files to exclude
@@ -50,8 +49,14 @@ module.exports = function (config) {
 		autoWatch: false,
 
 		// Start these browsers
-		browsers: ['Chrome'],
-
+		// browsers: ['Chrome'],
+		browsers: ['ChromeWithoutSecurity'],
+		customLaunchers: {
+			ChromeWithoutSecurity: {
+				base: 'Chrome',
+				flags: ['--disable-web-security']
+			}
+		},
 		// Continuous Integration mode
 		// if true, it capture browsers, run tests and exit
 		singleRun: true
