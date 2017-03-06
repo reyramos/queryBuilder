@@ -15,6 +15,7 @@ declare let String: any;
 
 const QBKEY: string = "$$QueryBuilder";
 
+// let moment = require('moment');
 
 String.prototype.replaceAt = function (index, char) {
     var a = this.split("");
@@ -330,7 +331,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     private defineDatatype(dataType, values) {
         values = Array.isArray(values) ? values : [values];
         let num = (values.slice(0)).map((f) => {
-            if (typeof f === 'string')return f.trim();
+            return typeof f === 'string' ? f.trim() : f;
         });
         
         if (dataType)
@@ -342,6 +343,11 @@ class QueryBuilderCtrl implements ng.IComponentController {
                         return Number(v);
                     });
                     break;
+                // case 'DATETIME':
+                //     num = values.map((v) => {
+                //         return moment(v).format('MM/DD/YYYY');
+                //     });
+                //     break;
                 
             }
         
@@ -575,7 +581,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
         
     }
     
-    onOperandChange() {
+    onOperandChange(rule: any) {
         this.$event = 'onOperandChange';
         this.$outputUpdate = false;
         this.onGroupChange();
@@ -781,6 +787,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
         
         this[event]({
             $event: {
+                event : self.$event,
                 group : self.CleanObject(),
                 string: self.queryString
             }
