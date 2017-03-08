@@ -352,7 +352,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
             }
         
         
-        return num;
+        return num.unique();
     }
     
     
@@ -513,7 +513,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 str.push(o.field[self.fieldName]);
                 
                 let dataType: string = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
-                let values = o.values[0] ? (self.defineDatatype(dataType, o.values)).join(", ") : "";
+                let values = o.values[0] ? (self.defineDatatype(dataType, o.values)).unique().join(", ") : "";
                 
                 
                 let condition = self.conditions.find(function (q) {
