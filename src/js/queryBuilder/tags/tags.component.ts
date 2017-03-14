@@ -131,7 +131,6 @@ class TagsComponentCtrl implements ng.IComponentController {
                     }
                 })
             }, false);
-            
             try {
                 ($ as any)(self.$input).typeahead().on('typeahead:selected', (e, value)=> {
                     this.model.push(value);

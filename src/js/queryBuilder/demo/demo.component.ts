@@ -93,6 +93,8 @@ class DemoComponentCtrl implements ng.IComponentController {
         let model = Array.isArray(ctrl.$viewValue) ? ctrl.$viewValue.slice(0) : ctrl.$viewValue;
 
         this.setBloodhound(ele).then((result) => {
+            console.log('typeahead:select', e, result)
+    
             if (!!e.group) {
                 ctrl.$setViewValue(result, 'change')
             }

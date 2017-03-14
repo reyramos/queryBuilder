@@ -641,6 +641,10 @@ class QueryBuilderCtrl implements ng.IComponentController {
     }
     
     
+    onChange(e?: any) {
+        this.onGroupChange(e);
+    }
+    
     private onGroupChange(e?: any) {
         clearTimeout(this.$timeoutPromise);
         let self: any = this;
