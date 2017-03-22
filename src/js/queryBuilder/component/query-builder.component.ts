@@ -102,6 +102,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
          other than query builder
          */
         if (!angular.equals(this.queryString, this.$queryString)) {
+            console.log('doCheck:', this.queryString)
             this.$queryString = this.queryString;
             clearTimeout(this.$timeoutPromise);
             this.$timeoutPromise = setTimeout(() => {
@@ -785,9 +786,10 @@ class QueryBuilderCtrl implements ng.IComponentController {
         let self: any = this;
         let string: Array<string> = this.stringifyQuery(this.group);
         //update both if updated from object
-        this.$queryString = this.queryString = string.join(' ');
-        
+        this.$queryString = string.join(' ');
         this.$outputUpdate = false;
+        
+        if (this.$queryString)this.queryString = this.$queryString;
         
         this[event]({
             $event: {

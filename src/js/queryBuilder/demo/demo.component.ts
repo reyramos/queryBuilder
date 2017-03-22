@@ -108,7 +108,6 @@ class DemoComponentCtrl implements ng.IComponentController {
      * @param e
      */
     onChanges(e) {
-        console.log('e', e)
         let self: any = this;
         if (!angular.equals(this.output, e.string)) {
             self.output = e.string;
