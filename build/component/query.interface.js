@@ -1,7 +1,5 @@
-/**
- * Created by ramor11 on 12/8/2016.
- */
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.QUERY_INTERFACE = Object.freeze({
     "type": "group",
     "op": "AND",
@@ -10,10 +8,10 @@ exports.QUERY_INTERFACE = Object.freeze({
             "type": "condition",
             "field": {
                 "name": "",
-                "description": ""
+                "description": "",
             },
             "operator": "EQ",
-            "values": [] // For LT, LE, GT, GE, EQ, NE, CONTAINS -> Single value; For IN -> One or more values; For BETWEEN -> Two values
+            "values": []
         }
     ]
 });

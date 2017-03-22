@@ -88,7 +88,7 @@ module.exports = webpackMerge(commonConfig, {
 		}),
 		new HtmlWebpackPlugin({
 			hash: true,
-			baseUrl: "//reyramos.github.io/dataTable/",
+			baseUrl: "//reyramos.github.io/queryBuilder/",
 			minify: {
 				removeComments: true,
 				collapseWhitespace: true,

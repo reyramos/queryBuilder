@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var angular = require("angular");
 var query_conditions_1 = require("./query.conditions");
 var query_interface_1 = require("./query.interface");
@@ -27,7 +28,6 @@ var QueryBuilderCtrl = (function () {
         this.multi = false;
         this.operators = query_conditions_1.QUERY_OPERATORS;
         this.conditions = [];
-        //trackers
         this.$event = "";
         this.$queryString = "";
         this.$outputUpdate = false;
@@ -48,11 +48,8 @@ var QueryBuilderCtrl = (function () {
     };
     QueryBuilderCtrl.prototype.$doCheck = function () {
         var self = this;
-        /*
-         This will be trigger when the output string is changes from outside source
-         other than query builder
-         */
         if (!angular.equals(this.queryString, this.$queryString)) {
+            console.log('doCheck:', this.queryString);
             this.$queryString = this.queryString;
             clearTimeout(this.$timeoutPromise);
             this.$timeoutPromise = setTimeout(function () {
@@ -71,33 +68,21 @@ var QueryBuilderCtrl = (function () {
         }
     };
     ;
-    /**
-     * It will take the query string and split into a simple single layer array to be evalualated
-     * later to build the JSON filters based on the parameters
-     * @param query
-     */
     QueryBuilderCtrl.prototype.split_string = function (query) {
         if (!query)
             return;
         var words = (query.trim()).split(/ /g);
-        //array element to keep single
         var conditions = ["(", ")"];
         var self = this;
         var qArr = [];
         var string = "";
         var operands = [];
-        /*
-         Get all available conditions
-         */
         this.conditions.map(function (c) {
             var lowerCase = (Array.isArray(c.symbol) ? c.symbol : [c.symbol]).map(function (o) {
                 return o.toLowerCase();
             });
             conditions = conditions.concat(lowerCase);
         });
-        /*
-         Get all the valid operand
-         */
         this.fields.map(function (o) {
             operands.push(o[self.fieldName]);
         });
@@ -108,26 +93,17 @@ var QueryBuilderCtrl = (function () {
             conditions = conditions.concat(lowerCase);
         });
         conditions = conditions.unique();
-        /*
-         First check all the condition and match them together
-         */
         var wCopy = words.filter(function (o) {
             return o !== "";
         });
-        /*
-         Split strings with parenthesis
-         */
         var _split = function () {
-            var cQarr = wCopy.slice(0); //lets copy
+            var cQarr = wCopy.slice(0);
             wCopy.forEach(function (o, i) {
                 var regex = /\(|\)/g;
                 var m = o.length > 1 ? regex.exec(o) : null;
                 if (m) {
-                    //push the match
                     wCopy.splice(m[0] === "(" ? i : i + 1, 0, m[0]);
-                    //remove the match
                     var string_1 = o.replaceAt(m.index, "");
-                    //replace the string
                     wCopy.splice(m[0] === ")" ? i : i + 1, 1, string_1);
                 }
             });
@@ -142,9 +118,8 @@ var QueryBuilderCtrl = (function () {
             var test = words[i_1].trim();
             if (["(", ")"].indexOf(test) === -1) {
                 string += " " + words[i_1];
-                sCount.push(i_1); //keep count of string adds
+                sCount.push(i_1);
                 if (conditions.indexOf(test.toLowerCase()) > -1) {
-                    //CHECK FOR ALL CONDITIONS AND OPERATORS
                     var isNot = words[i_1 - 1] ? words[i_1 - 1].toUpperCase() === "NOT" : false;
                     var cond = test;
                     if (isNot) {
@@ -161,30 +136,28 @@ var QueryBuilderCtrl = (function () {
                                 wCopy.splice(idx, 1, QBKEY);
                         });
                     }
-                    sCount = []; //reset
-                    string = ""; //reset on array changes
+                    sCount = [];
+                    string = "";
                 }
                 else if (operands.indexOf(string.trim()) > -1) {
-                    //CHECK FOR ALL OPERANDS
                     wCopy.splice(i_1, 1, string.trim());
                     sCount.forEach(function (idx) {
                         if (idx < i_1)
                             wCopy.splice(idx, 1, QBKEY);
                     });
-                    sCount = []; //reset
-                    string = ""; //reset on array changes
+                    sCount = [];
+                    string = "";
                 }
             }
             else if (test === ")") {
-                sCount = []; //reset
-                string = ""; //reset on array changes
+                sCount = [];
+                string = "";
             }
             position = i_1;
         };
         for (var i_1 = 0; i_1 < words.length; i_1++) {
             _loop_1(i_1);
         }
-        //CHECK FOR ALL OPERANDS
         if (string)
             wCopy.splice(position, 1, string.trim());
         sCount.forEach(function (idx) {
@@ -194,22 +167,14 @@ var QueryBuilderCtrl = (function () {
         words = wCopy.filter(function (o) {
             return o !== QBKEY;
         });
-        /*
-         This loop will handle the conditions
-         TODO:refactor
-         */
         var i = 0;
-        var handler = []; //this should reset on push to qArr
-        string = ""; //reset for new array use
+        var handler = [];
+        string = "";
         do {
             if (words[i]) {
                 if (conditions.indexOf(words[i].toLowerCase()) < 0) {
                     var regex = /^and|AND|or|OR$`/g;
                     var cond = regex.exec(words[i]);
-                    /*
-                     Testing for condition where the user started typing
-                     AND and OR uncomplete and define its group since its a broken word
-                     */
                     if (cond) {
                         handler.push(string);
                         handler.push(words[i]);
@@ -232,7 +197,6 @@ var QueryBuilderCtrl = (function () {
                     else {
                         handler.push(string);
                     }
-                    //push the condition being evalualated
                     if (words[i])
                         handler.push(words[i]);
                     if (handler.length > 3) {
@@ -247,13 +211,10 @@ var QueryBuilderCtrl = (function () {
             }
             i++;
         } while (i <= words.length);
-        //wrapping last array string
         qArr = qArr.concat(handler);
-        //clean empty strings
         qArr = qArr.filter(function (o) {
             return o !== "";
         });
-        //clean strings
         qArr = qArr.map(function (o) {
             return o.trim();
         });
@@ -262,34 +223,25 @@ var QueryBuilderCtrl = (function () {
     QueryBuilderCtrl.prototype.defineDatatype = function (dataType, values) {
         values = Array.isArray(values) ? values : [values];
         var num = (values.slice(0)).map(function (f) {
-            if (typeof f === 'string')
-                return f.trim();
+            return typeof f === 'string' ? f.trim() : f;
         });
-        switch (dataType.toUpperCase()) {
-            case 'NUMBER':
-            case 'INTEGER':
-            case 'FLOAT':
-                num = values.map(function (v) {
-                    return Number(v);
-                });
-                break;
-        }
-        return num;
+        if (dataType)
+            switch (dataType.toUpperCase()) {
+                case 'NUMBER':
+                case 'INTEGER':
+                case 'FLOAT':
+                    num = values.map(function (v) {
+                        return Number(v);
+                    });
+                    break;
+            }
+        return num.unique();
     };
-    /**
-     * Take the String and parse it into OBJECT format
-     * @param queryString
-     * @returns {Object}
-     */
     QueryBuilderCtrl.prototype.parseQuery = function (queryString) {
         var _this = this;
         var self = this;
-        //take the string and break into array
         var queryArray = this.split_string(queryString);
         var operators = [];
-        /*
-         Build the needed operators from the CONST
-         */
         this.operators.map(function (c) {
             var lowerCase = (Array.isArray(c.name) ? c.name : [c.name]).map(function (o) {
                 return o.toLowerCase();
@@ -297,9 +249,6 @@ var QueryBuilderCtrl = (function () {
             operators = operators.concat(lowerCase);
         });
         var conditions = [];
-        /*
-         Build a reference value of the QUERY_CONDITION constants
-         */
         Object.keys(query_conditions_1.QUERY_CONDITIONS).forEach(function (k) {
             var symbol = query_conditions_1.QUERY_CONDITIONS[k].symbol;
             conditions.push({
@@ -335,7 +284,6 @@ var QueryBuilderCtrl = (function () {
             values.forEach(function (v) {
                 expressions.values.push(v);
             });
-            //remove any empty strings
             expressions.values = expressions.values.filter(function (o) {
                 return o !== "" && o !== "``";
             });
@@ -351,10 +299,8 @@ var QueryBuilderCtrl = (function () {
                 if (txt === "$$QueryBuilder")
                     return;
                 if (txt === "(") {
-                    //defining the start of the group
                     var _group = newGroup();
                     group.expressions.push(_group);
-                    //clean empty strings
                     arr = arr.filter(function (o) {
                         return o !== "$$QueryBuilder";
                     });
@@ -364,7 +310,6 @@ var QueryBuilderCtrl = (function () {
                         var balance = m[0].replace(/\(/, "").trim();
                         balance = balance.replaceAt(balance.length - 1, "").trim();
                         var newStr = ((arr.join(" ")).replace(balance, "")).replace(/\(\s{1,}\)/, "").trim();
-                        //since of array reference add unidentified index to keep the same loop in order
                         arr = ["$$QueryBuilder"].concat(_this.split_string(newStr) || []);
                         var handler = _this.split_string(balance) || [];
                         handler = handler.filter(function (o) {
@@ -377,7 +322,6 @@ var QueryBuilderCtrl = (function () {
                 else if (txt === ")") {
                 }
                 else if (operators.indexOf(txt.toLowerCase()) === -1) {
-                    //this is a condition
                     expressions.push(txt);
                     if (expressions.length === 3)
                         group.expressions.push(newCondition(expressions));
@@ -386,18 +330,12 @@ var QueryBuilderCtrl = (function () {
                     group.op = txt;
                     expressions = [];
                 }
-                //unique identifier
                 arr[i] = "$$QueryBuilder";
             }
         };
         parseIt(group, queryArray);
         return group;
     };
-    /**
-     * Will take the query string and stringify
-     * @param group
-     * @returns {Array}
-     */
     QueryBuilderCtrl.prototype.stringifyQuery = function (group) {
         var self = this;
         if (!group)
@@ -405,14 +343,13 @@ var QueryBuilderCtrl = (function () {
         var str = [];
         angular.forEach(group.expressions, function (o, i) {
             if (o.type === 'condition') {
-                // var values = o.values[0] ? o.values.join(", ") : "";
                 if (!o.field || !o.field[self.fieldName])
                     return;
                 if (i !== 0)
                     str.push(group.op);
                 str.push(o.field[self.fieldName]);
                 var dataType = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
-                var values = o.values[0] ? (self.defineDatatype(dataType, o.values)).join(", ") : "";
+                var values = o.values[0] ? (self.defineDatatype(dataType, o.values)).unique().join(", ") : "";
                 var condition = self.conditions.find(function (q) {
                     return o.operator === q.value;
                 }).symbol;
@@ -467,7 +404,7 @@ var QueryBuilderCtrl = (function () {
             }
         }, 0);
     };
-    QueryBuilderCtrl.prototype.onOperandChange = function () {
+    QueryBuilderCtrl.prototype.onOperandChange = function (rule) {
         this.$event = 'onOperandChange';
         this.$outputUpdate = false;
         this.onGroupChange();
@@ -511,15 +448,15 @@ var QueryBuilderCtrl = (function () {
                 self.checkExpressions(o);
             }
         });
-        /*
-         Add a new row for new field entry
-         */
         if (conditions.length > 0 && values.length === conditions.length) {
             this.AddCondition(group, values[values.length - 1] + 1);
         }
         else if (conditions.length == 0) {
             this.AddCondition(group, 0);
         }
+    };
+    QueryBuilderCtrl.prototype.onChange = function (e) {
+        this.onGroupChange(e);
     };
     QueryBuilderCtrl.prototype.onGroupChange = function (e) {
         clearTimeout(this.$timeoutPromise);
@@ -531,7 +468,6 @@ var QueryBuilderCtrl = (function () {
     };
     QueryBuilderCtrl.prototype.setFieldsDescription = function (group) {
         var self = this;
-        //depends where the change came from find by
         var findBy = self.$outputUpdate ? self.fieldName : self.fieldValue;
         group.expressions.forEach(function (condition, i) {
             if (condition.type === 'condition') {
@@ -587,9 +523,6 @@ var QueryBuilderCtrl = (function () {
         self.group.expressions.splice(idx, 1);
         this.onGroupChange();
     };
-    /**
-     * OUTPUT
-     */
     QueryBuilderCtrl.prototype.onDeleteGroup = function (e) {
         var self = this;
         var gCopy = this.group.expressions.slice(0);
@@ -625,7 +558,6 @@ var QueryBuilderCtrl = (function () {
                 }
             });
         }
-        //clean up the json
         str = str.replace(/,\]/g, "]").replace(/\[,/g, "[").replace(/,,/g, ",");
         return this.setDatatypes(JSON.parse(str));
     };
@@ -646,11 +578,13 @@ var QueryBuilderCtrl = (function () {
     QueryBuilderCtrl.prototype.trigger = function (event) {
         var self = this;
         var string = this.stringifyQuery(this.group);
-        //update both if updated from object
-        this.$queryString = this.queryString = string.join(' ');
+        this.$queryString = string.join(' ');
         this.$outputUpdate = false;
+        if (this.$queryString)
+            this.queryString = this.$queryString;
         this[event]({
             $event: {
+                event: self.$event,
                 group: self.CleanObject(),
                 string: self.queryString
             }
@@ -671,9 +605,6 @@ var QueryBuilderCtrl = (function () {
             _this.onFetch({
                 $event: $event
             });
-            /*
-             It may loose focus on external library injections, ex: typeahead.js
-             */
             $event.$event.target.focus();
             resolve(e.target);
         });

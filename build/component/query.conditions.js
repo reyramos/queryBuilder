@@ -1,18 +1,16 @@
-/**
- * Created by ramor11 on 12/8/2016.
- */
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.QUERY_OPERATORS = [{ name: 'AND' }, { name: 'OR' }];
 exports.QUERY_CONDITIONS = {
     EQUAL: {
         name: "Equal",
         value: "EQ",
-        symbol: ["equal", "==", "=", "<=>"] //THIS CAN BE AN ARRAY OF POSSIBLE SYMBOLS
+        symbol: ["equal", "==", "=", "<=>"]
     },
     NOT_EQUAL: {
         name: "Not Equal",
         value: "NE",
-        symbol: ["not_equal", "not equal", "!==", "!=", "<>"] //THIS CAN BE AN ARRAY OF POSSIBLE SYMBOLS
+        symbol: ["not_equal", "not equal", "!==", "!=", "<>"]
     },
     GREATER_THAN: {
         name: "Greater Than",
@@ -44,15 +42,9 @@ exports.QUERY_CONDITIONS = {
         value: "BETWEEN",
         symbol: "BETWEEN"
     },
-    // NOT_BETWEEN: {
-    //     name: "Not Between",
-    //     value: "NOT_BETWEEN",
-    //     symbol: "not between"
-    // },
     CONTAINS: {
         name: "Contains",
         value: "CONTAINS",
-        //not implement LIKE %%  WIP
         symbol: ["contains", "LIKE `%{{VALUES}}%`"]
     },
     NOT_CONTAINS: {

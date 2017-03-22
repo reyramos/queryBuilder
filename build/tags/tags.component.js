@@ -1,7 +1,5 @@
 "use strict";
-/**
- * Created by reyra on 1/31/2017.
- */
+Object.defineProperty(exports, "__esModule", { value: true });
 require('bootstrap-tagsinput/src/bootstrap-tagsinput');
 require('bootstrap-tagsinput/src/bootstrap-tagsinput.css');
 var angular = require("angular");
