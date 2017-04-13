@@ -17,16 +17,24 @@
         ],
         "removeComments": true,
         "noImplicitAny": false,
-        "suppressImplicitAnyIndexErrors": true
+        "suppressImplicitAnyIndexErrors": true,
+        "typeRoots": [
+            "./typings",
+            "./node_modules/@types"
+        ],
+        "types": [
+            "node"
+        ]
     },
-    "typeRoots": [
-        "node_modules/@types",
-        "typings"
-    ],
     "exclude": [
         "node_modules",
         "bower_components",
-        "dist"
+        "dist",
+        "dist",
+        "test",
+        "src/**/*.spec.ts",
+        "src/**/*.e2e.ts",
+        "src/**/*_test.ts"
     ],
     "awesomeTypescriptLoaderOptions": {
         "useBabel": true,
