@@ -64,7 +64,7 @@ module.exports = {
 			{
 				test: /\.ts$/,
 				use: ["babel-loader","awesome-typescript-loader", "angular1-template-loader"],
-				exclude: [/\.(spec|e2e|d)\.ts$/]
+				exclude: [/\.(spec|e2e|d)\.ts$/, /node_modules/]
 			},
 			{
 				test: /\.(png|jpg|gif)$/,
