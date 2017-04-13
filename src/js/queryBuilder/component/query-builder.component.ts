@@ -710,14 +710,17 @@ class QueryBuilderCtrl implements ng.IComponentController {
     }
     
     RemoveCondition(idx: number, e?: any) {
+        
         this.$event = 'RemoveCondition';
-        let self: any = this;
         this.$countCondition = 0;
-        this.group.expressions.map(function (o) {
-            if (o.type === 'condition') self.$countCondition++;
+        this.group.expressions.map((o) => {
+            if (o.type === 'condition') this.$countCondition++;
         });
-        if (self.$countCondition === 1)return;
-        self.group.expressions.splice(idx, 1);
+        if (this.$countCondition === 1)return;
+        this.group.expressions.splice(idx, 1);
+        
+        //avoid trigger changes
+        this.$group = this.group;
         this.onGroupChange();
     }
     
@@ -786,10 +789,15 @@ class QueryBuilderCtrl implements ng.IComponentController {
         let self: any = this;
         let string: Array<string> = this.stringifyQuery(this.group);
         //update both if updated from object
-        this.$queryString = string.join(' ');
+        let $string = string ? string.join(' ') : "";
         this.$outputUpdate = false;
         
-        if (this.$queryString)this.queryString = this.$queryString;
+        if ($string !== this.$queryString) {
+            this.queryString = this.$queryString = $string;
+        }
+        
+        // if (this.$event === 'RemoveCondition') this.queryString = this.$queryString;
+        // if (this.$queryString) this.queryString = this.$queryString;
         
         this[event]({
             $event: {
@@ -811,7 +819,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 target: 'input'
             });
             
-            if (e.$event)Object.assign($event, e);
+            if (e.$event) Object.assign($event, e);
             this.onFetch({
                 $event: $event
             });
