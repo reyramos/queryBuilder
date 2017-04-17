@@ -78,6 +78,7 @@
                     </div>
                 </div>
                 <div class="rules-group-container-child"
+                     ng-class="{'error-group':rule.error}"
                      ng-if="rule.type === 'group'">
                     <query-builder group="rule" operands="$ctrl.fields" $$index="1"
                                    on-delete="$ctrl.onDeleteGroup($event)"
