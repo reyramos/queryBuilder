@@ -92,6 +92,11 @@ var QueryBuilder;
         name: "root",
         parent: 'QueryBuilder',
         component: 'demoComponent'
+    }, {
+        name: 'stringify',
+        url: 'stringify/',
+        parent: 'QueryBuilder',
+        component: 'demoComponent'
     }];
 })(QueryBuilder = exports.QueryBuilder || (exports.QueryBuilder = {}));
 

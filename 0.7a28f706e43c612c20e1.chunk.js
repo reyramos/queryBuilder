@@ -89,6 +89,123 @@ exports.ContactComponent = ContactComponent;
 
 /***/ }),
 
+/***/ 137:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const angular = __webpack_require__(0);
+const query_conditions_1 = __webpack_require__(30);
+const QBKEY = "$$QueryBuilder";
+class QueryBuilderService {
+    constructor(fieldName = 'name', fieldDatatype = 'dataType') {
+        this.fieldName = fieldName;
+        this.fieldDatatype = fieldDatatype;
+        this.conditions = [];
+        Object.keys(query_conditions_1.QUERY_CONDITIONS).forEach(k => {
+            this.conditions.push(query_conditions_1.QUERY_CONDITIONS[k]);
+        });
+    }
+    defineDatatype(dataType, values) {
+        values = Array.isArray(values) ? values : [values];
+        let num = values.slice(0).map(f => {
+            return typeof f === 'string' ? f.trim() : f;
+        });
+        if (dataType) switch (dataType.toUpperCase()) {
+            case 'NUMBER':
+            case 'INTEGER':
+            case 'FLOAT':
+                num = values.map(v => {
+                    return Number(v);
+                });
+                break;
+        }
+        return num.unique();
+    }
+    stringify(group, update = false) {
+        let string = this.stringifyQuery(group, update);
+        let $string = string ? string.join(' ') : "";
+        return $string;
+    }
+    stringifyQuery(group, update = false) {
+        if (!group) return;
+        var str = [];
+        angular.forEach(group.expressions, (o, i) => {
+            if (o.type === 'condition') {
+                if (!o.field || !o.field[this.fieldName]) return;
+                if (i !== 0) str.push(group.op);
+                str.push(o.field[this.fieldName]);
+                let dataType = o.field.hasOwnProperty(this.fieldDatatype) ? o.field[this.fieldDatatype] : false;
+                let values = o.values[0] ? this.defineDatatype(dataType, o.values).unique().join(", ") : "";
+                let condition = this.conditions.find((function (q) {
+                    return o.operator === q.value;
+                })).symbol;
+                str.push(Array.isArray(condition) ? condition[0] : condition);
+                let ticks = "`";
+                str.push(update ? values : ticks + values + ticks);
+            } else {
+                var comp = this.stringifyQuery(o, update);
+                if (comp.length) {
+                    if (str.length) str.push(group.op);
+                    if (comp.length > 3) {
+                        comp.unshift("(");
+                        comp.push(")");
+                    }
+                    str = str.concat(comp);
+                }
+            }
+        });
+        return str;
+    }
+}
+exports.QueryBuilderService = QueryBuilderService;
+
+/***/ }),
+
+/***/ 138:
+/***/ (function(module, exports) {
+
+module.exports =
+	".rules-group-container-child.error-group query-builder .rules-group-container {\n  position: relative;\n  margin: 4px 0;\n  border-radius: 5px;\n  padding: 5px;\n  border: 1px solid red;\n  background: rgba(255, 255, 255, 0.9);\n}\n";
+
+/***/ }),
+
+/***/ 139:
+/***/ (function(module, exports) {
+
+module.exports = "{\n    \"type\": \"group\",\n    \"op\": \"AND\",\n    \"expressions\": [\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_COUNTRY\",\n                \"description\": \"Country\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"USA\"\n            ]\n        },\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_COUNTRY\",\n                \"description\": \"Country\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"Canada\"\n            ]\n        },\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_GENDER\",\n                \"description\": \"Gender\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"Male\"\n            ]\n        },\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_GENDER\",\n                \"description\": \"Gender\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"Female\"\n            ]\n        },\n        {\n            \"type\": \"group\",\n            \"op\": \"OR\",\n            \"expressions\": [\n                {\n                    \"type\": \"condition\",\n                    \"field\": {\n                        \"name\": \"SOME_TABLE_NAME_STATE\",\n                        \"description\": \"State\",\n                        \"dataType\": \"STRING\"\n                    },\n                    \"operator\": \"EQ\",\n                    \"values\": [\n                        \"North Carolina\"\n                    ]\n                },\n                {\n                    \"type\": \"condition\",\n                    \"field\": {\n                        \"name\": \"SOME_TABLE_NAME_AGE\",\n                        \"description\": \"Age\",\n                        \"dataType\": \"INTEGER\"\n                    },\n                    \"operator\": \"EQ\",\n                    \"values\": [\n                        15\n                    ]\n                },\n                {\n                    \"type\": \"condition\",\n                    \"field\": {\n                        \"name\": \"\",\n                        \"description\": \"\"\n                    },\n                    \"operator\": \"EQ\",\n                    \"values\": [\n                    ]\n                }\n            ],\n            \"error\": true\n        }\n    ]\n}\n"
+
+/***/ }),
+
+/***/ 140:
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(138);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(24)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/less-loader/index.js!./custom.less", (function() {
+			var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/less-loader/index.js!./custom.less");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		}));
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose((function() { update(); }));
+}
+
+/***/ }),
+
 /***/ 25:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4180,6 +4297,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const angular = __webpack_require__(0);
 const query_conditions_1 = __webpack_require__(30);
 const query_interface_1 = __webpack_require__(28);
+const query_builder_service_1 = __webpack_require__(137);
 const QBKEY = "$$QueryBuilder";
 String.prototype.replaceAt = function (index, char) {
     var a = this.split("");
@@ -4218,12 +4336,12 @@ class QueryBuilderCtrl {
         if (!this.group) this.group = angular.copy(query_interface_1.QUERY_INTERFACE);
         if (!this.fieldValue) this.fieldValue = 'value';
         if (!this.fieldName) this.fieldName = 'name';
+        this.QueryService = new query_builder_service_1.QueryBuilderService(this.fieldName, this.fieldDatatype);
         this.onGroupChange();
     }
     $doCheck() {
         let self = this;
         if (!angular.equals(this.queryString, this.$queryString)) {
-            console.log('doCheck:', this.queryString);
             this.$queryString = this.queryString;
             clearTimeout(this.$timeoutPromise);
             this.$timeoutPromise = setTimeout(() => {
@@ -4484,37 +4602,6 @@ class QueryBuilderCtrl {
         parseIt(group, queryArray);
         return group;
     }
-    stringifyQuery(group) {
-        let self = this;
-        if (!group) return;
-        var str = [];
-        angular.forEach(group.expressions, (function (o, i) {
-            if (o.type === 'condition') {
-                if (!o.field || !o.field[self.fieldName]) return;
-                if (i !== 0) str.push(group.op);
-                str.push(o.field[self.fieldName]);
-                let dataType = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
-                let values = o.values[0] ? self.defineDatatype(dataType, o.values).unique().join(", ") : "";
-                let condition = self.conditions.find((function (q) {
-                    return o.operator === q.value;
-                })).symbol;
-                str.push(Array.isArray(condition) ? condition[0] : condition);
-                let ticks = "`";
-                str.push(self.$outputUpdate ? values : ticks + values + ticks);
-            } else {
-                var comp = self.stringifyQuery(o);
-                if (comp.length) {
-                    if (str.length) str.push(group.op);
-                    if (comp.length > 3) {
-                        comp.unshift("(");
-                        comp.push(")");
-                    }
-                    str = str.concat(comp);
-                }
-            }
-        }));
-        return str;
-    }
     setOperator(operator) {
         let self = this;
         switch (operator) {
@@ -4707,8 +4794,7 @@ class QueryBuilderCtrl {
 
     trigger(event) {
         let self = this;
-        let string = this.stringifyQuery(this.group);
-        let $string = string ? string.join(' ') : "";
+        let $string = this.QueryService.stringify(this.group, this.$outputUpdate);
         this.$outputUpdate = false;
         if ($string !== this.$queryString) {
             this.queryString = this.$queryString = $string;
@@ -4786,10 +4872,13 @@ exports.QueryBuilder = QueryBuilder;
 Object.defineProperty(exports, "__esModule", { value: true });
 const angular = __webpack_require__(0);
 const query_interface_1 = __webpack_require__(28);
+const query_builder_service_1 = __webpack_require__(137);
 const PrettyJSON = __webpack_require__(53);
 const JSON_DATASET = __webpack_require__(131);
+const GROUP_SAMPLE = JSON.parse(__webpack_require__(139));
 __webpack_require__(44);
 __webpack_require__(130);
+__webpack_require__(140);
 class DemoComponentCtrl {
     constructor($scope, $element) {
         this.$scope = $scope;
@@ -4798,6 +4887,8 @@ class DemoComponentCtrl {
         this.JSON_PRETTY = $element.find('#PRETTY_JSON');
     }
     $onInit() {
+        let queryService = new query_builder_service_1.QueryBuilderService('description', 'dataType');
+        console.log(queryService.stringify(GROUP_SAMPLE));
         this.filters = angular.copy(query_interface_1.QUERY_INTERFACE);
         this.fields = angular.copy(JSON_DATASET);
     }
@@ -4826,6 +4917,7 @@ class DemoComponentCtrl {
         });
     }
     onValueFetch(e) {
+        console.log('onValueFetch', e);
         let self = this;
         let ele = angular.element(e.$event.target);
         let ctrl = ele.controller('ngModel');
@@ -4837,7 +4929,23 @@ class DemoComponentCtrl {
             }
         });
     }
+    validateQuery(group) {
+        var validate = [];
+        delete group.error;
+        group.expressions.forEach((o, i) => {
+            if (o.type === 'condition') {
+                if (['INTEGER', 'STRING'].indexOf(o.field.dataType) !== -1) validate.push(o.field.dataType);
+            } else {
+                this.validateQuery(o);
+            }
+        });
+        if (validate.indexOf('INTEGER') !== -1 && validate.indexOf('STRING') !== -1) {
+            group.error = true;
+        }
+        return group;
+    }
     onChanges(e) {
+        this.validateQuery(e.group);
         let self = this;
         if (!angular.equals(this.output, e.string)) {
             self.output = e.string;
@@ -5103,14 +5211,14 @@ module.exports = "<nav class=\"navbar navbar-default navbar-static-top\" style=\
 /***/ 47:
 /***/ (function(module, exports) {
 
-module.exports = "<dl class=rules-group-container><dt class=rules-group-header><div class=\"btn-group pull-right group-actions\"><button class=\"btn btn-default btn-xs add-group\" md-no-ink ng-click=$ctrl.AddGroup()>Add Group</button> <button class=\"btn btn-default btn-xs remove-group\" md-no-ink ng-click=$ctrl.RemoveGroup() ng-if=$ctrl.$$index><i class=\"fa fa-trash\" aria-hidden=true></i></button></div><div class=\"btn-group group-conditions\"><select ng-options=\"o.name as o.name for o in $ctrl.operators\" data-ng-model=$ctrl.group.op class=\"form-control input-sm\" placeholder={{$ctrl.group.op}} ng-change=$ctrl.onGroupChange()></select></div></dt><dd class=rules-group-body><ul class=rules-list><li class=rule-container ng-repeat=\"rule in $ctrl.group.expressions track by $index\"><span ng-init=\"rule.$$indeed = $index\"></span><div ng-if=\"rule.type === 'condition'\"><div class=rule-header><div class=\"btn-group pull-right rule-actions\"><button ng-class=\"{'invisible':!rule.values[0]}\" style=\"margin-left: 5px\" ng-click=$ctrl.RemoveCondition($index) class=\"btn btn-sm btn-danger\"><i class=\"fa fa-minus\" aria-hidden=true></i></button></div></div><div class=rule-filter-container><select ng-model=rule.field[$ctrl.fieldValue] class=\"form-control input-sm\" style=\"width: 150px;\" ng-change=$ctrl.onOperandChange(rule)><option ng-value=t[$ctrl.fieldValue] ng-repeat=\"t in $ctrl.fields track by $index\">{{t[$ctrl.fieldName]}}</option></select></div><div class=rule-operator-container><select class=\"form-control input-sm\" ng-model=rule.operator placeholder=AND ng-change=$ctrl.onConditionChange(rule)><option value={{c.value}} ng-repeat=\"c in $ctrl.conditions | orderBy:'index'\">{{c.name}}</option></select></div><div class=rule-value-container><span ng-switch=rule.operator><span ng-switch-when=IN class=rule-operator-in><qb-tags ng-model=rule.values tags=rule.values ng-keyup=$ctrl.onKeyUp($event) ng-change=$ctrl.onTagsChange($event)></qb-tags></span> <span ng-switch-when=BETWEEN class=rule-operator-between><input type=text ng-model=rule.values[0] class=\"form-control input-sm\" ng-change=$ctrl.onChange($event) ng-keyup=\"$ctrl.onKeyUp($event, rule)\"> AND <input type=text ng-model=rule.values[1] class=\"form-control input-sm\" ng-change=$ctrl.onChange($event) ng-keyup=\"$ctrl.onKeyUp($event, rule)\"></span> <span ng-switch-default class=rule-condition><input type=text ng-model=rule.values[0] id={{rule.$$hashKey}} ng-change=$ctrl.onChange($event) class=\"form-control input-sm\" ng-keyup=\"$ctrl.onKeyUp($event, rule)\"></span></span></div></div><div class=rules-group-container-child ng-if=\"rule.type === 'group'\"><query-builder group=rule operands=$ctrl.fields $$index=1 on-delete=$ctrl.onDeleteGroup($event) on-update=$ctrl.onUpdateGroup($event) on-value-change=$ctrl.onValueChange($event) field-value={{$ctrl.fieldValue}} field-name={{$ctrl.fieldName}} field-datatype={{$ctrl.fieldDatatype}}></query-builder></div></li></ul></dd></dl>"
+module.exports = "<dl class=rules-group-container><dt class=rules-group-header><div class=\"btn-group pull-right group-actions\"><button class=\"btn btn-default btn-xs add-group\" md-no-ink ng-click=$ctrl.AddGroup()>Add Group</button> <button class=\"btn btn-default btn-xs remove-group\" md-no-ink ng-click=$ctrl.RemoveGroup() ng-if=$ctrl.$$index><i class=\"fa fa-trash\" aria-hidden=true></i></button></div><div class=\"btn-group group-conditions\"><select ng-options=\"o.name as o.name for o in $ctrl.operators\" data-ng-model=$ctrl.group.op class=\"form-control input-sm\" placeholder={{$ctrl.group.op}} ng-change=$ctrl.onGroupChange()></select></div></dt><dd class=rules-group-body><ul class=rules-list><li class=rule-container ng-repeat=\"rule in $ctrl.group.expressions track by $index\"><span ng-init=\"rule.$$indeed = $index\"></span><div ng-if=\"rule.type === 'condition'\"><div class=rule-header><div class=\"btn-group pull-right rule-actions\"><button ng-class=\"{'invisible':!rule.values[0]}\" style=\"margin-left: 5px\" ng-click=$ctrl.RemoveCondition($index) class=\"btn btn-sm btn-danger\"><i class=\"fa fa-minus\" aria-hidden=true></i></button></div></div><div class=rule-filter-container><select ng-model=rule.field[$ctrl.fieldValue] class=\"form-control input-sm\" style=\"width: 150px;\" ng-change=$ctrl.onOperandChange(rule)><option ng-value=t[$ctrl.fieldValue] ng-repeat=\"t in $ctrl.fields track by $index\">{{t[$ctrl.fieldName]}}</option></select></div><div class=rule-operator-container><select class=\"form-control input-sm\" ng-model=rule.operator placeholder=AND ng-change=$ctrl.onConditionChange(rule)><option value={{c.value}} ng-repeat=\"c in $ctrl.conditions | orderBy:'index'\">{{c.name}}</option></select></div><div class=rule-value-container><span ng-switch=rule.operator><span ng-switch-when=IN class=rule-operator-in><qb-tags ng-model=rule.values tags=rule.values ng-keyup=$ctrl.onKeyUp($event) ng-change=$ctrl.onTagsChange($event)></qb-tags></span> <span ng-switch-when=BETWEEN class=rule-operator-between><input type=text ng-model=rule.values[0] class=\"form-control input-sm\" ng-change=$ctrl.onChange($event) ng-keyup=\"$ctrl.onKeyUp($event, rule)\"> AND <input type=text ng-model=rule.values[1] class=\"form-control input-sm\" ng-change=$ctrl.onChange($event) ng-keyup=\"$ctrl.onKeyUp($event, rule)\"></span> <span ng-switch-default class=rule-condition><input type=text ng-model=rule.values[0] id={{rule.$$hashKey}} ng-change=$ctrl.onChange($event) class=\"form-control input-sm\" ng-keyup=\"$ctrl.onKeyUp($event, rule)\"></span></span></div></div><div class=rules-group-container-child ng-class=\"{'error-group':rule.error}\" ng-if=\"rule.type === 'group'\"><query-builder group=rule operands=$ctrl.fields $$index=1 on-delete=$ctrl.onDeleteGroup($event) on-update=$ctrl.onUpdateGroup($event) on-value-change=$ctrl.onValueChange($event) field-value={{$ctrl.fieldValue}} field-name={{$ctrl.fieldName}} field-datatype={{$ctrl.fieldDatatype}}></query-builder></div></li></ul></dd></dl>"
 
 /***/ }),
 
 /***/ 48:
 /***/ (function(module, exports) {
 
-module.exports = "<div class=jumbotron><div class=container><h1>Angular Query Builder</h1><p>CommonJs plugin for user friendly query/filter interface.</p><p><a class=\"btn btn-default\" role=button href=https://github.com/reyramos/queryBuilder>Code on Github</a></p></div></div><div class=container><section class=bs-docs-section><h1 id=overview class=page-header>Overview</h1><blockquote>QueryBuilder is an Angular component to create queries and filters</blockquote><ul><li>Allows for user input/copy/paste functionality for ease query format samples.</li><li>Build JSON object for server restful interaction and parsing.</li><li>It outputs a structured JSON of rules which can be easily parsed.</li></ul></section><section class=clearfix><h4>Example:</h4><div class=\"alert alert-info\"><strong>Sample Queries: <i>Copy/Paste or Write them out</i></strong><br><br>Country equal `USA` AND Country equal `Canada` AND Gender equal `Male` AND Gender equal `Female` AND (State equal `North Carolina` OR State equal `Ontario`)<br><br>Country equal `USA` AND Country equal `Canada` AND ((Gender equal `Male` AND Gender equal `Female`) AND (State equal `North Carolina` OR State equal `Ontario`))</div>Condition: <textarea style=\"width: 100%; height: 100px;\" class=flex ng-model=$ctrl.output name=query-string ng-trim=true></textarea><query-builder class=query-builder group=$ctrl.filters operands=$ctrl.fields on-update=$ctrl.onChanges($event) query-string=$ctrl.output field-value=name field-name=description field-datatype=dataType on-value-change=$ctrl.onValueFetch($event) optgroup></query-builder><br><p>JSON OUTPUT <code>\n                <pre id=PRETTY_JSON style=\"max-height: 500px;\"></pre>\n            </code></p></section><section class=bs-docs-section><h1 id=installation class=page-header>Getting started</h1><h3 id=dependencies>Dependencies</h3><ul><li>WebPack or CommonJS bundle see directory src for demo packages</li><li>Install Node.JS version 6.20>: Use your system package manager (brew,port,apt-get,yum etc)</li><li>Install global Typings , Bower, and Typescript commands</li></ul></section></div>"
+module.exports = "<div class=jumbotron><div class=container><h1>Angular Query Builder</h1><p>CommonJs plugin for user friendly query/filter interface.</p><p><a class=\"btn btn-default\" role=button href=https://github.com/reyramos/queryBuilder>Code on Github</a></p></div></div><div class=container><section class=bs-docs-section><h1 id=overview class=page-header>Overview</h1><blockquote>QueryBuilder is an Angular component to create queries and filters</blockquote><ul><li>Allows for user input/copy/paste functionality for ease query format samples.</li><li>Build JSON object for server restful interaction and parsing.</li><li>It outputs a structured JSON of rules which can be easily parsed.</li></ul></section><section class=clearfix><h4>Example:</h4><div class=\"alert alert-info\"><strong>Sample Queries: <i>Copy/Paste or Write them out</i></strong><br><br>Country equal `USA` AND Country equal `Canada` AND Gender equal `Male` AND Gender equal `Female` AND ( State equal `North Carolina` OR Age equal `15` )<br><br>Country equal `USA` AND Country equal `Canada` AND ((Gender equal `Male` AND Gender equal `Female`) AND (State equal `North Carolina` OR State equal `Ontario`))</div>Condition: <textarea style=\"width: 100%; height: 100px;\" class=flex ng-model=$ctrl.output name=query-string ng-trim=true></textarea><query-builder class=query-builder group=$ctrl.filters operands=$ctrl.fields on-update=$ctrl.onChanges($event) query-string=$ctrl.output field-value=name field-name=description field-datatype=dataType on-value-change=$ctrl.onValueFetch($event) optgroup></query-builder><br><p>JSON OUTPUT <code>\n                <pre id=PRETTY_JSON style=\"max-height: 500px;\"></pre>\n            </code></p></section><section class=bs-docs-section><h1 id=installation class=page-header>Getting started</h1><h3 id=dependencies>Dependencies</h3><ul><li>WebPack or CommonJS bundle see directory src for demo packages</li><li>Install Node.JS version 6.20>: Use your system package manager (brew,port,apt-get,yum etc)</li><li>Install global Typings , Bower, and Typescript commands</li></ul></section></div>"
 
 /***/ }),
 
