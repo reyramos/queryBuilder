@@ -5,11 +5,13 @@
 
 import * as angular from "angular";
 import {QUERY_INTERFACE} from "../component/query.interface";
+import {QueryBuilderService} from "../component/query-builder.service";
 declare let Bloodhound: any;
 
 
 const PrettyJSON: any = require('./pretty-json');
 const JSON_DATASET: any = require('./api/operands');
+const GROUP_SAMPLE: any = JSON.parse(require('!!raw-loader!./api/json-sample.json'));
 
 
 require('pretty-json/css/pretty-json.css');
@@ -42,7 +44,12 @@ class DemoComponentCtrl implements ng.IComponentController {
     }
     
     $onInit() {
+        
+        let queryService = new QueryBuilderService('description', 'dataType');
+        console.log(queryService.stringify(GROUP_SAMPLE));
+        
         this.filters = angular.copy(QUERY_INTERFACE);
+        // this.filters = angular.copy(GROUP_SAMPLE);
         this.fields = angular.copy(JSON_DATASET);
     }
     
@@ -107,7 +114,7 @@ class DemoComponentCtrl implements ng.IComponentController {
     validateQuery(group) {
         var validate = [];
         delete group.error;
-    
+        
         group.expressions.forEach((o, i) => {
             if (o.type === 'condition') {
                 if (['INTEGER', 'STRING'].indexOf(o.field.dataType) !== -1) validate.push(o.field.dataType)
@@ -130,10 +137,11 @@ class DemoComponentCtrl implements ng.IComponentController {
      */
     onChanges(e) {
         this.validateQuery(e.group);
-        setTimeout(() => {
-            this.filters = e.group
-            this.$scope.$digest();
-        }, 0)
+        // setTimeout(() => {
+        //     // this.filters = e.group
+        //     this.$scope.$digest();
+        // }, 0);
+        
         
         let self: any = this;
         if (!angular.equals(this.output, e.string)) {

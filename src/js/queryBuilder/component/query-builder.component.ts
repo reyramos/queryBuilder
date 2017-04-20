@@ -1,7 +1,7 @@
 import * as angular from "angular";
 import {QUERY_OPERATORS, QUERY_CONDITIONS} from "./query.conditions";
 import {QUERY_INTERFACE} from "./query.interface";
-import {type} from "os";
+import {QueryBuilderService} from "./query-builder.service";
 
 /**
  * Created by ramor11 on 2/2/2017.
@@ -53,6 +53,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     public fieldValue: string;
     public fieldName: string;
     
+    private QueryService;
     
     //output
     private onDelete: any;
@@ -89,6 +90,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
         if (!this.fieldName)
             this.fieldName = 'name';
         
+        this.QueryService = new QueryBuilderService(this.fieldName, this.fieldDatatype);
+        
         
         this.onGroupChange();
     }
@@ -102,7 +105,6 @@ class QueryBuilderCtrl implements ng.IComponentController {
          other than query builder
          */
         if (!angular.equals(this.queryString, this.$queryString)) {
-            console.log('doCheck:', this.queryString)
             this.$queryString = this.queryString;
             clearTimeout(this.$timeoutPromise);
             this.$timeoutPromise = setTimeout(() => {
@@ -494,56 +496,6 @@ class QueryBuilderCtrl implements ng.IComponentController {
         return group;
     }
     
-    /**
-     * Will take the query string and stringify
-     * @param group
-     * @returns {Array}
-     */
-    private stringifyQuery(group: any) {
-        let self: any = this;
-        
-        if (!group) return;
-        var str = [];
-        angular.forEach(group.expressions, function (o, i) {
-            if (o.type === 'condition') {
-                // var values = o.values[0] ? o.values.join(", ") : "";
-                
-                if (!o.field || !o.field[self.fieldName])return;
-                if (i !== 0) str.push(group.op)
-                
-                str.push(o.field[self.fieldName]);
-                
-                let dataType: string = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
-                let values = o.values[0] ? (self.defineDatatype(dataType, o.values)).unique().join(", ") : "";
-                
-                
-                let condition = self.conditions.find(function (q) {
-                    return o.operator === q.value;
-                }).symbol;
-                
-                str.push(Array.isArray(condition) ? condition[0] : condition);
-                
-                let ticks = "`";
-                str.push(self.$outputUpdate ? values : ticks + values + ticks);
-                
-            } else {
-                var comp = self.stringifyQuery(o);
-                if (comp.length) {
-                    if (str.length) str.push(group.op);
-                    if (comp.length > 3) {
-                        comp.unshift("(");
-                        comp.push(")");
-                    }
-                    str = str.concat(comp);
-                }
-                
-            }
-        });
-        
-        return str
-        
-    }
-    
     
     private setOperator(operator: string) {
         let self: any = this;
@@ -787,9 +739,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     
     trigger(event: string) {
         let self: any = this;
-        let string: Array<string> = this.stringifyQuery(this.group);
-        //update both if updated from object
-        let $string = string ? string.join(' ') : "";
+        let $string: string = this.QueryService.stringify(this.group, this.$outputUpdate);
         this.$outputUpdate = false;
         
         if ($string !== this.$queryString) {
