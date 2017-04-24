@@ -45,8 +45,8 @@ class DemoComponentCtrl implements ng.IComponentController {
     
     $onInit() {
         
-        let queryService = new QueryBuilderService('description', 'dataType');
-        console.log(queryService.stringify(GROUP_SAMPLE));
+        // let queryService = new QueryBuilderService('description', 'dataType');
+        // console.log(queryService.stringify(GROUP_SAMPLE));
         
         // this.filters = angular.copy(QUERY_INTERFACE);
         this.filters = {

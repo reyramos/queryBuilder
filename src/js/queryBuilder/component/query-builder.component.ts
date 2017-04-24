@@ -574,7 +574,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
         group.expressions.forEach(function (o, i) {
             if (o.type === 'condition') {
                 conditions.push(o);
-                let hasValue: boolean = o.values ? o.values[0] : false;
+                let hasValue: boolean = o.values ? angular.isDefined(o.values[0]) : false;
                 let hasOperand: boolean = o.field ? o.field[self.fieldValue] : false;
                 if (hasValue && hasOperand) values.push(i)
                 
@@ -585,7 +585,6 @@ class QueryBuilderCtrl implements ng.IComponentController {
         /*
          Add a new row for new field entry
          */
-        debugger
         if (conditions.length > 0 && values.length === conditions.length) {
             this.AddCondition(group, values[values.length - 1] + 1);
         } else if (conditions.length == 0) {
@@ -632,10 +631,10 @@ class QueryBuilderCtrl implements ng.IComponentController {
     };
     
     AddCondition(group, idx?: number) {
-        let self: any = this;
+        debugger
         
         var condition = angular.copy(QUERY_INTERFACE.expressions[0], {
-            $$indeed: self.$countCondition,
+            $$indeed: this.$countCondition,
             values  : []
         });
         
@@ -729,7 +728,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
         group.expressions.forEach(function (o, i) {
             if (o.type === 'condition') {
                 let dataType: string = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
-                o.values = o.values[0] ? self.defineDatatype(dataType, o.values) : [];
+                o.values = angular.isDefined(o.values[0]) ? self.defineDatatype(dataType, o.values) : [];
             } else {
                 self.setDatatypes(o)
             }
