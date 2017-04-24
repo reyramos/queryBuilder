@@ -1,224 +1,18 @@
-webpackJsonp([0],{
+webpackJsonp([4],{
 
-/***/ 129:
-/***/ (function(module, exports) {
-
-module.exports =
-	"/**\n*\n*  Bootstrap default values:\n*\n@gray-darker:            lighten(#000, 13.5%); // #222\n@gray-dark:              lighten(#000, 20%);   // #333\n@gray:                   lighten(#000, 33.5%); // #555\n@gray-light:             lighten(#000, 60%);   // #999\n@gray-lighter:           lighten(#000, 93.5%); // #eee\n**/\n/**\n* Bootstrap default values for primary colors\n*\n@brand-primary:         #428bca;\n@brand-success:         #5cb85c;\n@brand-info:            #5bc0de;\n@brand-warning:         #f0ad4e;\n@brand-danger:          #d9534f;\n*/\nspan.twitter-typeahead .tt-menu {\n  position: absolute;\n  top: 100%;\n  left: 0;\n  z-index: 1000;\n  display: none;\n  float: left;\n  min-width: 100%;\n  padding: 5px 0;\n  margin: 2px 0 0;\n  list-style: none;\n  font-size: 14px;\n  background-color: #ffffff;\n  border: 1px solid #cccccc;\n  border-radius: 4px;\n  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);\n  cursor: pointer;\n}\nspan.twitter-typeahead .tt-menu .tt-suggestion {\n  display: block;\n  padding: 3px 20px;\n  clear: both;\n  font-weight: normal;\n  line-height: 1.428571429;\n  color: #333333;\n  white-space: nowrap;\n  width: auto;\n}\nspan.twitter-typeahead .tt-menu .tt-suggestion:hover,\nspan.twitter-typeahead .tt-menu .tt-suggestion:focus {\n  color: #ffffff;\n  text-decoration: none;\n  outline: 0;\n  background-color: #5db0e1;\n}\nspan.twitter-typeahead .tt-menu .tt-suggestion.tt-cursor:not(:hover):not(:focus) {\n  background-color: #f6f6f6;\n}\n";
-
-/***/ }),
-
-/***/ 130:
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(129);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// add the styles to the DOM
-var update = __webpack_require__(24)(content, {});
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/less-loader/index.js!./typeaheadjs.less", (function() {
-			var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/less-loader/index.js!./typeaheadjs.less");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		}));
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose((function() { update(); }));
-}
-
-/***/ }),
-
-/***/ 131:
-/***/ (function(module, exports) {
-
-module.exports = [
-	{
-		"name": "SOME_TABLE_NAME_COUNTRY",
-		"description": "Country",
-		"dataType": "STRING"
-	},
-	{
-		"name": "SOME_TABLE_NAME_STATE",
-		"description": "State",
-		"dataType": "STRING"
-	},
-	{
-		"name": "SOME_TABLE_NAME_GENDER",
-		"description": "Gender",
-		"dataType": "STRING"
-
-	},
-	{
-		"name": "SOME_TABLE_NAME_AGE",
-		"description": "Age",
-		"dataType": "INTEGER"
-
-	}
-];
-
-
-/***/ }),
-
-/***/ 136:
+/***/ 167:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", { value: true });
-class ContactCtrl {
-    constructor($scope) {
-        this.$scope = $scope;
-    }
-}
-ContactCtrl.$inject = ['$scope'];
-class ContactComponent {
-    constructor() {
-        this.template = "Contact Page";
-        this.controller = ContactCtrl;
-    }
-}
-exports.ContactComponent = ContactComponent;
-
-/***/ }),
-
-/***/ 137:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const angular = __webpack_require__(0);
-const query_conditions_1 = __webpack_require__(30);
-const QBKEY = "$$QueryBuilder";
-class QueryBuilderService {
-    constructor(fieldName = 'name', fieldDatatype = 'dataType') {
-        this.fieldName = fieldName;
-        this.fieldDatatype = fieldDatatype;
-        this.conditions = [];
-        Object.keys(query_conditions_1.QUERY_CONDITIONS).forEach(k => {
-            this.conditions.push(query_conditions_1.QUERY_CONDITIONS[k]);
-        });
-    }
-    defineDatatype(dataType, values) {
-        values = Array.isArray(values) ? values : [values];
-        let num = values.slice(0).map(f => {
-            return typeof f === 'string' ? f.trim() : f;
-        });
-        if (dataType) switch (dataType.toUpperCase()) {
-            case 'NUMBER':
-            case 'INTEGER':
-            case 'FLOAT':
-                num = values.map(v => {
-                    return Number(v);
-                });
-                break;
-        }
-        return num.unique();
-    }
-    stringify(group, update = false) {
-        let string = this.stringifyQuery(group, update);
-        let $string = string ? string.join(' ') : "";
-        return $string;
-    }
-    stringifyQuery(group, update = false) {
-        if (!group) return;
-        var str = [];
-        angular.forEach(group.expressions, (o, i) => {
-            if (o.type === 'condition') {
-                if (!o.field || !o.field[this.fieldName]) return;
-                if (i !== 0) str.push(group.op);
-                str.push(o.field[this.fieldName]);
-                let dataType = o.field.hasOwnProperty(this.fieldDatatype) ? o.field[this.fieldDatatype] : false;
-                let values = o.values[0] ? this.defineDatatype(dataType, o.values).unique().join(", ") : "";
-                let condition = this.conditions.find((function (q) {
-                    return o.operator === q.value;
-                })).symbol;
-                str.push(Array.isArray(condition) ? condition[0] : condition);
-                let ticks = "`";
-                str.push(update ? values : ticks + values + ticks);
-            } else {
-                var comp = this.stringifyQuery(o, update);
-                if (comp.length) {
-                    if (str.length) str.push(group.op);
-                    if (comp.length > 3) {
-                        comp.unshift("(");
-                        comp.push(")");
-                    }
-                    str = str.concat(comp);
-                }
-            }
-        });
-        return str;
-    }
-}
-exports.QueryBuilderService = QueryBuilderService;
-
-/***/ }),
-
-/***/ 138:
-/***/ (function(module, exports) {
-
-module.exports =
-	".rules-group-container-child.error-group query-builder .rules-group-container {\n  position: relative;\n  margin: 4px 0;\n  border-radius: 5px;\n  padding: 5px;\n  border: 1px solid red;\n  background: rgba(255, 255, 255, 0.9);\n}\n";
-
-/***/ }),
-
-/***/ 139:
-/***/ (function(module, exports) {
-
-module.exports = "{\n    \"type\": \"group\",\n    \"op\": \"AND\",\n    \"expressions\": [\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_COUNTRY\",\n                \"description\": \"Country\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"USA\"\n            ]\n        },\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_COUNTRY\",\n                \"description\": \"Country\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"Canada\"\n            ]\n        },\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_GENDER\",\n                \"description\": \"Gender\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"Male\"\n            ]\n        },\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_GENDER\",\n                \"description\": \"Gender\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"Female\"\n            ]\n        },\n        {\n            \"type\": \"group\",\n            \"op\": \"OR\",\n            \"expressions\": [\n                {\n                    \"type\": \"condition\",\n                    \"field\": {\n                        \"name\": \"SOME_TABLE_NAME_STATE\",\n                        \"description\": \"State\",\n                        \"dataType\": \"STRING\"\n                    },\n                    \"operator\": \"EQ\",\n                    \"values\": [\n                        \"North Carolina\"\n                    ]\n                },\n                {\n                    \"type\": \"condition\",\n                    \"field\": {\n                        \"name\": \"SOME_TABLE_NAME_AGE\",\n                        \"description\": \"Age\",\n                        \"dataType\": \"INTEGER\"\n                    },\n                    \"operator\": \"EQ\",\n                    \"values\": [\n                        15\n                    ]\n                },\n                {\n                    \"type\": \"condition\",\n                    \"field\": {\n                        \"name\": \"\",\n                        \"description\": \"\"\n                    },\n                    \"operator\": \"EQ\",\n                    \"values\": [\n                    ]\n                }\n            ],\n            \"error\": true\n        }\n    ]\n}\n"
-
-/***/ }),
-
-/***/ 140:
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(138);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// add the styles to the DOM
-var update = __webpack_require__(24)(content, {});
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/less-loader/index.js!./custom.less", (function() {
-			var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/less-loader/index.js!./custom.less");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		}));
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose((function() { update(); }));
-}
-
-/***/ }),
-
-/***/ 25:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const angular = __webpack_require__(0);
+const angular = __webpack_require__(142);
 var app = angular.module("app.public", []);
-const nav_component_1 = __webpack_require__(35);
-const home_component_1 = __webpack_require__(34);
-const about_component_1 = __webpack_require__(33);
-const contact_component_1 = __webpack_require__(136);
+const nav_component_1 = __webpack_require__(178);
+const home_component_1 = __webpack_require__(177);
+const about_component_1 = __webpack_require__(175);
+const contact_component_1 = __webpack_require__(176);
 app.component('eqNav', new nav_component_1.NavComponent());
 app.component('eqHome', new home_component_1.HomeComponent());
 app.component('eqAbout', new about_component_1.AboutComponent());
@@ -227,33 +21,33 @@ module.exports = app;
 
 /***/ }),
 
-/***/ 26:
+/***/ 168:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const angular = __webpack_require__(0);
-const demo_component_1 = __webpack_require__(37);
+const angular = __webpack_require__(142);
+const demo_component_1 = __webpack_require__(181);
 var app = angular.module("demo.queryBuilder", []);
 app.component('demoComponent', new demo_component_1.DemoComponent());
 module.exports = app;
 
 /***/ }),
 
-/***/ 27:
+/***/ 169:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const angular = __webpack_require__(0);
-const query_builder_component_1 = __webpack_require__(36);
-const tags_component_1 = __webpack_require__(38);
-const query_conditions_1 = __webpack_require__(30);
-const query_interface_1 = __webpack_require__(28);
+const angular = __webpack_require__(142);
+const query_builder_component_1 = __webpack_require__(179);
+const tags_component_1 = __webpack_require__(182);
+const query_conditions_1 = __webpack_require__(170);
+const query_interface_1 = __webpack_require__(172);
 exports.app = angular.module("app.queryBuilder", []);
 exports.app.constant('QUERY_OPERATORS', query_conditions_1.QUERY_OPERATORS);
 exports.app.constant('QUERY_CONDITIONS', query_conditions_1.QUERY_CONDITIONS);
@@ -264,30 +58,80 @@ module.exports = exports.app;
 
 /***/ }),
 
-/***/ 28:
+/***/ 170:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.QUERY_INTERFACE = Object.freeze({
-    "type": "group",
-    "op": "AND",
-    "expressions": [{
-        "type": "condition",
-        "field": {
-            "name": "",
-            "description": ""
-        },
-        "operator": "EQ",
-        "values": []
-    }]
-});
+exports.QUERY_OPERATORS = [{ name: 'AND' }, { name: 'OR' }];
+exports.QUERY_CONDITIONS = {
+    EQUAL: {
+        name: "Equal",
+        value: "EQ",
+        symbol: ["equal", "==", "=", "<=>"]
+    },
+    NOT_EQUAL: {
+        name: "Not Equal",
+        value: "NE",
+        symbol: ["not_equal", "not equal", "!==", "!=", "<>"]
+    },
+    GREATER_THAN: {
+        name: "Greater Than",
+        value: "GT",
+        symbol: ["greater_than", ">"]
+    },
+    GREATER_EQUAL: {
+        name: "Greater or Equal",
+        value: "GE",
+        symbol: ["greater_or_equal", ">="]
+    },
+    LESS_THAN: {
+        name: "Less Than",
+        value: "LT",
+        symbol: ["less_than", "<"]
+    },
+    LESS_EQUAL: {
+        name: "Less or Equal",
+        value: "LE",
+        symbol: ["less_or_equal", "<="]
+    },
+    IN: {
+        name: "In",
+        value: "IN",
+        symbol: "IN"
+    },
+    BETWEEN: {
+        name: "Between",
+        value: "BETWEEN",
+        symbol: "BETWEEN"
+    },
+    CONTAINS: {
+        name: "Contains",
+        value: "CONTAINS",
+        symbol: ["contains", "LIKE `%{{VALUES}}%`"]
+    },
+    NOT_CONTAINS: {
+        name: "Not Contains",
+        value: "NOT_CONTAINS",
+        symbol: ["not_contains", "NOT CONTAINS", "NOT LIKE `%{{VALUES}}%`"]
+    },
+    STARTS_WITH: {
+        name: "Starts With",
+        value: "STARTS_WITH",
+        symbol: ["starts_with", "STARTS WITH", "LIKE `%{{VALUES}}`"]
+    },
+    ENDS_WITH: {
+        name: "Ends With",
+        value: "ENDS_WITH",
+        symbol: ["ends_with", "ENDS WITH", "LIKE `{{VALUES}}%`"]
+    }
+};
 
 /***/ }),
 
-/***/ 29:
+/***/ 171:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.8.3
@@ -1843,80 +1687,30 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
 
 /***/ }),
 
-/***/ 30:
+/***/ 172:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.QUERY_OPERATORS = [{ name: 'AND' }, { name: 'OR' }];
-exports.QUERY_CONDITIONS = {
-    EQUAL: {
-        name: "Equal",
-        value: "EQ",
-        symbol: ["equal", "==", "=", "<=>"]
-    },
-    NOT_EQUAL: {
-        name: "Not Equal",
-        value: "NE",
-        symbol: ["not_equal", "not equal", "!==", "!=", "<>"]
-    },
-    GREATER_THAN: {
-        name: "Greater Than",
-        value: "GT",
-        symbol: ["greater_than", ">"]
-    },
-    GREATER_EQUAL: {
-        name: "Greater or Equal",
-        value: "GE",
-        symbol: ["greater_or_equal", ">="]
-    },
-    LESS_THAN: {
-        name: "Less Than",
-        value: "LT",
-        symbol: ["less_than", "<"]
-    },
-    LESS_EQUAL: {
-        name: "Less or Equal",
-        value: "LE",
-        symbol: ["less_or_equal", "<="]
-    },
-    IN: {
-        name: "In",
-        value: "IN",
-        symbol: "IN"
-    },
-    BETWEEN: {
-        name: "Between",
-        value: "BETWEEN",
-        symbol: "BETWEEN"
-    },
-    CONTAINS: {
-        name: "Contains",
-        value: "CONTAINS",
-        symbol: ["contains", "LIKE `%{{VALUES}}%`"]
-    },
-    NOT_CONTAINS: {
-        name: "Not Contains",
-        value: "NOT_CONTAINS",
-        symbol: ["not_contains", "NOT CONTAINS", "NOT LIKE `%{{VALUES}}%`"]
-    },
-    STARTS_WITH: {
-        name: "Starts With",
-        value: "STARTS_WITH",
-        symbol: ["starts_with", "STARTS WITH", "LIKE `%{{VALUES}}`"]
-    },
-    ENDS_WITH: {
-        name: "Ends With",
-        value: "ENDS_WITH",
-        symbol: ["ends_with", "ENDS WITH", "LIKE `{{VALUES}}%`"]
-    }
-};
+exports.QUERY_INTERFACE = Object.freeze({
+    "type": "group",
+    "op": "AND",
+    "expressions": [{
+        "type": "condition",
+        "field": {
+            "name": "",
+            "description": ""
+        },
+        "operator": "EQ",
+        "values": []
+    }]
+});
 
 /***/ }),
 
-/***/ 31:
+/***/ 173:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.js 1.1.2
@@ -1930,7 +1724,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.
 
   // Set up Backbone appropriately for the environment. Start with AMD.
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(29), __webpack_require__(1), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(171), __webpack_require__(141), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backbone.
       root.Backbone = factory(root, exports, _, $);
@@ -3532,7 +3326,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.
 
 /***/ }),
 
-/***/ 32:
+/***/ 174:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {(function ($) {
@@ -4213,11 +4007,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.
   }));
 })(__webpack_provided_window_dot_jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(141)))
 
 /***/ }),
 
-/***/ 33:
+/***/ 175:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4240,7 +4034,30 @@ exports.AboutComponent = AboutComponent;
 
 /***/ }),
 
-/***/ 34:
+/***/ 176:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class ContactCtrl {
+    constructor($scope) {
+        this.$scope = $scope;
+    }
+}
+ContactCtrl.$inject = ['$scope'];
+class ContactComponent {
+    constructor() {
+        this.template = "Contact Page";
+        this.controller = ContactCtrl;
+    }
+}
+exports.ContactComponent = ContactComponent;
+
+/***/ }),
+
+/***/ 177:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4255,7 +4072,7 @@ class HomeCtrl {
 HomeCtrl.$inject = ['$scope'];
 class HomeComponent {
     constructor() {
-        this.template = __webpack_require__(45);
+        this.template = __webpack_require__(195);
         this.controller = HomeCtrl;
     }
 }
@@ -4263,7 +4080,7 @@ exports.HomeComponent = HomeComponent;
 
 /***/ }),
 
-/***/ 35:
+/***/ 178:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4279,7 +4096,7 @@ class NavCtrl {
 NavCtrl.$inject = ['$element'];
 class NavComponent {
     constructor() {
-        this.template = __webpack_require__(46);
+        this.template = __webpack_require__(196);
         this.controller = NavCtrl;
     }
 }
@@ -4287,17 +4104,17 @@ exports.NavComponent = NavComponent;
 
 /***/ }),
 
-/***/ 36:
+/***/ 179:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const angular = __webpack_require__(0);
-const query_conditions_1 = __webpack_require__(30);
-const query_interface_1 = __webpack_require__(28);
-const query_builder_service_1 = __webpack_require__(137);
+const angular = __webpack_require__(142);
+const query_conditions_1 = __webpack_require__(170);
+const query_interface_1 = __webpack_require__(172);
+const query_builder_service_1 = __webpack_require__(180);
 const QBKEY = "$$QueryBuilder";
 String.prototype.replaceAt = function (index, char) {
     var a = this.split("");
@@ -4668,7 +4485,7 @@ class QueryBuilderCtrl {
         group.expressions.forEach((function (o, i) {
             if (o.type === 'condition') {
                 conditions.push(o);
-                let hasValue = o.values ? o.values[0] : false;
+                let hasValue = o.values ? angular.isDefined(o.values[0]) : false;
                 let hasOperand = o.field ? o.field[self.fieldValue] : false;
                 if (hasValue && hasOperand) values.push(i);
             } else {
@@ -4709,9 +4526,8 @@ class QueryBuilderCtrl {
     }
 
     AddCondition(group, idx) {
-        let self = this;
         var condition = angular.copy(query_interface_1.QUERY_INTERFACE.expressions[0], {
-            $$indeed: self.$countCondition,
+            $$indeed: this.$countCondition,
             values: []
         });
         if (idx > -1) {
@@ -4784,7 +4600,7 @@ class QueryBuilderCtrl {
         group.expressions.forEach((function (o, i) {
             if (o.type === 'condition') {
                 let dataType = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
-                o.values = o.values[0] ? self.defineDatatype(dataType, o.values) : [];
+                o.values = angular.isDefined(o.values[0]) ? self.defineDatatype(dataType, o.values) : [];
             } else {
                 self.setDatatypes(o);
             }
@@ -4840,7 +4656,7 @@ class QueryBuilderCtrl {
     }
 }
 QueryBuilderCtrl.$inject = ['$element', '$scope'];
-__webpack_require__(50);
+__webpack_require__(201);
 class QueryBuilder {
     constructor() {
         this.bindings = {
@@ -4855,7 +4671,7 @@ class QueryBuilder {
             group: '=',
             fields: '<operands'
         };
-        this.template = __webpack_require__(47);
+        this.template = __webpack_require__(197);
         this.controller = QueryBuilderCtrl;
     }
 }
@@ -4863,22 +4679,95 @@ exports.QueryBuilder = QueryBuilder;
 
 /***/ }),
 
-/***/ 37:
+/***/ 180:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const angular = __webpack_require__(142);
+const query_conditions_1 = __webpack_require__(170);
+const QBKEY = "$$QueryBuilder";
+class QueryBuilderService {
+    constructor(fieldName = 'name', fieldDatatype = 'dataType') {
+        this.fieldName = fieldName;
+        this.fieldDatatype = fieldDatatype;
+        this.conditions = [];
+        Object.keys(query_conditions_1.QUERY_CONDITIONS).forEach(k => {
+            this.conditions.push(query_conditions_1.QUERY_CONDITIONS[k]);
+        });
+    }
+    defineDatatype(dataType, values) {
+        values = Array.isArray(values) ? values : [values];
+        let num = values.slice(0).map(f => {
+            return typeof f === 'string' ? f.trim() : f;
+        });
+        if (dataType) switch (dataType.toUpperCase()) {
+            case 'NUMBER':
+            case 'INTEGER':
+            case 'FLOAT':
+                num = values.map(v => {
+                    return Number(v);
+                });
+                break;
+        }
+        return num.unique();
+    }
+    stringify(group, update = false) {
+        let string = this.stringifyQuery(group, update);
+        let $string = string ? string.join(' ') : "";
+        return $string;
+    }
+    stringifyQuery(group, update = false) {
+        if (!group) return;
+        var str = [];
+        angular.forEach(group.expressions, (o, i) => {
+            if (o.type === 'condition') {
+                if (!o.field || !o.field[this.fieldName]) return;
+                if (i !== 0) str.push(group.op);
+                str.push(o.field[this.fieldName]);
+                let dataType = o.field.hasOwnProperty(this.fieldDatatype) ? o.field[this.fieldDatatype] : false;
+                let values = angular.isDefined(o.values[0]) ? this.defineDatatype(dataType, o.values).unique().join(", ") : "";
+                let condition = this.conditions.find((function (q) {
+                    return o.operator === q.value;
+                })).symbol;
+                str.push(Array.isArray(condition) ? condition[0] : condition);
+                let ticks = "`";
+                str.push(update ? values : ticks + values + ticks);
+            } else {
+                var comp = this.stringifyQuery(o, update);
+                if (comp.length) {
+                    if (str.length) str.push(group.op);
+                    if (comp.length > 3) {
+                        comp.unshift("(");
+                        comp.push(")");
+                    }
+                    str = str.concat(comp);
+                }
+            }
+        });
+        return str;
+    }
+}
+exports.QueryBuilderService = QueryBuilderService;
+
+/***/ }),
+
+/***/ 181:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const angular = __webpack_require__(0);
-const query_interface_1 = __webpack_require__(28);
-const query_builder_service_1 = __webpack_require__(137);
-const PrettyJSON = __webpack_require__(53);
-const JSON_DATASET = __webpack_require__(131);
-const GROUP_SAMPLE = JSON.parse(__webpack_require__(139));
-__webpack_require__(44);
-__webpack_require__(130);
-__webpack_require__(140);
+const angular = __webpack_require__(142);
+const PrettyJSON = __webpack_require__(206);
+const JSON_DATASET = __webpack_require__(205);
+const GROUP_SAMPLE = JSON.parse(__webpack_require__(200));
+__webpack_require__(190);
+__webpack_require__(203);
+__webpack_require__(202);
 class DemoComponentCtrl {
     constructor($scope, $element) {
         this.$scope = $scope;
@@ -4887,9 +4776,22 @@ class DemoComponentCtrl {
         this.JSON_PRETTY = $element.find('#PRETTY_JSON');
     }
     $onInit() {
-        let queryService = new query_builder_service_1.QueryBuilderService('description', 'dataType');
-        console.log(queryService.stringify(GROUP_SAMPLE));
-        this.filters = angular.copy(query_interface_1.QUERY_INTERFACE);
+        this.filters = {
+            "type": "group",
+            "op": "AND",
+            "expressions": [{
+                "type": "condition",
+                "field": { "name": "SOME_TABLE_NAME_GENDER", "description": "Gender", "dataType": "STRING" },
+                "operator": "IN",
+                "values": ["M", "F"]
+            }, {
+                "type": "condition",
+                "field": { "name": "SOME_TABLE_NAME_AGE", "description": "Age", "dataType": "INTEGER" },
+                "operator": "BETWEEN",
+                "values": [0, 100]
+            }],
+            "error": true
+        };
         this.fields = angular.copy(JSON_DATASET);
     }
     setBloodhound(ele) {
@@ -4960,25 +4862,25 @@ class DemoComponentCtrl {
 DemoComponentCtrl.$inject = ['$scope', '$element'];
 class DemoComponent {
     constructor() {
-        this.template = __webpack_require__(48);
+        this.template = __webpack_require__(198);
         this.controller = DemoComponentCtrl;
     }
 }
 exports.DemoComponent = DemoComponent;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(141)))
 
 /***/ }),
 
-/***/ 38:
+/***/ 182:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
-__webpack_require__(32);
-__webpack_require__(43);
-const angular = __webpack_require__(0);
+__webpack_require__(174);
+__webpack_require__(189);
+const angular = __webpack_require__(142);
 class TagsComponentCtrl {
     constructor($element) {
         this.$element = $element;
@@ -5078,7 +4980,7 @@ class TagsComponentCtrl {
     }
 }
 TagsComponentCtrl.$inject = ['$element'];
-__webpack_require__(51);
+__webpack_require__(204);
 class TagsComponent {
     constructor() {
         this.require = {
@@ -5099,16 +5001,16 @@ class TagsComponent {
             itemtext: "@",
             confirmKeys: "@"
         };
-        this.template = __webpack_require__(49);
+        this.template = __webpack_require__(199);
         this.controller = TagsComponentCtrl;
     }
 }
 exports.TagsComponent = TagsComponent;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(141)))
 
 /***/ }),
 
-/***/ 39:
+/***/ 183:
 /***/ (function(module, exports) {
 
 module.exports =
@@ -5116,7 +5018,23 @@ module.exports =
 
 /***/ }),
 
-/***/ 40:
+/***/ 184:
+/***/ (function(module, exports) {
+
+module.exports =
+	".rules-group-container-child.error-group query-builder .rules-group-container {\n  position: relative;\n  margin: 4px 0;\n  border-radius: 5px;\n  padding: 5px;\n  border: 1px solid red;\n  background: rgba(255, 255, 255, 0.9);\n}\n";
+
+/***/ }),
+
+/***/ 185:
+/***/ (function(module, exports) {
+
+module.exports =
+	"/**\n*\n*  Bootstrap default values:\n*\n@gray-darker:            lighten(#000, 13.5%); // #222\n@gray-dark:              lighten(#000, 20%);   // #333\n@gray:                   lighten(#000, 33.5%); // #555\n@gray-light:             lighten(#000, 60%);   // #999\n@gray-lighter:           lighten(#000, 93.5%); // #eee\n**/\n/**\n* Bootstrap default values for primary colors\n*\n@brand-primary:         #428bca;\n@brand-success:         #5cb85c;\n@brand-info:            #5bc0de;\n@brand-warning:         #f0ad4e;\n@brand-danger:          #d9534f;\n*/\nspan.twitter-typeahead .tt-menu {\n  position: absolute;\n  top: 100%;\n  left: 0;\n  z-index: 1000;\n  display: none;\n  float: left;\n  min-width: 100%;\n  padding: 5px 0;\n  margin: 2px 0 0;\n  list-style: none;\n  font-size: 14px;\n  background-color: #ffffff;\n  border: 1px solid #cccccc;\n  border-radius: 4px;\n  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);\n  cursor: pointer;\n}\nspan.twitter-typeahead .tt-menu .tt-suggestion {\n  display: block;\n  padding: 3px 20px;\n  clear: both;\n  font-weight: normal;\n  line-height: 1.428571429;\n  color: #333333;\n  white-space: nowrap;\n  width: auto;\n}\nspan.twitter-typeahead .tt-menu .tt-suggestion:hover,\nspan.twitter-typeahead .tt-menu .tt-suggestion:focus {\n  color: #ffffff;\n  text-decoration: none;\n  outline: 0;\n  background-color: #5db0e1;\n}\nspan.twitter-typeahead .tt-menu .tt-suggestion.tt-cursor:not(:hover):not(:focus) {\n  background-color: #f6f6f6;\n}\n";
+
+/***/ }),
+
+/***/ 186:
 /***/ (function(module, exports) {
 
 module.exports =
@@ -5124,7 +5042,7 @@ module.exports =
 
 /***/ }),
 
-/***/ 41:
+/***/ 187:
 /***/ (function(module, exports) {
 
 module.exports =
@@ -5132,7 +5050,7 @@ module.exports =
 
 /***/ }),
 
-/***/ 42:
+/***/ 188:
 /***/ (function(module, exports) {
 
 module.exports =
@@ -5140,16 +5058,16 @@ module.exports =
 
 /***/ }),
 
-/***/ 43:
+/***/ 189:
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(41);
+var content = __webpack_require__(187);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(24)(content, {});
+var update = __webpack_require__(166)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -5167,16 +5085,16 @@ if(false) {
 
 /***/ }),
 
-/***/ 44:
+/***/ 190:
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(42);
+var content = __webpack_require__(188);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(24)(content, {});
+var update = __webpack_require__(166)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -5194,51 +5112,58 @@ if(false) {
 
 /***/ }),
 
-/***/ 45:
+/***/ 195:
 /***/ (function(module, exports) {
 
 module.exports = "<a ui-sref=queryBuilder>Angular.js Query Builder</a><br><br>"
 
 /***/ }),
 
-/***/ 46:
+/***/ 196:
 /***/ (function(module, exports) {
 
 module.exports = "<nav class=\"navbar navbar-default navbar-static-top\" style=\"margin: 0px;\"><div class=container><div class=navbar-header><a class=navbar-brand href=#>Angular Query Builder</a></div><div id=navbar class=\"navbar-collapse collapse\"><ul class=\"nav navbar-nav\"><li ui-sref-active=active ui-sref=root><a ui-sref=root>Home</a></li><li ui-sref-active=active><a ui-sref=about>About</a></li><li ui-sref-active=active><a ui-sref=contact>Contact</a></li></ul></div></div></nav>"
 
 /***/ }),
 
-/***/ 47:
+/***/ 197:
 /***/ (function(module, exports) {
 
 module.exports = "<dl class=rules-group-container><dt class=rules-group-header><div class=\"btn-group pull-right group-actions\"><button class=\"btn btn-default btn-xs add-group\" md-no-ink ng-click=$ctrl.AddGroup()>Add Group</button> <button class=\"btn btn-default btn-xs remove-group\" md-no-ink ng-click=$ctrl.RemoveGroup() ng-if=$ctrl.$$index><i class=\"fa fa-trash\" aria-hidden=true></i></button></div><div class=\"btn-group group-conditions\"><select ng-options=\"o.name as o.name for o in $ctrl.operators\" data-ng-model=$ctrl.group.op class=\"form-control input-sm\" placeholder={{$ctrl.group.op}} ng-change=$ctrl.onGroupChange()></select></div></dt><dd class=rules-group-body><ul class=rules-list><li class=rule-container ng-repeat=\"rule in $ctrl.group.expressions track by $index\"><span ng-init=\"rule.$$indeed = $index\"></span><div ng-if=\"rule.type === 'condition'\"><div class=rule-header><div class=\"btn-group pull-right rule-actions\"><button ng-class=\"{'invisible':!rule.values[0]}\" style=\"margin-left: 5px\" ng-click=$ctrl.RemoveCondition($index) class=\"btn btn-sm btn-danger\"><i class=\"fa fa-minus\" aria-hidden=true></i></button></div></div><div class=rule-filter-container><select ng-model=rule.field[$ctrl.fieldValue] class=\"form-control input-sm\" style=\"width: 150px;\" ng-change=$ctrl.onOperandChange(rule)><option ng-value=t[$ctrl.fieldValue] ng-repeat=\"t in $ctrl.fields track by $index\">{{t[$ctrl.fieldName]}}</option></select></div><div class=rule-operator-container><select class=\"form-control input-sm\" ng-model=rule.operator placeholder=AND ng-change=$ctrl.onConditionChange(rule)><option value={{c.value}} ng-repeat=\"c in $ctrl.conditions | orderBy:'index'\">{{c.name}}</option></select></div><div class=rule-value-container><span ng-switch=rule.operator><span ng-switch-when=IN class=rule-operator-in><qb-tags ng-model=rule.values tags=rule.values ng-keyup=$ctrl.onKeyUp($event) ng-change=$ctrl.onTagsChange($event)></qb-tags></span> <span ng-switch-when=BETWEEN class=rule-operator-between><input type=text ng-model=rule.values[0] class=\"form-control input-sm\" ng-change=$ctrl.onChange($event) ng-keyup=\"$ctrl.onKeyUp($event, rule)\"> AND <input type=text ng-model=rule.values[1] class=\"form-control input-sm\" ng-change=$ctrl.onChange($event) ng-keyup=\"$ctrl.onKeyUp($event, rule)\"></span> <span ng-switch-default class=rule-condition><input type=text ng-model=rule.values[0] id={{rule.$$hashKey}} ng-change=$ctrl.onChange($event) class=\"form-control input-sm\" ng-keyup=\"$ctrl.onKeyUp($event, rule)\"></span></span></div></div><div class=rules-group-container-child ng-class=\"{'error-group':rule.error}\" ng-if=\"rule.type === 'group'\"><query-builder group=rule operands=$ctrl.fields $$index=1 on-delete=$ctrl.onDeleteGroup($event) on-update=$ctrl.onUpdateGroup($event) on-value-change=$ctrl.onValueChange($event) field-value={{$ctrl.fieldValue}} field-name={{$ctrl.fieldName}} field-datatype={{$ctrl.fieldDatatype}}></query-builder></div></li></ul></dd></dl>"
 
 /***/ }),
 
-/***/ 48:
+/***/ 198:
 /***/ (function(module, exports) {
 
 module.exports = "<div class=jumbotron><div class=container><h1>Angular Query Builder</h1><p>CommonJs plugin for user friendly query/filter interface.</p><p><a class=\"btn btn-default\" role=button href=https://github.com/reyramos/queryBuilder>Code on Github</a></p></div></div><div class=container><section class=bs-docs-section><h1 id=overview class=page-header>Overview</h1><blockquote>QueryBuilder is an Angular component to create queries and filters</blockquote><ul><li>Allows for user input/copy/paste functionality for ease query format samples.</li><li>Build JSON object for server restful interaction and parsing.</li><li>It outputs a structured JSON of rules which can be easily parsed.</li></ul></section><section class=clearfix><h4>Example:</h4><div class=\"alert alert-info\"><strong>Sample Queries: <i>Copy/Paste or Write them out</i></strong><br><br>Country equal `USA` AND Country equal `Canada` AND Gender equal `Male` AND Gender equal `Female` AND ( State equal `North Carolina` OR Age equal `15` )<br><br>Country equal `USA` AND Country equal `Canada` AND ((Gender equal `Male` AND Gender equal `Female`) AND (State equal `North Carolina` OR State equal `Ontario`))</div>Condition: <textarea style=\"width: 100%; height: 100px;\" class=flex ng-model=$ctrl.output name=query-string ng-trim=true></textarea><query-builder class=query-builder group=$ctrl.filters operands=$ctrl.fields on-update=$ctrl.onChanges($event) query-string=$ctrl.output field-value=name field-name=description field-datatype=dataType on-value-change=$ctrl.onValueFetch($event) optgroup></query-builder><br><p>JSON OUTPUT <code>\n                <pre id=PRETTY_JSON style=\"max-height: 500px;\"></pre>\n            </code></p></section><section class=bs-docs-section><h1 id=installation class=page-header>Getting started</h1><h3 id=dependencies>Dependencies</h3><ul><li>WebPack or CommonJS bundle see directory src for demo packages</li><li>Install Node.JS version 6.20>: Use your system package manager (brew,port,apt-get,yum etc)</li><li>Install global Typings , Bower, and Typescript commands</li></ul></section></div>"
 
 /***/ }),
 
-/***/ 49:
+/***/ 199:
 /***/ (function(module, exports) {
 
 module.exports = "<label class=tagsinput-container ng-class=\"{'required':$ctrl.required,'state-disabled':$ctrl.disabled,'state-error':$ctrl.form[$ctrl.name].$invalid}\"><input type=text class=\"form-control tagsinput\"></label> <input type=hidden name={{::$ctrl.name}} ng-required=$ctrl.required ng-model=$ctrl.model>"
 
 /***/ }),
 
-/***/ 50:
+/***/ 200:
+/***/ (function(module, exports) {
+
+module.exports = "{\n    \"type\": \"group\",\n    \"op\": \"AND\",\n    \"expressions\": [\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_COUNTRY\",\n                \"description\": \"Country\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"USA\"\n            ]\n        },\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_COUNTRY\",\n                \"description\": \"Country\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"Canada\"\n            ]\n        },\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_GENDER\",\n                \"description\": \"Gender\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"Male\"\n            ]\n        },\n        {\n            \"type\": \"condition\",\n            \"field\": {\n                \"name\": \"SOME_TABLE_NAME_GENDER\",\n                \"description\": \"Gender\",\n                \"dataType\": \"STRING\"\n            },\n            \"operator\": \"EQ\",\n            \"values\": [\n                \"Female\"\n            ]\n        },\n        {\n            \"type\": \"group\",\n            \"op\": \"OR\",\n            \"expressions\": [\n                {\n                    \"type\": \"condition\",\n                    \"field\": {\n                        \"name\": \"SOME_TABLE_NAME_STATE\",\n                        \"description\": \"State\",\n                        \"dataType\": \"STRING\"\n                    },\n                    \"operator\": \"EQ\",\n                    \"values\": [\n                        \"North Carolina\"\n                    ]\n                },\n                {\n                    \"type\": \"condition\",\n                    \"field\": {\n                        \"name\": \"SOME_TABLE_NAME_AGE\",\n                        \"description\": \"Age\",\n                        \"dataType\": \"INTEGER\"\n                    },\n                    \"operator\": \"EQ\",\n                    \"values\": [\n                        15\n                    ]\n                },\n                {\n                    \"type\": \"condition\",\n                    \"field\": {\n                        \"name\": \"\",\n                        \"description\": \"\"\n                    },\n                    \"operator\": \"EQ\",\n                    \"values\": [\n                    ]\n                }\n            ],\n            \"error\": true\n        }\n    ]\n}\n"
+
+/***/ }),
+
+/***/ 201:
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(39);
+var content = __webpack_require__(183);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(24)(content, {});
+var update = __webpack_require__(166)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -5256,16 +5181,70 @@ if(false) {
 
 /***/ }),
 
-/***/ 51:
+/***/ 202:
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(40);
+var content = __webpack_require__(184);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(24)(content, {});
+var update = __webpack_require__(166)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/less-loader/index.js!./custom.less", (function() {
+			var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/less-loader/index.js!./custom.less");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		}));
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose((function() { update(); }));
+}
+
+/***/ }),
+
+/***/ 203:
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(185);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(166)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/less-loader/index.js!./typeaheadjs.less", (function() {
+			var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/less-loader/index.js!./typeaheadjs.less");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		}));
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose((function() { update(); }));
+}
+
+/***/ }),
+
+/***/ 204:
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(186);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(166)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -5283,7 +5262,38 @@ if(false) {
 
 /***/ }),
 
-/***/ 53:
+/***/ 205:
+/***/ (function(module, exports) {
+
+module.exports = [
+	{
+		"name": "SOME_TABLE_NAME_COUNTRY",
+		"description": "Country",
+		"dataType": "STRING"
+	},
+	{
+		"name": "SOME_TABLE_NAME_STATE",
+		"description": "State",
+		"dataType": "STRING"
+	},
+	{
+		"name": "SOME_TABLE_NAME_GENDER",
+		"description": "Gender",
+		"dataType": "STRING"
+
+	},
+	{
+		"name": "SOME_TABLE_NAME_AGE",
+		"description": "Age",
+		"dataType": "INTEGER"
+
+	}
+];
+
+
+/***/ }),
+
+/***/ 206:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Backbone, _, $) {/*
@@ -5519,7 +5529,7 @@ PrettyJSON.view.Leaf = Backbone.View.extend({
 
 module.exports = PrettyJSON;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(31), __webpack_require__(29), __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(173), __webpack_require__(171), __webpack_require__(141)))
 
 /***/ })
 
