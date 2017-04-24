@@ -599,7 +599,6 @@ class QueryBuilderCtrl implements ng.IComponentController {
     }
     
     private onGroupChange(e?: any) {
-        debugger
         clearTimeout(this.$timeoutPromise);
         let self: any = this;
         this.$event = e || 'onGroupChange';
@@ -631,8 +630,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     };
     
     AddCondition(group, idx?: number) {
-        debugger
-        
+       
         var condition = angular.copy(QUERY_INTERFACE.expressions[0], {
             $$indeed: this.$countCondition,
             values  : []

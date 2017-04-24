@@ -69,7 +69,6 @@ export class QueryBuilderService {
      * @returns {Array}
      */
     private stringifyQuery(group: any, update: boolean = false) {
-        debugger
         if (!group) return;
         var str = [];
         angular.forEach(group.expressions, (o, i) => {
