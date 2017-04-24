@@ -1,7 +1,7 @@
 import * as angular from "angular";
 import {QUERY_OPERATORS, QUERY_CONDITIONS} from "./query.conditions";
 import {QUERY_INTERFACE} from "./query.interface";
-import {type} from "os";
+import {QueryBuilderService} from "./query-builder.service";
 
 /**
  * Created by ramor11 on 2/2/2017.
@@ -53,6 +53,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     public fieldValue: string;
     public fieldName: string;
     
+    private QueryService;
     
     //output
     private onDelete: any;
@@ -88,6 +89,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
         
         if (!this.fieldName)
             this.fieldName = 'name';
+        
+        this.QueryService = new QueryBuilderService(this.fieldName, this.fieldDatatype);
         
         
         this.onGroupChange();
@@ -352,7 +355,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
             }
         
         
-        return num;
+        return num.unique();
     }
     
     
@@ -493,56 +496,6 @@ class QueryBuilderCtrl implements ng.IComponentController {
         return group;
     }
     
-    /**
-     * Will take the query string and stringify
-     * @param group
-     * @returns {Array}
-     */
-    private stringifyQuery(group: any) {
-        let self: any = this;
-        
-        if (!group) return;
-        var str = [];
-        angular.forEach(group.expressions, function (o, i) {
-            if (o.type === 'condition') {
-                // var values = o.values[0] ? o.values.join(", ") : "";
-                
-                if (!o.field || !o.field[self.fieldName])return;
-                if (i !== 0) str.push(group.op)
-                
-                str.push(o.field[self.fieldName]);
-                
-                let dataType: string = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
-                let values = o.values[0] ? (self.defineDatatype(dataType, o.values)).join(", ") : "";
-                
-                
-                let condition = self.conditions.find(function (q) {
-                    return o.operator === q.value;
-                }).symbol;
-                
-                str.push(Array.isArray(condition) ? condition[0] : condition);
-                
-                let ticks = "`";
-                str.push(self.$outputUpdate ? values : ticks + values + ticks);
-                
-            } else {
-                var comp = self.stringifyQuery(o);
-                if (comp.length) {
-                    if (str.length) str.push(group.op);
-                    if (comp.length > 3) {
-                        comp.unshift("(");
-                        comp.push(")");
-                    }
-                    str = str.concat(comp);
-                }
-                
-            }
-        });
-        
-        return str
-        
-    }
-    
     
     private setOperator(operator: string) {
         let self: any = this;
@@ -621,7 +574,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
         group.expressions.forEach(function (o, i) {
             if (o.type === 'condition') {
                 conditions.push(o);
-                let hasValue: boolean = o.values ? o.values[0] : false;
+                let hasValue: boolean = o.values ? angular.isDefined(o.values[0]) : false;
                 let hasOperand: boolean = o.field ? o.field[self.fieldValue] : false;
                 if (hasValue && hasOperand) values.push(i)
                 
@@ -640,6 +593,10 @@ class QueryBuilderCtrl implements ng.IComponentController {
         
     }
     
+    
+    onChange(e?: any) {
+        this.onGroupChange(e);
+    }
     
     private onGroupChange(e?: any) {
         clearTimeout(this.$timeoutPromise);
@@ -673,10 +630,9 @@ class QueryBuilderCtrl implements ng.IComponentController {
     };
     
     AddCondition(group, idx?: number) {
-        let self: any = this;
-        
+       
         var condition = angular.copy(QUERY_INTERFACE.expressions[0], {
-            $$indeed: self.$countCondition,
+            $$indeed: this.$countCondition,
             values  : []
         });
         
@@ -705,14 +661,17 @@ class QueryBuilderCtrl implements ng.IComponentController {
     }
     
     RemoveCondition(idx: number, e?: any) {
+        
         this.$event = 'RemoveCondition';
-        let self: any = this;
         this.$countCondition = 0;
-        this.group.expressions.map(function (o) {
-            if (o.type === 'condition') self.$countCondition++;
+        this.group.expressions.map((o) => {
+            if (o.type === 'condition') this.$countCondition++;
         });
-        if (self.$countCondition === 1)return;
-        self.group.expressions.splice(idx, 1);
+        if (this.$countCondition === 1)return;
+        this.group.expressions.splice(idx, 1);
+        
+        //avoid trigger changes
+        this.$group = this.group;
         this.onGroupChange();
     }
     
@@ -767,7 +726,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
         group.expressions.forEach(function (o, i) {
             if (o.type === 'condition') {
                 let dataType: string = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
-                o.values = o.values[0] ? self.defineDatatype(dataType, o.values) : [];
+                o.values = angular.isDefined(o.values[0]) ? self.defineDatatype(dataType, o.values) : [];
             } else {
                 self.setDatatypes(o)
             }
@@ -779,11 +738,15 @@ class QueryBuilderCtrl implements ng.IComponentController {
     
     trigger(event: string) {
         let self: any = this;
-        let string: Array<string> = this.stringifyQuery(this.group);
-        //update both if updated from object
-        this.$queryString = this.queryString = string.join(' ');
-        
+        let $string: string = this.QueryService.stringify(this.group, this.$outputUpdate);
         this.$outputUpdate = false;
+        
+        if ($string !== this.$queryString) {
+            this.queryString = this.$queryString = $string;
+        }
+        
+        // if (this.$event === 'RemoveCondition') this.queryString = this.$queryString;
+        // if (this.$queryString) this.queryString = this.$queryString;
         
         this[event]({
             $event: {
@@ -805,7 +768,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
                 target: 'input'
             });
             
-            if (e.$event)Object.assign($event, e);
+            if (e.$event) Object.assign($event, e);
             this.onFetch({
                 $event: $event
             });

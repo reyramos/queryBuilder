@@ -59,15 +59,18 @@
                         <span ng-switch-when="BETWEEN" class="rule-operator-between">
                             <input type="text" ng-model="rule.values[0]"
                                    class="form-control input-sm"
+                                   ng-change="$ctrl.onChange($event)"
                                    ng-keyup="$ctrl.onKeyUp($event, rule)">
                                         AND
                             <input type="text" ng-model="rule.values[1]"
                                    class="form-control input-sm"
+                                   ng-change="$ctrl.onChange($event)"
                                    ng-keyup="$ctrl.onKeyUp($event, rule)">
                                     </span>
                         <span ng-switch-default class="rule-condition">
                             <input type="text" ng-model="rule.values[0]"
                                    id="{{rule.$$hashKey}}"
+                                   ng-change="$ctrl.onChange($event)"
                                    class="form-control input-sm"
                                    ng-keyup="$ctrl.onKeyUp($event, rule)">
                         </span>
@@ -75,6 +78,7 @@
                     </div>
                 </div>
                 <div class="rules-group-container-child"
+                     ng-class="{'error-group':rule.error}"
                      ng-if="rule.type === 'group'">
                     <query-builder group="rule" operands="$ctrl.fields" $$index="1"
                                    on-delete="$ctrl.onDeleteGroup($event)"

@@ -10,6 +10,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const OptimizeJsPlugin = require('optimize-js-plugin');
 
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
@@ -17,12 +18,48 @@ const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 module.exports = webpackMerge(commonConfig, {
 	devtool: 'source-map',
 	output: {
+		/**
+		 * The output directory as absolute path (required).
+		 *
+		 * See: http://webpack.github.io/docs/configuration.html#output-path
+		 */
 		path: helpers.root('dist'),
+
+		/**
+		 * Specifies the name of each output file on disk.
+		 * IMPORTANT: You must not specify an absolute path here!
+		 *
+		 * See: http://webpack.github.io/docs/configuration.html#output-filename
+		 */
 		filename: '[name].[chunkhash].bundle.js',
+
+		/**
+		 * The filename of the SourceMaps for the JavaScript files.
+		 * They are inside the output.path directory.
+		 *
+		 * See: http://webpack.github.io/docs/configuration.html#output-sourcemapfilename
+		 */
 		sourceMapFilename: '[name].[chunkhash].bundle.map',
-		chunkFilename: '[id].[chunkhash].chunk.js',
+
+		/**
+		 * The filename of non-entry chunks as relative path
+		 * inside the output.path directory.
+		 *
+		 * See: http://webpack.github.io/docs/configuration.html#output-chunkfilename
+		 */
+		chunkFilename: '[id].[chunkhash].chunk.js'
 	},
 	plugins: [
+		/**
+		 * Webpack plugin to optimize a JavaScript file for faster initial load
+		 * by wrapping eagerly-invoked functions.
+		 *
+		 * See: https://github.com/vigneshshanmugam/optimize-js-plugin
+		 */
+
+		new OptimizeJsPlugin({
+			sourceMap: false
+		}),
 		new webpack.LoaderOptionsPlugin({
 			minimize: true,
 			debug: false,
@@ -58,28 +95,27 @@ module.exports = webpackMerge(commonConfig, {
 		new webpack.optimize.MinChunkSizePlugin({
 			minChunkSize: 51200 // ~50kb
 		}),
-		// new UglifyJSPlugin(),
-		new UglifyJSPlugin({
-			mangle: {
-				screw_ie8: true,
-				except: ['$super', '$', 'exports', 'require']
-			},
-			compress: {
-				warnings: true,
-				screw_ie8: true,
-				sequences: true,
-				dead_code: true,
-				conditionals: true,
-				booleans: true,
-				unused: true,
-				if_return: true,
-				join_vars: true,
-				drop_console: true
-			},
-			output: {
-				comments: false
-			}
-		}),
+		// new UglifyJSPlugin({
+		// 	mangle: {
+		// 		screw_ie8: true,
+		// 		except: ['$super', '$', 'exports', 'require']
+		// 	},
+		// 	compress: {
+		// 		warnings: true,
+		// 		screw_ie8: true,
+		// 		sequences: true,
+		// 		dead_code: true,
+		// 		conditionals: true,
+		// 		booleans: true,
+		// 		unused: true,
+		// 		if_return: true,
+		// 		join_vars: true,
+		// 		drop_console: true
+		// 	},
+		// 	output: {
+		// 		comments: false
+		// 	}
+		// }),
 		new ExtractTextPlugin('[name].[hash].css'),
 		new webpack.DefinePlugin({
 			'process.env': {
@@ -88,7 +124,7 @@ module.exports = webpackMerge(commonConfig, {
 		}),
 		new HtmlWebpackPlugin({
 			hash: true,
-			baseUrl: "//reyramos.github.io/dataTable/",
+			baseUrl: "//reyramos.github.io/queryBuilder/",
 			minify: {
 				removeComments: true,
 				collapseWhitespace: true,

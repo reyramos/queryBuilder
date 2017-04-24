@@ -8,11 +8,11 @@ var commonConfig = require('./webpack.common.js');
 var helpers = require('./helpers');
 
 var userConfig = fs.existsSync('.user.config.js') ? require('./.user.config') : {
-		devServer: {
-			historyApiFallback: true,
-			stats: 'minimal'
-		}
-	};
+	devServer: {
+		historyApiFallback: true,
+		stats: 'minimal'
+	}
+};
 
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'development';
@@ -30,10 +30,45 @@ const METADATA = webpackMerge(commonConfig.metadata, {
 
 
 module.exports = webpackMerge(commonConfig, {
-	devtool: 'source-map',
+	/**
+	 * Developer tool to enhance debugging
+	 *
+	 * See: http://webpack.github.io/docs/configuration.html#devtool
+	 * See: https://github.com/webpack/docs/wiki/build-performance#sourcemaps
+	 */
+	devtool: 'cheap-module-source-map',
 	output: {
-		chunkFilename: "[id].[chunkhash].js",
-		path: '/'
+
+		/**
+		 * The output directory as absolute path (required).
+		 *
+		 * See: http://webpack.github.io/docs/configuration.html#output-path
+		 */
+		path: helpers.root('dist'),
+
+		/**
+		 * Specifies the name of each output file on disk.
+		 * IMPORTANT: You must not specify an absolute path here!
+		 *
+		 * See: http://webpack.github.io/docs/configuration.html#output-filename
+		 */
+		filename: '[name].bundle.js',
+
+		/**
+		 * The filename of the SourceMaps for the JavaScript files.
+		 * They are inside the output.path directory.
+		 *
+		 * See: http://webpack.github.io/docs/configuration.html#output-sourcemapfilename
+		 */
+		sourceMapFilename: '[file].map',
+
+		/** The filename of non-entry chunks as relative path
+		 * inside the output.path directory.
+		 *
+		 * See: http://webpack.github.io/docs/configuration.html#output-chunkfilename
+		 */
+		chunkFilename: '[id].chunk.js'
+
 	},
 	stats: {
 		colors: true,
@@ -42,7 +77,7 @@ module.exports = webpackMerge(commonConfig, {
 		errorDetails: true
 	},
 	plugins: [
-		new ExtractTextPlugin({ filename: '[name].css', disable: true, allChunks: true }),
+		new ExtractTextPlugin({filename: '[name].css', disable: true, allChunks: true}),
 		new webpack.DefinePlugin({
 			'process.env': {
 				'ENV': JSON.stringify(ENV)

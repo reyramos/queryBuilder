@@ -5,25 +5,28 @@
 
 import * as angular from "angular";
 import {QUERY_INTERFACE} from "../component/query.interface";
+import {QueryBuilderService} from "../component/query-builder.service";
 declare let Bloodhound: any;
 
 
 const PrettyJSON: any = require('./pretty-json');
 const JSON_DATASET: any = require('./api/operands');
+const GROUP_SAMPLE: any = JSON.parse(require('!!raw-loader!./api/json-sample.json'));
 
 
 require('pretty-json/css/pretty-json.css');
 require('./typeaheadjs.less');
+require('./custom.less');
 
 class DemoComponentCtrl implements ng.IComponentController {
-
+    
     static $inject = ['$scope', '$element'];
-
+    
     public filters: any;
     public fields: any;
     public output: string;
     private JSON_PRETTY;
-
+    
     private states: Array<string> = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
         'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
         'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
@@ -34,20 +37,40 @@ class DemoComponentCtrl implements ng.IComponentController {
         'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
         'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'Some really long name for this input'
     ];
-
+    
     constructor(private $scope, private $element) {
         this.JSON_PRETTY = $element.find('#PRETTY_JSON');
-
+        
     }
-
+    
     $onInit() {
-        this.filters = angular.copy(QUERY_INTERFACE);
+        
+        // let queryService = new QueryBuilderService('description', 'dataType');
+        // console.log(queryService.stringify(GROUP_SAMPLE));
+        
+        // this.filters = angular.copy(QUERY_INTERFACE);
+        this.filters = {
+            "type"       : "group",
+            "op"         : "AND",
+            "expressions": [{
+                "type"    : "condition",
+                "field"   : {"name": "SOME_TABLE_NAME_GENDER", "description": "Gender", "dataType": "STRING"},
+                "operator": "IN",
+                "values"  : ["M", "F"]
+            }, {
+                "type"    : "condition",
+                "field"   : {"name": "SOME_TABLE_NAME_AGE", "description": "Age", "dataType": "INTEGER"},
+                "operator": "BETWEEN",
+                "values"  : [0, 100]
+            }],
+            "error"      : true
+        };
         this.fields = angular.copy(JSON_DATASET);
     }
-
+    
     private setBloodhound(ele) {
         let self: any = this;
-
+        
         return new Promise((resolve, reject) => {
             if (!ele.data('bloodhound')) {
                 let typed = new Bloodhound({
@@ -55,7 +78,7 @@ class DemoComponentCtrl implements ng.IComponentController {
                     queryTokenizer: Bloodhound.tokenizers.whitespace,
                     local         : self.states
                 });
-
+                
                 ele.data('bloodhound', typed);
                 ($ as any)(ele)
                     .typeahead({
@@ -67,22 +90,22 @@ class DemoComponentCtrl implements ng.IComponentController {
                             name  : 'states',
                             source: typed
                         });
-
-
+                
+                
             }
-
+            
             ($ as any)(ele).off('typeahead:select').on('typeahead:select', function (ev, suggestion) {
                 resolve(suggestion)
             });
         })
     }
-
-
+    
+    
     onValueFetch(e) {
-
-        // console.log('onValueFetch', e)
-
-
+        
+        console.log('onValueFetch', e)
+        
+        
         /**
          * Control GROUPS
          */
@@ -91,43 +114,73 @@ class DemoComponentCtrl implements ng.IComponentController {
         let ele: any = angular.element(e.$event.target)
         let ctrl = ele.controller('ngModel');
         let model = Array.isArray(ctrl.$viewValue) ? ctrl.$viewValue.slice(0) : ctrl.$viewValue;
-
+        
         this.setBloodhound(ele).then((result) => {
+            console.log('typeahead:select', e, result)
+            
             if (!!e.group) {
                 ctrl.$setViewValue(result, 'change')
             }
         });
         // }
     }
-
-
+    
+    
+    validateQuery(group) {
+        var validate = [];
+        delete group.error;
+        
+        group.expressions.forEach((o, i) => {
+            if (o.type === 'condition') {
+                if (['INTEGER', 'STRING'].indexOf(o.field.dataType) !== -1) validate.push(o.field.dataType)
+            } else {
+                this.validateQuery(o)
+            }
+        });
+        
+        if (validate.indexOf('INTEGER') !== -1 && validate.indexOf('STRING') !== -1) {
+            group.error = true
+        }
+        
+        return group;
+        
+    }
+    
     /**
      * Update the view with the new output
      * @param e
      */
     onChanges(e) {
-        console.log('e', e)
+        this.validateQuery(e.group);
+        // setTimeout(() => {
+        //     // this.filters = e.group
+        //     this.$scope.$digest();
+        // }, 0);
+        
+        // console.log(JSON.stringify(e.group))
+        
+        
         let self: any = this;
         if (!angular.equals(this.output, e.string)) {
             self.output = e.string;
         }
-
+        
         var node = new PrettyJSON.view.Node({
             el  : self.JSON_PRETTY,
             data: e.group
         });
-
+        
         node.expandAll()
     };
-
-
+    
+    
 }
 
 export class DemoComponent implements ng.IComponentOptions {
     public template: any;
     public controller: any;
-
-
+    
+    
     constructor() {
         this.template = require('./index.sample.html');
         this.controller = DemoComponentCtrl;

@@ -27,10 +27,10 @@ module.exports = {
 		],
 		vendor: [helpers.root("src", "js", "vendor.js")]
 	},
-	output: {
-		path: helpers.root("dist"),
-		filename: "/[name].bundle.js"
-	},
+	// output: {
+	// 	path: helpers.root("dist"),
+	// 	filename: "/[name].bundle.js"
+	// },
 	stats: {
 		colors: true,
 		modules: true,
@@ -64,7 +64,7 @@ module.exports = {
 			{
 				test: /\.ts$/,
 				use: ["babel-loader","awesome-typescript-loader", "angular1-template-loader"],
-				exclude: [/\.(spec|e2e|d)\.ts$/]
+				exclude: [/\.(spec|e2e|d)\.ts$/, /node_modules/]
 			},
 			{
 				test: /\.(png|jpg|gif)$/,

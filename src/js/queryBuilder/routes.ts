@@ -33,12 +33,12 @@ export module QueryBuilder {
             parent   : 'QueryBuilder',
             component: 'demoComponent'
         },
-        // {
-        //     name: 'queryBuilder',
-        //     url: 'query-builder/',
-        //     parent: 'QueryBuilder',
-        //     component: 'demoComponent'
-        // }
+        {
+            name: 'stringify',
+            url: 'stringify/',
+            parent: 'QueryBuilder',
+            component: 'demoComponent'
+        }
     ];
 
 }
