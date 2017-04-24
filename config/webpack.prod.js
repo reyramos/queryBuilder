@@ -95,27 +95,27 @@ module.exports = webpackMerge(commonConfig, {
 		new webpack.optimize.MinChunkSizePlugin({
 			minChunkSize: 51200 // ~50kb
 		}),
-		new UglifyJSPlugin({
-			mangle: {
-				screw_ie8: true,
-				except: ['$super', '$', 'exports', 'require']
-			},
-			compress: {
-				warnings: true,
-				screw_ie8: true,
-				sequences: true,
-				dead_code: true,
-				conditionals: true,
-				booleans: true,
-				unused: true,
-				if_return: true,
-				join_vars: true,
-				drop_console: true
-			},
-			output: {
-				comments: false
-			}
-		}),
+		// new UglifyJSPlugin({
+		// 	mangle: {
+		// 		screw_ie8: true,
+		// 		except: ['$super', '$', 'exports', 'require']
+		// 	},
+		// 	compress: {
+		// 		warnings: true,
+		// 		screw_ie8: true,
+		// 		sequences: true,
+		// 		dead_code: true,
+		// 		conditionals: true,
+		// 		booleans: true,
+		// 		unused: true,
+		// 		if_return: true,
+		// 		join_vars: true,
+		// 		drop_console: true
+		// 	},
+		// 	output: {
+		// 		comments: false
+		// 	}
+		// }),
 		new ExtractTextPlugin('[name].[hash].css'),
 		new webpack.DefinePlugin({
 			'process.env': {
