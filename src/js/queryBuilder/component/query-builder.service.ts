@@ -69,6 +69,7 @@ export class QueryBuilderService {
      * @returns {Array}
      */
     private stringifyQuery(group: any, update: boolean = false) {
+        debugger
         if (!group) return;
         var str = [];
         angular.forEach(group.expressions, (o, i) => {
@@ -81,7 +82,7 @@ export class QueryBuilderService {
                 str.push(o.field[this.fieldName]);
                 
                 let dataType: string = o.field.hasOwnProperty(this.fieldDatatype) ? o.field[this.fieldDatatype] : false;
-                let values = o.values[0] ? (this.defineDatatype(dataType, o.values)).unique().join(", ") : "";
+                let values = angular.isDefined(o.values[0]) ? (this.defineDatatype(dataType, o.values)).unique().join(", ") : "";
                 
                 
                 let condition = this.conditions.find(function (q) {
