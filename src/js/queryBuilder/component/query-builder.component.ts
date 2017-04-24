@@ -585,6 +585,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
         /*
          Add a new row for new field entry
          */
+        debugger
         if (conditions.length > 0 && values.length === conditions.length) {
             this.AddCondition(group, values[values.length - 1] + 1);
         } else if (conditions.length == 0) {
@@ -599,6 +600,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     }
     
     private onGroupChange(e?: any) {
+        debugger
         clearTimeout(this.$timeoutPromise);
         let self: any = this;
         this.$event = e || 'onGroupChange';

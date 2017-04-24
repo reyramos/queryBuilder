@@ -48,8 +48,23 @@ class DemoComponentCtrl implements ng.IComponentController {
         let queryService = new QueryBuilderService('description', 'dataType');
         console.log(queryService.stringify(GROUP_SAMPLE));
         
-        this.filters = angular.copy(QUERY_INTERFACE);
-        // this.filters = angular.copy(GROUP_SAMPLE);
+        // this.filters = angular.copy(QUERY_INTERFACE);
+        this.filters = {
+            "type"       : "group",
+            "op"         : "AND",
+            "expressions": [{
+                "type"    : "condition",
+                "field"   : {"name": "SOME_TABLE_NAME_GENDER", "description": "Gender", "dataType": "STRING"},
+                "operator": "IN",
+                "values"  : ["M", "F"]
+            }, {
+                "type"    : "condition",
+                "field"   : {"name": "SOME_TABLE_NAME_AGE", "description": "Age", "dataType": "INTEGER"},
+                "operator": "BETWEEN",
+                "values"  : [0, 100]
+            }],
+            "error"      : true
+        };
         this.fields = angular.copy(JSON_DATASET);
     }
     
@@ -141,6 +156,8 @@ class DemoComponentCtrl implements ng.IComponentController {
         //     // this.filters = e.group
         //     this.$scope.$digest();
         // }, 0);
+        
+        // console.log(JSON.stringify(e.group))
         
         
         let self: any = this;
