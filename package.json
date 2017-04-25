@@ -1,6 +1,6 @@
 {
-    "name": "demoComponent",
-    "version": "1.5.0",
+    "name": "queryBuilder",
+    "version": "2.0.0",
     "private": true,
     "scripts": {
         "start": "webpack-dev-server  --content-base src --inline --progress --port 9000",
