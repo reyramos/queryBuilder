@@ -17,7 +17,10 @@ export let app: any = angular.module('app', [
 
 // app.component('progressLinear', new ProgressLinear());
 
-app.config(['routeStateProvider', function(states){
+app.config(['routeStateProvider', function (states) {
     return new RouteProvider(states);
 }]);
 
+// app.run(['$templateCache', function ($templateCache) {
+//     $templateCache.put('query-builder.component.html', require('!!raw-loader!./queryBuilder/component/query-builder.component.html'))
+// }]);
