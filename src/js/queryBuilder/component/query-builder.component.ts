@@ -630,7 +630,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     };
     
     AddCondition(group, idx?: number) {
-       
+        
         var condition = angular.copy(QUERY_INTERFACE.expressions[0], {
             $$indeed: this.$countCondition,
             values  : []
@@ -806,7 +806,7 @@ require('./query.less');
 
 export class QueryBuilder implements ng.IComponentOptions {
     public bindings: any;
-    public template: any;
+    public templateUrl: any;
     public controller: any;
     
     
@@ -824,7 +824,7 @@ export class QueryBuilder implements ng.IComponentOptions {
             fields       : '<operands'
         };
         
-        this.template = require('./query-builder.component.html');
+        this.templateUrl = './query-builder.component.html';
         this.controller = QueryBuilderCtrl;
     }
 }
