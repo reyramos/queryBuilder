@@ -35,7 +35,7 @@ Array.prototype.unique = function () {
     return a;
 };
 
-class QueryBuilderCtrl implements ng.IComponentController {
+class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentController {
     
     
     static $inject: Array<string> = ['$element', '$scope'];
@@ -53,7 +53,7 @@ class QueryBuilderCtrl implements ng.IComponentController {
     public fieldValue: string;
     public fieldName: string;
     
-    private QueryService;
+    // private QueryService;
     
     //output
     private onDelete: any;
@@ -73,6 +73,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
     
     
     constructor(private $element, private $scope: ng.IScope) {
+        super();
+        
         let self: any = this;
         
         Object.keys(QUERY_CONDITIONS).forEach(function (k) {
@@ -84,13 +86,11 @@ class QueryBuilderCtrl implements ng.IComponentController {
     $onInit() {
         if (!this.group) this.group = angular.copy(QUERY_INTERFACE);
         
-        if (!this.fieldValue)
-            this.fieldValue = 'value';
+        if (!this.fieldValue) this.fieldValue = 'value';
         
-        if (!this.fieldName)
-            this.fieldName = 'name';
+        if (!this.fieldName) this.fieldName = 'name';
         
-        this.QueryService = new QueryBuilderService(this.fieldName, this.fieldDatatype);
+        // this.QueryService = new QueryBuilderService(this.fieldName, this.fieldDatatype);
         
         
         this.onGroupChange();
@@ -329,33 +329,6 @@ class QueryBuilderCtrl implements ng.IComponentController {
         
         return qArr;
         
-    }
-    
-    private defineDatatype(dataType, values) {
-        values = Array.isArray(values) ? values : [values];
-        let num = (values.slice(0)).map((f) => {
-            return typeof f === 'string' ? f.trim() : f;
-        });
-        
-        if (dataType)
-            switch (dataType.toUpperCase()) {
-                case 'NUMBER':
-                case 'INTEGER':
-                case 'FLOAT':
-                    num = values.map((v) => {
-                        return Number(v);
-                    });
-                    break;
-                // case 'DATETIME':
-                //     num = values.map((v) => {
-                //         return moment(v).format('MM/DD/YYYY');
-                //     });
-                //     break;
-                
-            }
-        
-        
-        return num.unique();
     }
     
     
@@ -737,10 +710,18 @@ class QueryBuilderCtrl implements ng.IComponentController {
     
     
     trigger(event: string) {
+        
+        
+        // debugger
+        
+        
         let self: any = this;
-        let $string: string = this.QueryService.stringify(this.group, this.$outputUpdate);
+        let $string: string = this.stringify(this.group, this.$outputUpdate);
         this.$outputUpdate = false;
         
+        // console.log('$string', $string)
+        // console.log('this.$queryString', this.$queryString)
+        // this.$queryString = $string;
         if ($string !== this.$queryString) {
             this.queryString = this.$queryString = $string;
         }
@@ -790,6 +771,8 @@ class QueryBuilderCtrl implements ng.IComponentController {
             a.push(e[k]);
         });
         
+        console.log('==================onValueChange=======================')
+        console.log('e', e)
         this.onPrefetch.apply(this, a).then((e) => {
             self.onGroupChange();
         });
@@ -806,7 +789,7 @@ require('./query.less');
 
 export class QueryBuilder implements ng.IComponentOptions {
     public bindings: any;
-    public templateUrl: any;
+    public template: any;
     public controller: any;
     
     
@@ -824,7 +807,7 @@ export class QueryBuilder implements ng.IComponentOptions {
             fields       : '<operands'
         };
         
-        this.templateUrl = 'query-builder.component.html';
+        this.template = require('./query-builder.component.html');
         this.controller = QueryBuilderCtrl;
     }
 }

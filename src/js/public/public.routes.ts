@@ -22,24 +22,7 @@ export module Public {
                     });
                 }]
             }
-        },
-        // {
-        //     name     : "root",
-        //     parent   : "rootBundle.root",
-        //     component: 'eqHome'
-        // },
-        // {
-        //     name     : "about",
-        //     url      : "about/",
-        //     parent   : "rootBundle.root",
-        //     component: 'eqAbout'
-        // },
-        // {
-        //     name     : "contact",
-        //     url      : "contact/",
-        //     parent   : "rootBundle.root",
-        //     component: 'eqContact'
-        // }
+        }
     ];
 }
 

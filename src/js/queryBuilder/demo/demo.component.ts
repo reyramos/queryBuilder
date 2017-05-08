@@ -45,26 +45,13 @@ class DemoComponentCtrl implements ng.IComponentController {
     
     $onInit() {
         
-        // let queryService = new QueryBuilderService('description', 'dataType');
+        // must first define the params
+        // let queryService = new QueryBuilderService();
+        // queryService.fieldName = "description";
+        // queryService.fieldDatatype = "dataType";
         // console.log(queryService.stringify(GROUP_SAMPLE));
         
-        // this.filters = angular.copy(QUERY_INTERFACE);
-        this.filters = {
-            "type"       : "group",
-            "op"         : "AND",
-            "expressions": [{
-                "type"    : "condition",
-                "field"   : {"name": "SOME_TABLE_NAME_GENDER", "description": "Gender", "dataType": "STRING"},
-                "operator": "IN",
-                "values"  : ["M", "F"]
-            }, {
-                "type"    : "condition",
-                "field"   : {"name": "SOME_TABLE_NAME_AGE", "description": "Age", "dataType": "INTEGER"},
-                "operator": "BETWEEN",
-                "values"  : [0, 100]
-            }],
-            "error"      : true
-        };
+        this.filters = angular.copy(QUERY_INTERFACE);
         this.fields = angular.copy(JSON_DATASET);
     }
     

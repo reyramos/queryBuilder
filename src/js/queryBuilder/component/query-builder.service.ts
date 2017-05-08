@@ -16,20 +16,21 @@ declare let String: any;
 
 const QBKEY: string = "$$QueryBuilder";
 
-// @Injectable()
 export class QueryBuilderService {
     
     static instance: QueryBuilderService;
-    private conditions: Array<any> = [];
+    public conditions: Array<any> = [];
+    public fieldName: string = "name";
+    public fieldDatatype: string = "dataType";
     
-    constructor(private fieldName: string = 'name', private fieldDatatype: string = 'dataType') {
+    constructor() {
         Object.keys(QUERY_CONDITIONS).forEach((k) => {
             this.conditions.push(QUERY_CONDITIONS[k])
         })
     }
     
     
-    private defineDatatype(dataType, values) {
+    public defineDatatype(dataType, values) {
         values = Array.isArray(values) ? values : [values];
         let num = (values.slice(0)).map((f) => {
             return typeof f === 'string' ? f.trim() : f;
@@ -56,7 +57,16 @@ export class QueryBuilderService {
         return num.unique();
     }
     
+    
     stringify(group: any, update: boolean = false) {
+        
+        if (!this.fieldName)
+            throw "MISSING FIELDNAME";
+        
+        
+        if (!this.fieldDatatype)
+            throw "MISSING FIELDNAME";
+        
         let string: Array<string> = this.stringifyQuery(group, update);
         let $string: string = string ? string.join(' ') : "";
         return $string;
