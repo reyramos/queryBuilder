@@ -7,8 +7,6 @@ import {QueryBuilderService} from "./query-builder.service";
  * Created by ramor11 on 2/2/2017.
  */
 
-declare let window: any;
-declare let $: any;
 declare let Array: any;
 declare let String: any;
 
@@ -53,8 +51,6 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     public fieldValue: string;
     public fieldName: string;
     
-    // private QueryService;
-    
     //output
     private onDelete: any;
     private onUpdate: any;
@@ -89,9 +85,6 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         if (!this.fieldValue) this.fieldValue = 'value';
         
         if (!this.fieldName) this.fieldName = 'name';
-        
-        // this.QueryService = new QueryBuilderService(this.fieldName, this.fieldDatatype);
-        
         
         this.onGroupChange();
     }
