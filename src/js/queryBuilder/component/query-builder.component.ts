@@ -706,8 +706,9 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         
         
         // debugger
-        
-        
+        // console.log(JSON.stringify(this.group))
+    
+    
         let self: any = this;
         let $string: string = this.stringify(this.group, this.$outputUpdate);
         this.$outputUpdate = false;

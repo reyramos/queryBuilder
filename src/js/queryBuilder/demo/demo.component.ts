@@ -138,14 +138,14 @@ class DemoComponentCtrl implements ng.IComponentController {
      */
     onChanges(e) {
         this.validateQuery(e.group);
-        setTimeout(() => {
-            // this.filters = e.group
-            this.$scope.$digest();
-        }, 0);
+        // setTimeout(() => {
+        //     // this.filters = e.group
+        //     this.$scope.$digest();
+        // }, 0);
         
         // console.log(JSON.stringify(e.group))
     
-        console.log('onChanges', e.group)
+        // console.log('onChanges', e.group)
     
         let self: any = this;
         if (!angular.equals(this.output, e.string)) {
