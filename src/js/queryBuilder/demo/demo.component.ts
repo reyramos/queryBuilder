@@ -102,8 +102,6 @@ class DemoComponentCtrl implements ng.IComponentController {
         let model = Array.isArray(ctrl.$viewValue) ? ctrl.$viewValue.slice(0) : ctrl.$viewValue;
 
         this.setBloodhound(ele).then((result) => {
-            console.log('typeahead:select', e, result)
-
             if (!!e.group) {
                 ctrl.$setViewValue(result, 'change')
             }
@@ -138,14 +136,6 @@ class DemoComponentCtrl implements ng.IComponentController {
      */
     onChanges(e) {
         this.validateQuery(e.group);
-        // setTimeout(() => {
-        //     // this.filters = e.group
-        //     this.$scope.$digest();
-        // }, 0);
-
-        // console.log(JSON.stringify(e.group))
-        console.info('==================onChanges!!=======================')
-        console.info('e', JSON.stringify(e.group))
 
         let self: any = this;
         if (!angular.equals(this.output, e.string)) {
