@@ -2,7 +2,6 @@ import * as angular from "angular";
 import {QUERY_OPERATORS, QUERY_CONDITIONS} from "./query.conditions";
 import {QUERY_INTERFACE} from "./query.interface";
 import {QueryBuilderService} from "./query-builder.service";
-import {type} from "os";
 
 /**
  * Created by ramor11 on 2/2/2017.
@@ -37,14 +36,14 @@ Array.prototype.unique = function () {
 };
 
 class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentController {
-
-
+    
+    
     static $inject: Array<string> = ['$element', '$scope'];
-
-
+    
+    
     public maxChips = 1;
     public multi = false;
-
+    
     public operators = QUERY_OPERATORS;
     public conditions: Array<any> = [];
     public group: any;
@@ -53,12 +52,12 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     public queryString: string;
     public fieldValue: string;
     public fieldName: string;
-
+    
     //output
     private onDelete: any;
     private onUpdate: any;
     private onFetch: any;
-
+    
     //trackers
     private $event: any = "";
     private $queryString: string = "";
@@ -68,33 +67,33 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     //keep original group
     private $group: any;
     private $digestCycle: any;
-
-
+    
+    
     constructor(private $element, private $scope: ng.IScope) {
         super();
-
+        
         let self: any = this;
-
+        
         Object.keys(QUERY_CONDITIONS).forEach(function (k) {
             self.conditions.push(QUERY_CONDITIONS[k])
         })
-
+        
     }
-
+    
     $onInit() {
         if (!this.group) this.group = angular.copy(QUERY_INTERFACE);
-
+        
         if (!this.fieldValue) this.fieldValue = 'value';
-
+        
         if (!this.fieldName) this.fieldName = 'name';
-
+        
         this.onGroupChange();
     }
-
-
+    
+    
     $doCheck() {
         let self: any = this;
-
+        
         /*
          This will be trigger when the output string is changes from outside source
          other than query builder
@@ -106,22 +105,22 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                 self.$outputUpdate = true;
                 let obj = self.parseQuery(self.queryString);
                 let group = angular.toJson(obj);
-
+                
                 self.group = JSON.parse(group);
                 self.onGroupChange();
                 self.$scope.$digest();
             }, 500);
         }
-
+        
         if (this.$trigger && !angular.equals(this.group, this.$group)) {
             this.$group = angular.copy(this.group);
             this.$trigger = false;
             self.trigger('onUpdate')
         }
-
+        
     };
-
-
+    
+    
     /**
      * It will take the query string and split into a simple single layer array to be evalualated
      * later to build the JSON filters based on the parameters
@@ -129,8 +128,8 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
      */
     private split_string(query: string) {
         if (!query)return;
-
-
+        
+        
         let words = (query.trim()).split(/ /g);
         //array element to keep single
         let conditions: any = ["(", ")"];
@@ -138,7 +137,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         let qArr = [];
         let string = "";
         let operands = [];
-
+        
         /*
          Get all available conditions
          */
@@ -148,30 +147,30 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
             });
             conditions = conditions.concat(lowerCase);
         });
-
+        
         /*
          Get all the valid operand
          */
         this.fields.map(function (o) {
             operands.push(o[self.fieldName]);
         });
-
+        
         this.operators.map(function (c) {
             let lowerCase = (Array.isArray(c.name) ? c.name : [c.name]).map((o) => {
                 return o.toLowerCase();
             });
             conditions = conditions.concat(lowerCase);
         });
-
+        
         conditions = conditions.unique();
-
+        
         /*
          First check all the condition and match them together
          */
         let wCopy = words.filter((o) => {
             return o !== "";
         });
-
+        
         /*
          Split strings with parenthesis
          */
@@ -187,20 +186,20 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                     let string = (o as any).replaceAt(m.index, "");
                     //replace the string
                     wCopy.splice(m[0] === ")" ? i : i + 1, 1, string);
-
+                    
                 }
             });
-
+            
             if (wCopy.length !== cQarr.length) _split();
         };
-
+        
         _split();
         words = wCopy.slice(0);
-
+        
         let sCount = [];
         let position = 0;
         for (let i = 0; i < words.length; i++) {
-
+            
             let test = words[i].trim();
             if (["(", ")"].indexOf(test) === -1) {
                 string += " " + words[i];
@@ -214,7 +213,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                         wCopy.splice(i, 1, cond);
                         wCopy.splice(i - 1, 1, QBKEY);
                     }
-
+                    
                     let comp1 = string.replace(cond, "").trim();
                     let comp2 = words[i - 1] ? words[i - 1].trim() : null;
                     if (comp1 && [test, comp2].indexOf(comp1) < 0) {
@@ -225,14 +224,14 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                     }
                     sCount = [];//reset
                     string = "";//reset on array changes
-
+                    
                 } else if (operands.indexOf(string.trim()) > -1) {
                     //CHECK FOR ALL OPERANDS
                     wCopy.splice(i, 1, string.trim());
                     sCount.forEach((idx) => {
                         if (idx < i) wCopy.splice(idx, 1, QBKEY);
                     });
-
+                    
                     sCount = [];//reset
                     string = "";//reset on array changes
                 }
@@ -240,29 +239,29 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                 sCount = [];//reset
                 string = "";//reset on array changes
             }
-
-
+            
+            
             position = i;
         }
-
+        
         //CHECK FOR ALL OPERANDS
         if (string) wCopy.splice(position, 1, string.trim());
         sCount.forEach((idx) => {
             if (idx < position) wCopy.splice(idx, 1, QBKEY);
         });
-
-
+        
+        
         words = wCopy.filter((o) => {
             return o !== QBKEY;
         });
-
+        
         /*
          This loop will handle the conditions
          TODO:refactor
          */
         var i = 0;
         let handler = []; //this should reset on push to qArr
-
+        
         string = ""; //reset for new array use
         do {
             if (words[i]) {
@@ -279,28 +278,28 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                     } else {
                         string += " " + words[i];
                     }
-
+                    
                 } else if (["(", ")"].indexOf(words[i].trim()) !== -1) {
                     handler.push(string);
                     string = "";
                     handler.push(words[i]);
                 } else {
                     let regex = /(["'`])(\\?.)*?\1/g;
-
+                    
                     let value = regex.exec(string);
                     if (value) {
                         handler.push(value.input);
                     } else {
                         handler.push(string);
                     }
-
+                    
                     //push the condition being evalualated
                     if (words[i]) handler.push(words[i]);
                     if (handler.length > 3) {
                         qArr = qArr.concat(handler)
                         handler = [];
                     }
-
+                    
                     string = "";
                 }
             } else {
@@ -308,25 +307,25 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
             }
             i++;
         } while (i <= words.length);
-
+        
         //wrapping last array string
         qArr = qArr.concat(handler);
         //clean empty strings
         qArr = qArr.filter(function (o) {
             return o !== ""
         });
-
+        
         //clean strings
         qArr = qArr.map(function (o) {
             return o.trim()
         });
-
-
+        
+        
         return qArr;
-
+        
     }
-
-
+    
+    
     /**
      * Take the String and parse it into OBJECT format
      * @param queryString
@@ -336,7 +335,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         let self: any = this;
         //take the string and break into array
         let queryArray: Array<string> = this.split_string(queryString);
-
+        
         let operators = [];
         /*
          Build the needed operators from the CONST
@@ -347,7 +346,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
             });
             operators = operators.concat(lowerCase);
         });
-
+        
         let conditions = [];
         /*
          Build a reference value of the QUERY_CONDITION constants
@@ -359,18 +358,18 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                 value : QUERY_CONDITIONS[k].value
             })
         });
-
+        
         let newGroup = () => {
             let filters: any = angular.copy(QUERY_INTERFACE);
-
+            
             Object.assign(filters, {
                 expressions: []
             });
-
+            
             return filters;
-
+            
         };
-
+        
         let newCondition = (exp: Array<string>) => {
             let expressions: any = angular.copy(QUERY_INTERFACE.expressions[0]);
             let regex = /(["'`])(\\?.)*?\1/g
@@ -378,7 +377,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
             let value = val ? exp[2].substring(1, exp[2].length - 1) : exp[2];
             let desc = regex.exec(exp[0]);
             let description = desc ? exp[0].substring(1, exp[0].length - 1) : exp[0];
-
+            
             Object.assign(expressions, {
                 values  : [],
                 field   : self.fields.find(function (o) {
@@ -388,50 +387,50 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                     return o.symbol.indexOf(exp[1].toLowerCase()) !== -1 || o.symbol.indexOf(exp[1].toUpperCase()) !== -1
                 }).value
             });
-
+            
             let dataType: string = expressions.field.hasOwnProperty(this.fieldDatatype) ? expressions.field[this.fieldDatatype] : false;
             let values = this.defineDatatype(dataType, value.split(","));
-
-
+            
+            
             values.forEach((v) => {
                 expressions.values.push(v);
             });
-
+            
             //remove any empty strings
             expressions.values = expressions.values.filter(function (o) {
                 return o !== "" && o !== "``"
             });
-
+            
             return expressions;
         };
-
-
+        
+        
         let group = newGroup();
         let parseIt = (group, arr: Array<string>) => {
-
+            
             let expressions = [];
             if (!arr)return;
-
+            
             for (let i = 0; i < arr.length; i++) {
                 let txt = arr[i];
                 if (txt === "$$QueryBuilder")return;
                 if (txt === "(") {
                     //defining the start of the group
                     let _group = newGroup();
-
+                    
                     group.expressions.push(_group);
                     //clean empty strings
                     arr = arr.filter(function (o) {
                         return o !== "$$QueryBuilder"
                     });
-
+                    
                     let reg = /(\()?(?:[^()]+|\([^)]+\))+(\)?)/;
                     let m = reg.exec(arr.join(" "));
                     if (m) {
-
+                        
                         let balance = (m[0] as any).replace(/\(/, "").trim();
                         balance = balance.replaceAt(balance.length - 1, "").trim();
-
+                        
                         let newStr = ((arr.join(" ")).replace(balance, "")).replace(/\(\s{1,}\)/, "").trim();
                         //since of array reference add unidentified index to keep the same loop in order
                         arr = ["$$QueryBuilder"].concat(this.split_string(newStr) || []);
@@ -442,7 +441,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                         expressions = [];
                         parseIt(_group, handler);
                     }
-
+                    
                 } else if (txt === ")") {
                     //defining the end of the group
                 } else if (operators.indexOf(txt.toLowerCase()) === -1) {
@@ -453,21 +452,21 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                     group.op = txt;
                     expressions = [];
                 }
-
+                
                 //unique identifier
                 arr[i] = "$$QueryBuilder";
             }
-
+            
         };
-
+        
         parseIt(group, queryArray);
         return group;
     }
-
-
+    
+    
     private setOperator(operator: string) {
         let self: any = this;
-
+        
         switch (operator) {
             case QUERY_CONDITIONS.IN.value:
                 self.multi = true;
@@ -482,10 +481,10 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                 self.maxChips = 1;
                 break;
         }
-
+        
     }
-
-
+    
+    
     private safeApply(fn?: any) {
         let scope: any = this.$scope;
         clearTimeout(this.$digestCycle);
@@ -499,42 +498,42 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                 scope.$apply(fn)
             }
         }, 0)
-
+        
     }
-
+    
     onOperandChange(rule: any) {
         this.$event = 'onOperandChange';
         this.$outputUpdate = false;
         this.onGroupChange();
     }
-
+    
     onKeyUp(e: any, rule?: any) {
         let self: any = this;
         let evnt: any = e.originalEvent || e;
         this.$event = 'onKeyUp';
         this.$trigger = true;
         this.$outputUpdate = false;
-
+        
         this.onPrefetch(evnt, rule).then((e) => {
             self.onGroupChange();
         });
     }
-
+    
     onTagsChange(e: any) {
         this.$event = 'onTagsChange';
         this.$outputUpdate = false;
         this.onGroupChange();
         this.safeApply();
     }
-
+    
     onConditionChange(rule: any, e?: any) {
         this.$event = 'onConditionChange';
         this.setOperator(rule.operator);
         rule.values.splice(this.maxChips);
         this.onGroupChange();
     };
-
-
+    
+    
     private checkExpressions(group) {
         let self: any = this;
         let conditions = [];
@@ -545,7 +544,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                 let hasValue: boolean = o.values ? angular.isDefined(o.values[0]) : false;
                 let hasOperand: boolean = o.field ? o.field[self.fieldValue] : false;
                 if (hasValue && hasOperand) values.push(i)
-
+                
             } else {
                 self.checkExpressions(o)
             }
@@ -558,10 +557,14 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         } else if (conditions.length == 0) {
             this.AddCondition(group, 0);
         }
-
+        
     }
-
-
+    
+    
+    onChange(e?: any) {
+        this.onGroupChange(e);
+    }
+    
     private onGroupChange(e?: any) {
         clearTimeout(this.$timeoutPromise);
         let self: any = this;
@@ -572,8 +575,8 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
 
 
     }
-
-
+    
+    
     private setFieldsDescription(group) {
         let self: any = this;
         //depends where the change came from find by
@@ -584,41 +587,40 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                     return condition.field[findBy] === o[findBy]
                 });
                 if (found) Object.assign(condition.field, found);
-
-
+                
+                
                 let dataType: string = condition.field.hasOwnProperty(self.fieldDatatype) ? condition.field[self.fieldDatatype] : false;
-
-
+                
+                
             } else {
                 self.setFieldsDescription(condition)
             }
         });
     };
-
+    
     AddCondition(group, idx?: number) {
-        let self: any = this;
-
+        
         var condition = angular.copy(QUERY_INTERFACE.expressions[0], {
-            $$indeed: self.$countCondition,
+            $$indeed: this.$countCondition,
             values  : []
         });
-
+        
         if (idx > -1) {
             group.expressions.splice(idx, 0, condition);
         } else {
             group.expressions.push(condition);
         }
-
+        
     }
-
+    
     AddGroup(e?: any) {
         this.$event = 'AddGroup';
         this.group.expressions.push(angular.copy(QUERY_INTERFACE));
     }
-
+    
     RemoveGroup(e?: any) {
         this.$event = 'RemoveGroup';
-
+        
         let self: any = this;
         this.onDelete({
             $event: {
@@ -626,9 +628,9 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
             }
         })
     }
-
+    
     RemoveCondition(idx: number, e?: any) {
-
+        
         this.$event = 'RemoveCondition';
         let self: any = this;
         this.$countCondition = 0;
@@ -639,7 +641,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         self.group.expressions.splice(idx, 1);
         this.onGroupChange();
     }
-
+    
     /**
      * OUTPUT
      */
@@ -650,19 +652,19 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
             if (o.$$hashKey === e.group.$$hashKey && o.$$indeed === e.group.$$indeed)
                 self.group.expressions.splice(i, 1)
         });
-
+        
         this.onGroupChange();
     }
-
+    
     onUpdateGroup(e: any) {
         this.trigger('onUpdate');
     }
-
+    
     private CleanObject() {
         const regex = /\{"type":"condition".*?"values":\[\]\}/g;
         let str: string = angular.toJson(this.group);
         let m;
-
+        
         while ((m = regex.exec(str)) !== null) {
             if (m.index === regex.lastIndex) {
                 regex.lastIndex++;
@@ -685,7 +687,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         str = str.replace(/,\]/g, "]").replace(/\[,/g, "[").replace(/,,/g, ",");
         return this.setDatatypes(JSON.parse(str));
     }
-
+    
     private setDatatypes(group) {
         let self: any = this;
         group.expressions.forEach(function (o, i) {
@@ -696,19 +698,25 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                 self.setDatatypes(o)
             }
         });
-
+        
         return group;
     };
-
-
+    
+    
     trigger(event: string) {
         let self: any = this;
         let string: Array<string> = this.stringifyQuery(this.group);
         //update both if updated from object
         this.$queryString = this.queryString = string.join(' ');
-
+        
         this.$outputUpdate = false;
-
+        
+        if (this.queryString !== this.$queryString) this.queryString = this.$queryString;
+        
+        
+        // if (this.$event === 'RemoveCondition') this.queryString = this.$queryString;
+        // if (this.$queryString) this.queryString = this.$queryString;
+        
         this[event]({
             $event: {
                 event : self.$event,
@@ -716,24 +724,24 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                 string: self.queryString
             }
         })
-
+        
     }
-
+    
     onPrefetch(e: any, rule?: any) {
         let self: any = this;
-
+        
         return new Promise((resolve) => {
             let $event: any = {$event: e};
             if (rule) Object.assign($event, {
                 group : rule,
                 target: 'input'
             });
-
+            
             if (e.$event) Object.assign($event, e);
             this.onFetch({
                 $event: $event
             });
-
+            
             /*
              It may loose focus on external library injections, ex: typeahead.js
              */
@@ -741,8 +749,8 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
             resolve(e.target);
         })
     }
-
-
+    
+    
     onValueChange(e: any) {
         this.$event = 'onValueChange';
         let self: any = this;
@@ -750,7 +758,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         Object.keys(e).forEach((k) => {
             a.push(e[k]);
         });
-
+        
 
         this.onPrefetch.apply(this, a).then((e) => {
             self.onGroupChange();
@@ -758,7 +766,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
 
 
     }
-
+    
     $onDestroy() {
         clearTimeout(this.$timeoutPromise);
         clearTimeout(this.$digestCycle);
@@ -772,8 +780,8 @@ export class QueryBuilder implements ng.IComponentOptions {
     public bindings: any;
     public template: any;
     public controller: any;
-
-
+    
+    
     constructor() {
         this.bindings = {
             onDelete     : '&',
@@ -787,7 +795,7 @@ export class QueryBuilder implements ng.IComponentOptions {
             group        : '=',
             fields       : '<operands'
         };
-
+        
         this.template = require('./query-builder.component.html');
         this.controller = QueryBuilderCtrl;
     }
