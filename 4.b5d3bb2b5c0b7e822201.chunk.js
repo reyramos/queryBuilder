@@ -10,13 +10,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const angular = __webpack_require__(142);
 var app = angular.module("app.public", []);
 const nav_component_1 = __webpack_require__(178);
-const home_component_1 = __webpack_require__(177);
-const about_component_1 = __webpack_require__(175);
-const contact_component_1 = __webpack_require__(176);
 app.component('eqNav', new nav_component_1.NavComponent());
-app.component('eqHome', new home_component_1.HomeComponent());
-app.component('eqAbout', new about_component_1.AboutComponent());
-app.component('eqContact', new contact_component_1.ContactComponent());
 module.exports = app;
 
 /***/ }),
@@ -4011,75 +4005,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.
 
 /***/ }),
 
-/***/ 175:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", { value: true });
-class AboutCtrl {
-    constructor($scope) {
-        this.$scope = $scope;
-    }
-}
-AboutCtrl.$inject = ['$scope'];
-class AboutComponent {
-    constructor() {
-        this.template = "About Page";
-        this.controller = AboutCtrl;
-    }
-}
-exports.AboutComponent = AboutComponent;
-
-/***/ }),
-
-/***/ 176:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", { value: true });
-class ContactCtrl {
-    constructor($scope) {
-        this.$scope = $scope;
-    }
-}
-ContactCtrl.$inject = ['$scope'];
-class ContactComponent {
-    constructor() {
-        this.template = "Contact Page";
-        this.controller = ContactCtrl;
-    }
-}
-exports.ContactComponent = ContactComponent;
-
-/***/ }),
-
-/***/ 177:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", { value: true });
-class HomeCtrl {
-    constructor($scope) {
-        this.$scope = $scope;
-    }
-}
-HomeCtrl.$inject = ['$scope'];
-class HomeComponent {
-    constructor() {
-        this.template = __webpack_require__(195);
-        this.controller = HomeCtrl;
-    }
-}
-exports.HomeComponent = HomeComponent;
-
-/***/ }),
-
 /***/ 178:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4132,8 +4057,9 @@ Array.prototype.unique = function () {
     }
     return a;
 };
-class QueryBuilderCtrl {
+class QueryBuilderCtrl extends query_builder_service_1.QueryBuilderService {
     constructor($element, $scope) {
+        super();
         this.$element = $element;
         this.$scope = $scope;
         this.maxChips = 1;
@@ -4142,7 +4068,6 @@ class QueryBuilderCtrl {
         this.conditions = [];
         this.$event = "";
         this.$queryString = "";
-        this.$outputUpdate = false;
         this.$trigger = false;
         let self = this;
         Object.keys(query_conditions_1.QUERY_CONDITIONS).forEach((function (k) {
@@ -4153,7 +4078,6 @@ class QueryBuilderCtrl {
         if (!this.group) this.group = angular.copy(query_interface_1.QUERY_INTERFACE);
         if (!this.fieldValue) this.fieldValue = 'value';
         if (!this.fieldName) this.fieldName = 'name';
-        this.QueryService = new query_builder_service_1.QueryBuilderService(this.fieldName, this.fieldDatatype);
         this.onGroupChange();
     }
     $doCheck() {
@@ -4311,22 +4235,6 @@ class QueryBuilderCtrl {
             return o.trim();
         }));
         return qArr;
-    }
-    defineDatatype(dataType, values) {
-        values = Array.isArray(values) ? values : [values];
-        let num = values.slice(0).map(f => {
-            return typeof f === 'string' ? f.trim() : f;
-        });
-        if (dataType) switch (dataType.toUpperCase()) {
-            case 'NUMBER':
-            case 'INTEGER':
-            case 'FLOAT':
-                num = values.map(v => {
-                    return Number(v);
-                });
-                break;
-        }
-        return num.unique();
     }
     parseQuery(queryString) {
         let self = this;
@@ -4498,9 +4406,6 @@ class QueryBuilderCtrl {
             this.AddCondition(group, 0);
         }
     }
-    onChange(e) {
-        this.onGroupChange(e);
-    }
     onGroupChange(e) {
         clearTimeout(this.$timeoutPromise);
         let self = this;
@@ -4526,8 +4431,9 @@ class QueryBuilderCtrl {
     }
 
     AddCondition(group, idx) {
+        let self = this;
         var condition = angular.copy(query_interface_1.QUERY_INTERFACE.expressions[0], {
-            $$indeed: this.$countCondition,
+            $$indeed: self.$countCondition,
             values: []
         });
         if (idx > -1) {
@@ -4551,13 +4457,13 @@ class QueryBuilderCtrl {
     }
     RemoveCondition(idx, e) {
         this.$event = 'RemoveCondition';
+        let self = this;
         this.$countCondition = 0;
-        this.group.expressions.map(o => {
-            if (o.type === 'condition') this.$countCondition++;
-        });
-        if (this.$countCondition === 1) return;
-        this.group.expressions.splice(idx, 1);
-        this.$group = this.group;
+        this.group.expressions.map((function (o) {
+            if (o.type === 'condition') self.$countCondition++;
+        }));
+        if (self.$countCondition === 1) return;
+        self.group.expressions.splice(idx, 1);
         this.onGroupChange();
     }
     onDeleteGroup(e) {
@@ -4610,11 +4516,9 @@ class QueryBuilderCtrl {
 
     trigger(event) {
         let self = this;
-        let $string = this.QueryService.stringify(this.group, this.$outputUpdate);
+        let string = this.stringifyQuery(this.group);
+        this.$queryString = this.queryString = string.join(' ');
         this.$outputUpdate = false;
-        if ($string !== this.$queryString) {
-            this.queryString = this.$queryString = $string;
-        }
         this[event]({
             $event: {
                 event: self.$event,
@@ -4690,10 +4594,11 @@ const angular = __webpack_require__(142);
 const query_conditions_1 = __webpack_require__(170);
 const QBKEY = "$$QueryBuilder";
 class QueryBuilderService {
-    constructor(fieldName = 'name', fieldDatatype = 'dataType') {
-        this.fieldName = fieldName;
-        this.fieldDatatype = fieldDatatype;
+    constructor() {
         this.conditions = [];
+        this.fieldName = "name";
+        this.fieldDatatype = "dataType";
+        this.$outputUpdate = false;
         Object.keys(query_conditions_1.QUERY_CONDITIONS).forEach(k => {
             this.conditions.push(query_conditions_1.QUERY_CONDITIONS[k]);
         });
@@ -4714,29 +4619,33 @@ class QueryBuilderService {
         }
         return num.unique();
     }
-    stringify(group, update = false) {
-        let string = this.stringifyQuery(group, update);
+    stringify(group) {
+        if (!this.fieldName) throw "MISSING FIELDNAME";
+        if (!this.fieldDatatype) throw "MISSING FIELDNAME";
+        this.$outputUpdate = false;
+        let string = this.stringifyQuery(group);
         let $string = string ? string.join(' ') : "";
         return $string;
     }
-    stringifyQuery(group, update = false) {
+    stringifyQuery(group) {
+        let self = this;
         if (!group) return;
         var str = [];
-        angular.forEach(group.expressions, (o, i) => {
+        angular.forEach(group.expressions, (function (o, i) {
             if (o.type === 'condition') {
-                if (!o.field || !o.field[this.fieldName]) return;
+                if (!o.field || !o.field[self.fieldName]) return;
                 if (i !== 0) str.push(group.op);
-                str.push(o.field[this.fieldName]);
-                let dataType = o.field.hasOwnProperty(this.fieldDatatype) ? o.field[this.fieldDatatype] : false;
-                let values = angular.isDefined(o.values[0]) ? this.defineDatatype(dataType, o.values).unique().join(", ") : "";
-                let condition = this.conditions.find((function (q) {
+                str.push(o.field[self.fieldName]);
+                let dataType = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
+                let values = angular.isDefined(o.values[0]) ? self.defineDatatype(dataType, o.values).unique().join(", ") : "";
+                let condition = self.conditions.find((function (q) {
                     return o.operator === q.value;
                 })).symbol;
                 str.push(Array.isArray(condition) ? condition[0] : condition);
                 let ticks = "`";
-                str.push(update ? values : ticks + values + ticks);
+                str.push(self.$outputUpdate ? values : ticks + values + ticks);
             } else {
-                var comp = this.stringifyQuery(o, update);
+                var comp = self.stringifyQuery(o);
                 if (comp.length) {
                     if (str.length) str.push(group.op);
                     if (comp.length > 3) {
@@ -4746,7 +4655,7 @@ class QueryBuilderService {
                     str = str.concat(comp);
                 }
             }
-        });
+        }));
         return str;
     }
 }
@@ -4762,6 +4671,7 @@ exports.QueryBuilderService = QueryBuilderService;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const angular = __webpack_require__(142);
+const query_interface_1 = __webpack_require__(172);
 const PrettyJSON = __webpack_require__(206);
 const JSON_DATASET = __webpack_require__(205);
 const GROUP_SAMPLE = JSON.parse(__webpack_require__(200));
@@ -4776,22 +4686,7 @@ class DemoComponentCtrl {
         this.JSON_PRETTY = $element.find('#PRETTY_JSON');
     }
     $onInit() {
-        this.filters = {
-            "type": "group",
-            "op": "AND",
-            "expressions": [{
-                "type": "condition",
-                "field": { "name": "SOME_TABLE_NAME_GENDER", "description": "Gender", "dataType": "STRING" },
-                "operator": "IN",
-                "values": ["M", "F"]
-            }, {
-                "type": "condition",
-                "field": { "name": "SOME_TABLE_NAME_AGE", "description": "Age", "dataType": "INTEGER" },
-                "operator": "BETWEEN",
-                "values": [0, 100]
-            }],
-            "error": true
-        };
+        this.filters = angular.copy(query_interface_1.QUERY_INTERFACE);
         this.fields = angular.copy(JSON_DATASET);
     }
     setBloodhound(ele) {
@@ -4819,13 +4714,11 @@ class DemoComponentCtrl {
         });
     }
     onValueFetch(e) {
-        console.log('onValueFetch', e);
         let self = this;
         let ele = angular.element(e.$event.target);
         let ctrl = ele.controller('ngModel');
         let model = Array.isArray(ctrl.$viewValue) ? ctrl.$viewValue.slice(0) : ctrl.$viewValue;
         this.setBloodhound(ele).then(result => {
-            console.log('typeahead:select', e, result);
             if (!!e.group) {
                 ctrl.$setViewValue(result, 'change');
             }
@@ -5112,17 +5005,10 @@ if(false) {
 
 /***/ }),
 
-/***/ 195:
-/***/ (function(module, exports) {
-
-module.exports = "<a ui-sref=queryBuilder>Angular.js Query Builder</a><br><br>"
-
-/***/ }),
-
 /***/ 196:
 /***/ (function(module, exports) {
 
-module.exports = "<nav class=\"navbar navbar-default navbar-static-top\" style=\"margin: 0px;\"><div class=container><div class=navbar-header><a class=navbar-brand href=#>Angular Query Builder</a></div><div id=navbar class=\"navbar-collapse collapse\"><ul class=\"nav navbar-nav\"><li ui-sref-active=active ui-sref=root><a ui-sref=root>Home</a></li><li ui-sref-active=active><a ui-sref=about>About</a></li><li ui-sref-active=active><a ui-sref=contact>Contact</a></li></ul></div></div></nav>"
+module.exports = "<nav class=\"navbar navbar-default navbar-static-top\" style=\"margin: 0px;\"><div class=container><div class=navbar-header><a class=navbar-brand href=#>Angular Query Builder</a></div><div id=navbar class=\"navbar-collapse collapse\"><ul class=\"nav navbar-nav\"></ul></div></div></nav>"
 
 /***/ }),
 
@@ -5136,7 +5022,7 @@ module.exports = "<dl class=rules-group-container><dt class=rules-group-header><
 /***/ 198:
 /***/ (function(module, exports) {
 
-module.exports = "<div class=jumbotron><div class=container><h1>Angular Query Builder</h1><p>CommonJs plugin for user friendly query/filter interface.</p><p><a class=\"btn btn-default\" role=button href=https://github.com/reyramos/queryBuilder>Code on Github</a></p></div></div><div class=container><section class=bs-docs-section><h1 id=overview class=page-header>Overview</h1><blockquote>QueryBuilder is an Angular component to create queries and filters</blockquote><ul><li>Allows for user input/copy/paste functionality for ease query format samples.</li><li>Build JSON object for server restful interaction and parsing.</li><li>It outputs a structured JSON of rules which can be easily parsed.</li></ul></section><section class=clearfix><h4>Example:</h4><div class=\"alert alert-info\"><strong>Sample Queries: <i>Copy/Paste or Write them out</i></strong><br><br>Country equal `USA` AND Country equal `Canada` AND Gender equal `Male` AND Gender equal `Female` AND ( State equal `North Carolina` OR Age equal `15` )<br><br>Country equal `USA` AND Country equal `Canada` AND ((Gender equal `Male` AND Gender equal `Female`) AND (State equal `North Carolina` OR State equal `Ontario`))</div>Condition: <textarea style=\"width: 100%; height: 100px;\" class=flex ng-model=$ctrl.output name=query-string ng-trim=true></textarea><query-builder class=query-builder group=$ctrl.filters operands=$ctrl.fields on-update=$ctrl.onChanges($event) query-string=$ctrl.output field-value=name field-name=description field-datatype=dataType on-value-change=$ctrl.onValueFetch($event) optgroup></query-builder><br><p>JSON OUTPUT <code>\n                <pre id=PRETTY_JSON style=\"max-height: 500px;\"></pre>\n            </code></p></section><section class=bs-docs-section><h1 id=installation class=page-header>Getting started</h1><h3 id=dependencies>Dependencies</h3><ul><li>WebPack or CommonJS bundle see directory src for demo packages</li><li>Install Node.JS version 6.20>: Use your system package manager (brew,port,apt-get,yum etc)</li><li>Install global Typings , Bower, and Typescript commands</li></ul></section></div>"
+module.exports = "<div class=jumbotron><div class=container><h1>Angular Query Builder</h1><p>CommonJs plugin for user friendly query/filter interface.</p><p><a class=\"btn btn-default\" role=button href=https://github.com/reyramos/queryBuilder>Code on Github</a></p></div></div><div class=container><section class=bs-docs-section><h1 id=overview class=page-header>Overview</h1><blockquote>QueryBuilder is an Angular component to create queries and filters</blockquote><ul><li>Allows for user input/copy/paste functionality for ease query format samples.</li><li>Build JSON object for server restful interaction and parsing.</li><li>It outputs a structured JSON of rules which can be easily parsed.</li></ul></section><section class=clearfix><h4>Example:</h4><div class=\"alert alert-info\"><strong>Sample Queries: <i>Copy/Paste or Write them out</i></strong><br><br>Gender IN `M, F` AND Age BETWEEN `0, 100`<br><br>Country equal `USA` AND Country equal `Canada` AND Gender equal `Male` AND Gender equal `Female` AND ( State equal `North Carolina` OR Age equal `15` )<br><br>Country equal `USA` AND Country equal `Canada` AND ((Gender equal `Male` AND Gender equal `Female`) AND (State equal `North Carolina` OR State equal `Ontario`))</div>Condition: <textarea style=\"width: 100%; height: 100px;\" class=flex ng-model=$ctrl.output name=query-string ng-trim=true></textarea><query-builder class=query-builder group=$ctrl.filters operands=$ctrl.fields on-update=$ctrl.onChanges($event) query-string=$ctrl.output field-value=name field-name=description field-datatype=dataType on-value-change=$ctrl.onValueFetch($event) optgroup></query-builder><br><p>JSON OUTPUT <code>\n                <pre id=PRETTY_JSON style=\"max-height: 500px;\"></pre>\n            </code></p></section><section class=bs-docs-section><h1 id=installation class=page-header>Getting started</h1><h3 id=dependencies>Dependencies</h3><ul><li>WebPack or CommonJS bundle see directory src for demo packages</li><li>Install Node.JS version 6.20>: Use your system package manager (brew,port,apt-get,yum etc)</li><li>Install global Typings , Bower, and Typescript commands</li></ul></section></div>"
 
 /***/ }),
 
