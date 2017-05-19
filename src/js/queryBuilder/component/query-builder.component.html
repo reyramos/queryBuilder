@@ -58,17 +58,20 @@
                         </span>
                         <span ng-switch-when="BETWEEN" class="rule-operator-between">
                             <input type="text" ng-model="rule.values[0]"
+                                   ng-trim="false"
                                    class="form-control input-sm"
                                    ng-change="$ctrl.onChange($event)"
                                    ng-keyup="$ctrl.onKeyUp($event, rule)">
                                         AND
                             <input type="text" ng-model="rule.values[1]"
+                                   ng-trim="false"
                                    class="form-control input-sm"
                                    ng-change="$ctrl.onChange($event)"
                                    ng-keyup="$ctrl.onKeyUp($event, rule)">
                                     </span>
                         <span ng-switch-default class="rule-condition">
                             <input type="text" ng-model="rule.values[0]"
+                                   ng-trim="false"
                                    id="{{rule.$$hashKey}}"
                                    ng-change="$ctrl.onChange($event)"
                                    class="form-control input-sm"

@@ -27,13 +27,13 @@ class DemoComponentCtrl implements ng.IComponentController {
     public output: string;
     private JSON_PRETTY;
 
-    private states: Array<string> = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+    private states: Array<string> = ['   Alabama   ', 'Alaska', 'Arizona', 'Arkansas', 'California',
         'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
         'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
         'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
         'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-        'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
-        'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+        'New Jersey', 'New Mexico', 'New York', '   North Carolina ', 'North Dakota',
+        'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', ' Rhode Island      ',
         'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
         'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'Some really long name for this input'
     ];
@@ -89,9 +89,7 @@ class DemoComponentCtrl implements ng.IComponentController {
 
 
     onValueFetch(e) {
-
-
-
+    
         /**
          * Control GROUPS
          */
@@ -111,6 +109,9 @@ class DemoComponentCtrl implements ng.IComponentController {
 
 
     validateQuery(group) {
+    
+        console.log('validateQuery', JSON.stringify(group))
+    
         var validate = [];
         delete group.error;
 
@@ -135,6 +136,7 @@ class DemoComponentCtrl implements ng.IComponentController {
      * @param e
      */
     onChanges(e) {
+    
         this.validateQuery(e.group);
 
         let self: any = this;

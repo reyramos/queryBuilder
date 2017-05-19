@@ -45,7 +45,7 @@ class TagsComponentCtrl implements ng.IComponentController {
         let options: any = {
             itemValue  : self.itemvalue,
             itemText   : self.itemtext,
-            trimValue  : true,
+            trimValue  : false,
             confirmKeys: self.confirmkeys ? JSON.parse(self.confirmkeys) : [13],
             tagClass   : typeof self.tagClass === "function" ? self.tagClass : function (item) {
                 return self.tagclass;
@@ -119,7 +119,7 @@ class TagsComponentCtrl implements ng.IComponentController {
         let self: any = this;
         this.$inputtimeout = setTimeout(() => {
             let input = self.$element.find('input');
-   
+            
             self.$input = input[0];
             self.$input.placeholder = self.placeholder || "";
             self.$input.addEventListener('keyup', function (e) {
@@ -132,7 +132,7 @@ class TagsComponentCtrl implements ng.IComponentController {
                 })
             }, false);
             try {
-                ($ as any)(self.$input).typeahead().on('typeahead:selected', (e, value)=> {
+                ($ as any)(self.$input).typeahead().on('typeahead:selected', (e, value) => {
                     this.model.push(value);
                 });
             } catch (e) {
