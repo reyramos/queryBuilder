@@ -109,8 +109,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                 let group = angular.toJson(obj);
                 
                 self.group = JSON.parse(group);
-                console.log('$doCheck:1', JSON.stringify(this.group))
-    
+   
                 self.onGroupChange();
                 self.$scope.$digest();
             }, 500);
@@ -378,7 +377,6 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         };
         
         let newCondition = (exp: Array<string>) => {
-            console.log('newCondition')
     
             let expressions: any = angular.copy(QUERY_INTERFACE.expressions[0]);
             let regex = /(["'`])(\\?.)*?\1/g
@@ -390,7 +388,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
             Object.assign(expressions, {
                 values  : [],
                 field   : self.fields.find(function (o) {
-                    return description === o[self.fieldName];
+                    return description.trim() === o[self.fieldName];
                 }),
                 operator: conditions.find((o) => {
                     return o.symbol.indexOf(exp[1].toLowerCase()) !== -1 || o.symbol.indexOf(exp[1].toUpperCase()) !== -1
@@ -516,7 +514,6 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     }
     
     onKeyUp(e: any, rule?: any) {
-        console.log('onKeyUp')
         let self: any = this;
         let evnt: any = e.originalEvent || e;
         this.$event = 'onKeyUp';
@@ -702,7 +699,6 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
             });
         }
         //clean up the json
-        console.log('str =>', str)
         str = str.replace(/,\]/g, "]").replace(/\[,/g, "[").replace(/,,/g, ",");
     
         return this.setDatatypes(JSON.parse(str));
@@ -754,8 +750,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     }
     
     onPrefetch(e: any, rule?: any) {
-        console.log('onPrefetch')
-        
+       
         let self: any = this;
         
         return new Promise((resolve) => {

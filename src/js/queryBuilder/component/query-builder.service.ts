@@ -94,8 +94,6 @@ export class QueryBuilderService {
                 let dataType: string = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
                 let values = angular.isDefined(o.values[0]) ? (self.defineDatatype(dataType, o.values)).unique().join(", ") : "";
                 
-                console.log('values:', values)
-                
                 
                 let condition = self.conditions.find(function (q) {
                     return o.operator === q.value;
