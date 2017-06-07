@@ -17,6 +17,16 @@ export const QUERY_CONDITIONS: any = {
         value : "NE",
         symbol: ["not_equal", "not equal", "!==", "!=", "<>"] //THIS CAN BE AN ARRAY OF POSSIBLE SYMBOLS
     },
+    IS_NULL      : {
+        name  : "is Null",
+        value : "ISN",
+        symbol: ["is_null", "is null"]
+    },
+    IS_NOT_NULL  : {
+        name  : "is Not Null",
+        value : "INN",
+        symbol: ["is_not_null", "is not null"]
+    },
     GREATER_THAN : {
         name  : "Greater Than",
         value : "GT",

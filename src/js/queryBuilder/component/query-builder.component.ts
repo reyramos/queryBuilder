@@ -33,7 +33,7 @@ Array.prototype.unique = function () {
         }
     }
     
-   
+    
     return a;
 };
 
@@ -88,14 +88,14 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         if (!this.fieldValue) this.fieldValue = 'value';
         
         if (!this.fieldName) this.fieldName = 'name';
-    
+        
         this.onGroupChange();
     }
     
     
     $doCheck() {
         let self: any = this;
-    
+        
         /*
          This will be trigger when the output string is changes from outside source
          other than query builder
@@ -109,7 +109,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                 let group = angular.toJson(obj);
                 
                 self.group = JSON.parse(group);
-   
+                
                 self.onGroupChange();
                 self.$scope.$digest();
             }, 500);
@@ -377,7 +377,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         };
         
         let newCondition = (exp: Array<string>) => {
-    
+            
             let expressions: any = angular.copy(QUERY_INTERFACE.expressions[0]);
             let regex = /(["'`])(\\?.)*?\1/g
             let val = regex.exec(exp[2]);
@@ -541,16 +541,19 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     
     
     private checkExpressions(group) {
-    
+        
         let self: any = this;
         let conditions = [];
         let values = [];
         group.expressions.forEach(function (o, i) {
             if (o.type === 'condition') {
                 conditions.push(o);
+                let NullOperand: boolean = ['ISN', 'INN'].indexOf(o.operator) !== -1;
+                if (NullOperand) o.values[0] = null;
+                
                 let hasValue: boolean = o.values ? angular.isDefined(o.values[0]) : false;
                 let hasOperand: boolean = o.field ? o.field[self.fieldValue] : false;
-                if (hasValue && hasOperand) values.push(i)
+                if ((NullOperand || hasValue) && hasOperand) values.push(i)
                 
             } else {
                 self.checkExpressions(o)
@@ -569,7 +572,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     
     
     onChange(e?: any) {
-   
+        
         this.onGroupChange(e);
     }
     
@@ -607,7 +610,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     };
     
     AddCondition(group, idx?: number) {
-       
+        
         var condition = angular.copy(QUERY_INTERFACE.expressions[0], {
             $$indeed: this.$countCondition,
             values  : []
@@ -700,7 +703,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         }
         //clean up the json
         str = str.replace(/,\]/g, "]").replace(/\[,/g, "[").replace(/,,/g, ",");
-    
+        
         return this.setDatatypes(JSON.parse(str));
     }
     
@@ -750,7 +753,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     }
     
     onPrefetch(e: any, rule?: any) {
-       
+        
         let self: any = this;
         
         return new Promise((resolve) => {
@@ -784,7 +787,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         
         this.onPrefetch.apply(this, a).then((e) => {
             console.log('onValueChange:2')
-    
+            
             self.onGroupChange();
         });
     }
