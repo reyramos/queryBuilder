@@ -548,7 +548,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         group.expressions.forEach(function (o, i) {
             if (o.type === 'condition') {
                 conditions.push(o);
-                let NullOperand: boolean = ['ISN', 'INN'].indexOf(o.operator) !== -1;
+                let NullOperand: boolean = [QUERY_CONDITIONS.IS_NULL.value, QUERY_CONDITIONS.IS_NOT_NULL.value].indexOf(o.operator) !== -1;
                 if (NullOperand) o.values[0] = null;
                 
                 let hasValue: boolean = o.values ? angular.isDefined(o.values[0]) : false;
