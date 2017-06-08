@@ -109,9 +109,7 @@ class DemoComponentCtrl implements ng.IComponentController {
 
 
     validateQuery(group) {
-    
-        console.log('validateQuery', JSON.stringify(group))
-    
+        
         var validate = [];
         delete group.error;
 

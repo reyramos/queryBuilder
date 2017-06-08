@@ -132,8 +132,6 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     private split_string(query: string) {
         if (!query)return;
         
-        console.log('split_string')
-        
         let words = (query).split(/\s{0,} \s{0,}/g);
         //array element to keep single
         let conditions: any = ["(", ")"];
@@ -508,6 +506,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     }
     
     onOperandChange(rule: any) {
+        debugger
         this.$event = 'onOperandChange';
         this.$outputUpdate = false;
         this.onGroupChange();
@@ -641,8 +640,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     }
     
     RemoveCondition(idx: number, e?: any) {
-        console.log('RemoveCondition')
-        
+       
         this.$event = 'RemoveCondition';
         let self: any = this;
         this.$countCondition = 0;
@@ -719,8 +717,6 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
             }
         });
         
-        console.log('setDatatypes:', JSON.stringify(group))
-        
         
         return group;
     };
@@ -786,8 +782,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         });
         
         this.onPrefetch.apply(this, a).then((e) => {
-            console.log('onValueChange:2')
-            
+           
             self.onGroupChange();
         });
     }

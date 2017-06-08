@@ -44,7 +44,7 @@ export class QueryBuilderService {
                 case 'INTEGER':
                 case 'FLOAT':
                     num = values.map((v) => {
-                        return Number(v);
+                        return v ? Number(v) : v;
                     });
                     break;
                 // case 'DATETIME':
