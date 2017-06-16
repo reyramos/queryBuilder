@@ -53,7 +53,6 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     public fieldDatatype: string;
     public queryString: string;
     public fieldValue: string;
-    public fieldName: string;
     
     //output
     private onDelete: any;

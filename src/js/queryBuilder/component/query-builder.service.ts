@@ -21,7 +21,7 @@ export class QueryBuilderService {
     
     static instance: QueryBuilderService;
     public conditions: Array<any> = [];
-    public fieldName: string = "name";
+    public fieldName: string;
     public fieldDatatype: string = "dataType";
     public $outputUpdate: boolean = false;
     
