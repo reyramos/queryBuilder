@@ -75,8 +75,8 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         
         let self: any = this;
         
-        Object.keys(QUERY_CONDITIONS).forEach(function (k) {
-            self.conditions.push(QUERY_CONDITIONS[k])
+        Object.keys(QUERY_CONDITIONS).forEach((k) => {
+            this.conditions.push(QUERY_CONDITIONS[k])
         })
         
     }
@@ -123,6 +123,58 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     };
     
     
+    private evaluateWords(words, filter, callback?) {
+        let test = ``;
+        let wh = [];
+        let idxH = [];
+        words.forEach((o, i) => {
+            if (words[i + 1]) {
+                let find;
+                let curW = o;
+                let curIdx = i + 1;
+                let rWords = words.slice(curIdx);
+                test = `${curW}`;
+                find = filter(test.trim(), curIdx);
+                if (!find)
+                    rWords.forEach((rW, r) => {
+                        test += ` ${rW}`;
+                        curIdx += r;
+                        idxH.push(curIdx);
+                        find = filter(test.trim(), curIdx);
+                        if (find) {
+                            let regex = /\(.*?\)/g;
+                            let str = test.trim();
+                            let m;
+                            while ((m = regex.exec(str)) !== null) str = str.replace(/\(/g, '&#40;').replace(/\)/g, '&#41;');
+                            wh.push({
+                                name: str,
+                                idx1: i,
+                                idx2: idxH.slice(-1).pop()
+                            });
+                            test = ``;
+                            idxH = [];
+                        }
+                    });
+                
+            }
+        });
+        
+        let wCopy = words.slice(0);
+        if (callback) callback(wh);
+        wh.forEach(o => {
+            wCopy[o.idx1] = o.name;
+            for (let i = o.idx1 + 1; i <= o.idx2; i++)wCopy[i] = undefined;
+        });
+        
+        //clean the words
+        words = wCopy.filter((o) => {
+            return o !== "" && o !== undefined;
+        });
+        
+        return words;
+        
+    }
+    
     /**
      * It will take the query string and split into a simple single layer array to be evalualated
      * later to build the JSON filters based on the parameters
@@ -130,8 +182,11 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
      */
     private split_string(query: string) {
         if (!query)return;
+        //split and clean
+        let words = ((query).split(/\s{0,} \s{0,}/g)).filter(o => {
+            return o;
+        });
         
-        let words = (query).split(/\s{0,} \s{0,}/g);
         //array element to keep single
         let conditions: any = ["(", ")"];
         let self: any = this;
@@ -152,8 +207,8 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         /*
          Get all the valid operand
          */
-        this.fields.map(function (o) {
-            operands.push(o[self.fieldName]);
+        this.fields.map((o) => {
+            operands.push(o[this.fieldName]);
         });
         
         this.operators.map(function (c) {
@@ -164,6 +219,47 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         });
         
         conditions = conditions.unique();
+        
+        //evaluateWords OPERANDS
+        words = this.evaluateWords(words, (comp) => {
+            return this.fields.find(f => {
+                return f[this.fieldName] === comp || `(${f[this.fieldName]}` === comp;
+            });
+        });
+        
+        let vHandler = [];
+        //evaluateWords CONDITIONS
+        words = this.evaluateWords(words, (comp, i) => {
+            comp = comp.toLowerCase();
+            let find = conditions.find(f => {
+                return f === comp || `(${f}` === comp;
+            });
+            if (find) {
+                vHandler.push({
+                    condition: find,
+                    idx      : i
+                })
+            }
+            
+            return find;
+        });
+        
+        
+        //evaluateWords OPERATORS
+        words = this.evaluateWords(words, (comp, i) => {
+            let find = this.operators.find(f => {
+                return f.name === comp || `(${f.name}` === comp;
+            });
+            if (find) {
+                vHandler.push({
+                    operators: find,
+                    idx      : i
+                })
+            }
+            
+            return find;
+        });
+        
         
         /*
          First check all the condition and match them together
@@ -260,7 +356,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
          This loop will handle the conditions
          TODO:refactor
          */
-        var i = 0;
+        let i = 0;
         let handler = []; //this should reset on push to qArr
         
         string = ""; //reset for new array use
@@ -318,7 +414,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         
         //clean strings
         qArr = qArr.map(function (o) {
-            return o
+            return o;
         });
         
         
@@ -374,26 +470,28 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         };
         
         let newCondition = (exp: Array<string>) => {
-            
             let expressions: any = angular.copy(QUERY_INTERFACE.expressions[0]);
             let regex = /(["'`])(\\?.)*?\1/g
             let val = regex.exec(exp[2]);
             let value = val ? exp[2].substring(1, exp[2].length - 1) : exp[2];
             let desc = regex.exec(exp[0]);
-            let description = desc ? exp[0].substring(1, exp[0].length - 1) : exp[0];
+            let description = (desc ? exp[0].substring(1, exp[0].length - 1) : exp[0]).replace(/&#40;/g, '(').replace(/&#41;/g, ')')
+            let field = self.fields.find(function (o) {
+                return description.trim() === o[self.fieldName];
+            });
             
             Object.assign(expressions, {
                 values  : [],
-                field   : self.fields.find(function (o) {
-                    return description.trim() === o[self.fieldName];
-                }),
                 operator: conditions.find((o) => {
                     return o.symbol.indexOf(exp[1].toLowerCase()) !== -1 || o.symbol.indexOf(exp[1].toUpperCase()) !== -1
                 }).value
-            });
-            
+            }, field ? {
+                field: field
+            } : {});
+            //o.replace(/&#40;/g, '(').replace(/&#41;/g, ')')
             let dataType: string = expressions.field.hasOwnProperty(this.fieldDatatype) ? expressions.field[this.fieldDatatype] : false;
-            let values = this.defineDatatype(dataType, value.split(","));
+            // let values = this.defineDatatype(dataType, expressions.operator.contains('IN') ? value.split(", ") : value[0]);
+            let values = this.defineDatatype(dataType, value.split(", "));
             
             
             values.forEach((v) => {
@@ -411,12 +509,13 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
         
         let group = newGroup();
         let parseIt = (group, arr: Array<string>) => {
+            
             let expressions = [];
             if (!arr)return;
             
             for (let i = 0; i < arr.length; i++) {
                 let txt = arr[i];
-                if (txt === "$$QueryBuilder")return;
+                if (txt === QBKEY)return;
                 if (txt === "(") {
                     //defining the start of the group
                     let _group = newGroup();
@@ -424,7 +523,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                     group.expressions.push(_group);
                     //clean empty strings
                     arr = arr.filter(function (o) {
-                        return o !== "$$QueryBuilder"
+                        return o !== QBKEY
                     });
                     
                     let reg = /(\()?(?:[^()]+|\([^)]+\))+(\)?)/;
@@ -436,7 +535,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                         
                         let newStr = ((arr.join(" ")).replace(balance, ""))//.replace(/\(\s{1,}\)/, "");
                         //since of array reference add unidentified index to keep the same loop in order
-                        arr = ["$$QueryBuilder"].concat(this.split_string(newStr) || []);
+                        arr = [QBKEY].concat(this.split_string(newStr) || []);
                         let handler = this.split_string(balance) || [];
                         handler = handler.filter((o) => {
                             return o;
@@ -457,7 +556,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
                 }
                 
                 //unique identifier
-                arr[i] = "$$QueryBuilder";
+                arr[i] = QBKEY;
             }
             
         };
@@ -505,7 +604,6 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     }
     
     onOperandChange(rule: any) {
-        debugger
         this.$event = 'onOperandChange';
         this.$outputUpdate = false;
         this.onGroupChange();
@@ -639,7 +737,7 @@ class QueryBuilderCtrl extends QueryBuilderService implements ng.IComponentContr
     }
     
     RemoveCondition(idx: number, e?: any) {
-       
+        
         this.$event = 'RemoveCondition';
         let self: any = this;
         this.$countCondition = 0;

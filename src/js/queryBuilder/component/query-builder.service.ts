@@ -33,9 +33,12 @@ export class QueryBuilderService {
     
     
     public defineDatatype(dataType, values) {
-        values = Array.isArray(values) ? values : [values];
-        let num = (values.slice(0)).map((f) => {
-            return typeof f === 'string' ? f : f;
+        values = (Array.isArray(values) ? values : [values]).map((v) => {
+            return typeof(v) === 'string' ? v.trim() : v;
+        });
+        
+        let num = (values.slice(0)).filter((f) => {
+            return f;
         });
         
         if (dataType)
@@ -44,7 +47,8 @@ export class QueryBuilderService {
                 case 'INTEGER':
                 case 'FLOAT':
                     num = values.map((v) => {
-                        return v ? Number(v) : v;
+                        //if the string has comma is will be NaN
+                        return v ? Number(typeof v === 'string' ? v.replace(/,/g, '') : v) : null;
                     });
                     break;
                 // case 'DATETIME':
@@ -85,6 +89,7 @@ export class QueryBuilderService {
         var str = [];
         angular.forEach(group.expressions, function (o, i) {
             if (o.type === 'condition') {
+                // var values = o.values[0] ? o.values.join(", ") : "";
                 
                 if (!o.field || !o.field[self.fieldName])return;
                 if (i !== 0) str.push(group.op)
@@ -92,7 +97,8 @@ export class QueryBuilderService {
                 str.push(o.field[self.fieldName]);
                 
                 let dataType: string = o.field.hasOwnProperty(self.fieldDatatype) ? o.field[self.fieldDatatype] : false;
-                let values = angular.isDefined(o.values[0]) ? (self.defineDatatype(dataType, o.values)).unique().join(", ") : "";
+                let values: string = null;
+                values = angular.isDefined(o.values[0]) ? (self.defineDatatype(dataType, o.values)).unique().join(", ") : "";
                 
                 
                 let condition = self.conditions.find(function (q) {
@@ -101,8 +107,10 @@ export class QueryBuilderService {
                 
                 str.push(Array.isArray(condition) ? condition[0] : condition);
                 
-                let ticks = "`";
-                str.push(self.$outputUpdate ? values : ticks + values + ticks);
+                if (values !== null) {
+                    let ticks = "`";
+                    str.push(self.$outputUpdate ? values : ticks + values + ticks);
+                }
                 
             } else {
                 var comp = self.stringifyQuery(o);
